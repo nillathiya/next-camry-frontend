@@ -1,37 +1,29 @@
 export interface IUser {
   _id: string;
   parentUCode?: string;
+  sponsorUCode?: string;
   name: string;
   email: string;
   password: string;
   contactNumber?: string;
-  city?: string;
-  gender?: "Male" | "Female" | "Other";
-  dob?: Date;
-  state?: string;
-  myRank?: string;
   username: string;
   walletId?: string;
-  sponsorUCode?: string;
-  country?: string;
   wallet_address?: string;
-  address?: string;
-  withdraw_status: number;
-  position: number;
-  parent?: string;
-  img?: string;
-  profilePicture?: string;
-  ip?: string;
-  source?: string;
-  accessLevel?: number[];
-  resetPasswordToken?: string;
-  settings?: Record<string, any>;
-  validityDate?: Date;
-  planName?: string;
-  role?: String;
+  gender?: string;
+  dob?: Date;
+  role: string;
+  kycStatus: number;
+  address?: {
+    line1?: string;
+    line2?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    countryCode?: string;
+    postalCode?: string;
+  };
   // Account & Status
   accountStatus?: {
-    activeId?: number;
     activeStatus?: number;
     blockStatus?: number;
     activeDate?: Date;
@@ -42,21 +34,27 @@ export interface IUser {
     bank?: string;
     accountType?: string;
   };
-  cryptoAddress?: string;
-  upi?: {
+  upiDetails?: {
     gPay?: string;
     phonePe?: string;
     bharatPe?: string;
     payTM?: string;
     upiId?: string;
   };
-  nominee?: {
+
+  nominee: {
     name?: string;
     relation?: string;
     dob?: string;
-    address?: string;
-    city?: string;
-    state?: string;
+    address?: {
+      line1?: string;
+      line2?: string;
+      city?: string;
+      state?: string;
+      country?: string;
+      countryCode?: string;
+      postalCode?: string;
+    };
   };
   panCard?: {
     panNo?: string;
@@ -73,21 +71,24 @@ export interface IUser {
     amount?: number;
     dateTime?: Date;
   };
-  reason?: string;
-  kycStatus: number;
-  status: number;
+
+  profilePicture?: string;
+  ip?: string;
+  source?: string;
+  accessLevels?: number[];
+  resetPasswordToken?: string;
+  settings?: Record<string, any>;
+  validityDate?: Date;
+  planName?: string;
+  cryptoAddress?: string;
+  metadata?: Record<string, any>;
   lastLogin?: Date;
   lastActivity?: Date;
-  createdAt: string;
-  updatedAt: string;
-}
-
-//  User Wallet
-export interface ICheckWalletQuery {
-  address: string;
-}
-
-export interface IRegisterUserResponse{
-  token:string;
-  user:IUser
+  createdAt: Date;
+  updatedAt: Date;
+  myRank?: string;
+  withdraw_status: number;
+  position: number;
+  reason?: string;
+  status: number;
 }
