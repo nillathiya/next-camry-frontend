@@ -12,6 +12,7 @@ interface Routes {
     LOGOUT: string;
     CHANGE_PASSWORD: string;
     IMPERSONATE: string;
+    SEND_OTP:string;
   };
   COMPANY_INFO: {
     GET_ALL: string;
@@ -47,6 +48,7 @@ interface Routes {
     GET_GENERATION_TREE: string;
     GET_DETAILS_WITH_INVEST_INFO: string;
     ADD_MEMBER: string;
+    SEND_AUTHENTICATED_OTP:string;
   };
   ORDER: {
     GET_ALL: string;
@@ -96,6 +98,7 @@ export const ROUTES: Routes = {
     LOGOUT: `${API_URL}/api/auth/admin/logout`,
     CHANGE_PASSWORD: `${API_URL}/api/auth/change-password`,
     IMPERSONATE: `${API_URL}/api/auth/admin/impersonate`,
+    SEND_OTP:`${API_URL}/api/auth/send-otp`
   },
   COMPANY_INFO: {
     GET_ALL: `${API_URL}/api/company-info/get`,
@@ -159,6 +162,7 @@ export const ROUTES: Routes = {
     GET_GENERATION_TREE: `${API_URL}/api/user/generation-tree`,
     GET_DETAILS_WITH_INVEST_INFO: `${API_URL}/api/user/details-with-investment`,
     ADD_MEMBER: `${API_URL}/api/user/create`,
+    SEND_AUTHENTICATED_OTP:`${API_URL}/api/user/send-otp`,
   },
   ORDER: {
     GET_ALL: `${API_URL}/api/orders/get-all`,

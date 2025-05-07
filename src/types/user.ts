@@ -92,3 +92,14 @@ export interface IUser {
   reason?: string;
   status: number;
 }
+
+
+//  User Wallet
+export interface ICheckWalletQuery {
+  address: string;
+}
+
+export interface IRegisterUserResponse{
+  token:string;
+  user:IUser
+}

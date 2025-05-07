@@ -52,3 +52,19 @@ export const useWeb3RegistrationFields = (): string[] | undefined => {
   );
   return Array.isArray(registrationType) ? registrationType : undefined;
 };
+
+export const useWeb3RegistrationWithOtp = (): string | undefined => {
+  const registrationType = useCompanyInfo(
+    "Registration",
+    "web3_registration_with_otp"
+  );
+  return Array.isArray(registrationType) ? registrationType[0] : undefined;
+};
+
+export const useRegistrationWithOtp = (): string | undefined => {
+  const registrationType = useCompanyInfo(
+    "Registration",
+    "registration_with_otp"
+  );
+  return Array.isArray(registrationType) ? registrationType[0] : undefined;
+};

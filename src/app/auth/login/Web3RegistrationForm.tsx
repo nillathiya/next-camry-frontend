@@ -18,11 +18,15 @@ import "react-phone-number-input/style.css";
 import { useAppDispatch } from "@/redux-toolkit/Hooks";
 import { web3RegisterAsync } from "@/redux-toolkit/slices/userSlice";
 import { toast } from "react-toastify";
-import { useWeb3RegistrationFields } from "@/hooks/useWebsiteSettings";
+import {
+  useWeb3RegistrationFields,
+  useWeb3RegistrationWithOtp,
+} from "@/hooks/useWebsiteSettings";
 import countries from "i18n-iso-countries";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useSignMessage, useAccount } from "wagmi";
 import { SiweMessage } from "siwe";
+import { useOtp } from "@/hooks/useOtp";
 
 // Load English locale for country names
 countries.registerLocale(require("i18n-iso-countries/langs/en.json"));
@@ -101,7 +105,9 @@ const Web3RegistrationForm = ({
   const dispatch = useAppDispatch();
   const { signMessageAsync } = useSignMessage();
   const { address: connectedAddress, chain } = useAccount();
+  const web3RegistrationWithOtp = useWeb3RegistrationWithOtp() || "no";
   const value = useWeb3RegistrationFields() || [];
+  const [isOtpSent, setIsOtpSent] = useState<boolean>(false);
   const initialFormData = value.reduce((acc, item) => {
     const [key] = item.split(":");
     if (key === "contactNumber") {
@@ -114,7 +120,9 @@ const Web3RegistrationForm = ({
   }, {} as Record<string, any>);
 
   const [regFormData, setRegFormData] = useState(initialFormData);
+  const [inputOtp, setInputOtp] = useState<string>("");
   const formFields = parseFormFields(value);
+  const { sendOtp, otp, isLoading, timeRemaining, error } = useOtp();
 
   // Use connectedAddress from useAccount, fallback to propAddress
   const walletAddress = connectedAddress || propAddress;
@@ -146,6 +154,30 @@ const Web3RegistrationForm = ({
     setRegFormData((prev) => ({ ...prev, [key]: value }));
   };
 
+  const handleRequestOtp = async () => {
+    if (!regFormData.username || !regFormData.contactNumber) {
+      toast.error("Username and Contact Number are required to request OTP");
+      return;
+    }
+
+    try {
+      await sendOtp({
+        username: regFormData.username,
+        contactNumber: regFormData.contactNumber,
+      });
+
+      if (error) {
+        toast.error("Failed to request OTP. Please try again.");
+        return;
+      }
+      toast.success("OTP requested successfully!");
+      setIsOtpSent(true);
+    } catch (error) {
+      console.error("OTP request error:", error);
+      toast.error("Failed to request OTP. Please try again.");
+    }
+  };
+
   // Handle form submission
   const regFormSubmitHandle = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -160,7 +192,9 @@ const Web3RegistrationForm = ({
       const registrationData = {
         ...regFormData,
         wallet_address: walletAddress,
+        ...(web3RegistrationWithOtp === "yes" ? { otp: inputOtp } : {}),
       };
+
       console.log("Registering user with data:", registrationData);
       await dispatch(web3RegisterAsync(registrationData)).unwrap();
       toast.success("Registration successful!");
@@ -231,9 +265,7 @@ const Web3RegistrationForm = ({
       router.push("/dashboard/project");
     } catch (error) {
       console.error("Registration or SIWE error:", error);
-      toast.error(
-        (error as Error)?.message || "Registration failed. Please try again."
-      );
+      toast.error(error || "Registration failed. Please try again.");
     }
   };
 
@@ -284,6 +316,39 @@ const Web3RegistrationForm = ({
                   )}
                 </FormGroup>
               ))}
+
+              {web3RegistrationWithOtp === "yes" && (
+                <>
+                  <FormGroup>
+                    <Label className="col-form-label">OTP</Label>
+                    <Input
+                      type="text"
+                      value={inputOtp}
+                      onChange={(event) => setInputOtp(event.target.value)}
+                      placeholder="Enter OTP"
+                      required
+                    />
+                  </FormGroup>
+                  {isOtpSent && timeRemaining !== "00:00" && (
+                    <FormGroup>
+                      <Label className="col-form-label">
+                        Time Remaining: {timeRemaining}
+                      </Label>
+                    </FormGroup>
+                  )}
+                  <FormGroup>
+                    <Button
+                      type="button"
+                      color="secondary"
+                      block
+                      onClick={handleRequestOtp}
+                      disabled={isLoading || timeRemaining !== "00:00"}
+                    >
+                      {isLoading ? "Sending OTP..." : "Request OTP"}
+                    </Button>
+                  </FormGroup>
+                </>
+              )}
               <div className="form-group mb-0">
                 <div className="text-end mt-3">
                   <Button type="submit" color="primary" block>
