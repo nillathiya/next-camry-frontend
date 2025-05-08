@@ -1,3 +1,6 @@
+import { ChangeEventHandler } from "react";
+import { InputType } from "reactstrap/types/lib/Input";
+
 export interface IUser {
   _id: string;
   parentUCode?: string;
@@ -93,7 +96,6 @@ export interface IUser {
   status: number;
 }
 
-//  User Wallet
 export interface ICheckWalletQuery {
   address: string;
 }
@@ -106,3 +108,40 @@ export interface IRegisterUserResponse {
 export interface IUserWalletInfo {
   [key: string]: string | number | null;
 }
+export interface CommonUserFormGroupProps {
+  value: string | undefined;
+  disabled: boolean | undefined;
+  readOnly: boolean | undefined;
+  tag: string;
+  name: string | undefined;
+  onChange: ChangeEventHandler<HTMLInputElement> | undefined;
+  title: string;
+  type: InputType;
+  placeholder?: string;
+  defaultValue?: string;
+  row?: number;
+}
+
+export interface IUserAddress {
+  stateCode: any;
+  line1?: string;
+  line2?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  countryCode?: string;
+  postalCode?: string;
+}
+
+export interface IUserProfile {
+  username?: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  mobile?: string;
+  profilePicture?: string;
+  address?: IUserAddress;
+}
+
+export type ProfileUpdatePayload = Partial<IUserProfile> | FormData;
+export type ProfileUpdateType = 'data' | 'avatar';

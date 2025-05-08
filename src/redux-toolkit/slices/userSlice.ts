@@ -7,6 +7,8 @@ import {
   IUser,
   IUserWalletInfo,
   IWebsiteSettings,
+  ProfileUpdatePayload,
+  ProfileUpdateType,
 } from "@/types";
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 // import { persistor } from "../store";
@@ -58,6 +60,49 @@ export const web3RegisterAsync = createAsyncThunk(
   }
 );
 
+export const getProfileAsync = createAsyncThunk(
+  "user/getProfile",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get<IUser>(ROUTES.USER.GET_PROFILE);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch profile"
+      );
+    }
+  }
+);
+
+export const updateProfileAsync = createAsyncThunk(
+  "user/updateProfile",
+  async (
+    { payload, type }: { payload: FormData | object; type: "avatar" | "data" },
+    { rejectWithValue }
+  ) => {
+    try {
+      const config = {
+        headers: {
+          "Content-Type":
+            type === "avatar" ? "multipart/form-data" : "application/json",
+        },
+      };
+      if (type === "avatar" && payload instanceof FormData) {
+        payload.append("updateAction", "profileImageUpdate");
+      }
+
+      const response = await apiClient.post(
+        ROUTES.USER.EDIT_PROFILE,
+        payload,
+        config
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || "Upload failed");
+    }
+  }
+);
+
 export const getUserWalletAsync = createAsyncThunk(
   "user/getUserWallet",
   async (_, { rejectWithValue }) => {
@@ -80,6 +125,7 @@ const userSlice = createSlice({
   reducers: {
     resetUserState(state) {
       state.user = null;
+      state.error = null;
     },
   },
   extraReducers: (builder) => {
@@ -121,6 +167,41 @@ const userSlice = createSlice({
         state.userWallet = action.payload.data;
       })
       .addCase(getUserWalletAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      // getProfileAsync
+      .addCase(getProfileAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getProfileAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(getProfileAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      // updateProfileAsync
+      .addCase(updateProfileAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateProfileAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        if (state.user) {
+          state.user = {
+            ...state.user,
+            ...action.payload.data,
+            address: {
+              ...state.user.address,
+              ...action.payload.data.address
+            }
+          };
+        }
+      })
+      .addCase(updateProfileAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

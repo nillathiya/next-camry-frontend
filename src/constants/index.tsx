@@ -495,10 +495,10 @@ export const WishlistTableHeader = ["Product", "Product Name", "Price", "Availab
 
 // check out
 export const BillingDetails = "Billing Details";
-export const FirstName = "First Name";
+export const FirstName = "Name";
 export const LastName = "Last Name";
 export const Phone = "Phone";
-export const EmailAddress = "Email Address";
+export const EmailAddress = "Email";
 export const Country = "Country";
 
 export const CountryMenu = ["India", "South Africa", "United State", "Australia"];
