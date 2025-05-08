@@ -42,7 +42,8 @@ interface Routes {
     GET_ALL: string;
     UPDATE_USER: any;
     CHECK_WALLET: (params: ICheckWalletQuery) => string;
-    UPDATE_PROFILE: string;
+    GET_PROFILE: string;
+    EDIT_PROFILE: string;
     CHECK_NAME: string;
     GET_GENERATION_TREE: string;
     GET_DETAILS_WITH_INVEST_INFO: string;
@@ -154,7 +155,8 @@ export const ROUTES: Routes = {
       });
       return `${API_URL}/api/user/check-wallet?${query.toString()}`;
     },
-    UPDATE_PROFILE: `${API_URL}/api/user/update/profile`,
+    GET_PROFILE: `${API_URL}/api/user/profile`,
+    EDIT_PROFILE: `${API_URL}/api/user/edit-profile`,
     CHECK_NAME: `${API_URL}/api/user/check-name`,
     GET_GENERATION_TREE: `${API_URL}/api/user/generation-tree`,
     GET_DETAILS_WITH_INVEST_INFO: `${API_URL}/api/user/details-with-investment`,
