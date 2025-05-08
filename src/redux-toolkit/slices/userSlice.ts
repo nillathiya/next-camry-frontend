@@ -5,20 +5,25 @@ import {
   ICheckWalletQuery,
   IRegisterUserResponse,
   IUser,
+  IUserWalletInfo,
   IWebsiteSettings,
 } from "@/types";
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
-import { persistor } from "../store";
-import { signOut } from "next-auth/react";
+// import { persistor } from "../store";
+// import { signOut } from "next-auth/react";
 
 interface UserState {
   user: IUser | null;
-  status: "loading" | "idle" | "failed";
+  userWallet: IUserWalletInfo | null;
+  loading: boolean;
+  error: any;
 }
 
 const initialState: UserState = {
   user: null,
-  status: "idle",
+  userWallet: null,
+  loading: false,
+  error: null,
 };
 
 export const registerUserAsync = createAsyncThunk(
@@ -53,6 +58,22 @@ export const web3RegisterAsync = createAsyncThunk(
   }
 );
 
+export const getUserWalletAsync = createAsyncThunk(
+  "user/getUserWallet",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get<IApiResponse<IUserWalletInfo>>(
+        ROUTES.USER.GET_USER_WALLET
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "An unknown error occurred"
+      );
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState,
@@ -65,40 +86,58 @@ const userSlice = createSlice({
     builder
       // registerUserAsync
       .addCase(registerUserAsync.pending, (state) => {
-        state.status = "loading";
+        state.loading = true;
+        state.error = null;
       })
       .addCase(registerUserAsync.fulfilled, (state, action) => {
-        state.status = "idle";
+        state.loading = false;
         state.user = action.payload.data.user;
       })
       .addCase(registerUserAsync.rejected, (state, action) => {
-        state.status = "failed";
+        state.loading = false;
+        state.error = action.payload as string;
       })
       // web3RegisterAsync
       .addCase(web3RegisterAsync.pending, (state) => {
-        state.status = "loading";
+        state.loading = true;
+        state.error = null;
       })
       .addCase(web3RegisterAsync.fulfilled, (state, action) => {
-        state.status = "idle";
+        state.loading = false;
         state.user = action.payload.data.user;
       })
       .addCase(web3RegisterAsync.rejected, (state, action) => {
-        state.status = "failed";
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      // getUserWalletAsync
+      .addCase(getUserWalletAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getUserWalletAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        state.userWallet = action.payload.data;
+      })
+      .addCase(getUserWalletAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });
 export const { resetUserState } = userSlice.actions;
 
-export const handleUnauthorized = () => async (dispatch: any) => {
-  try {
-    await persistor.purge();
-    dispatch(resetUserState());
-    await signOut({ redirect: false });
-    window.location.href = "/auth/login";
-  } catch (err) {
-    console.error("Error during logout:", err);
-    window.location.href = "/auth/login";
-  }
-};
+// export const handleUnauthorized = () => async (dispatch: any) => {
+//   try {
+//     await persistor.purge();
+//     dispatch(resetUserState());
+//     await signOut({ redirect: false });
+//     window.location.href = "/auth/login";
+//   } catch (err) {
+//     console.error("Error during logout:", err);
+//     window.location.href = "/auth/login";
+//   }
+// };
 
 export default userSlice.reducer;

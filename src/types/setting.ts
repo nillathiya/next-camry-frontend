@@ -53,3 +53,20 @@ export interface IUserSetting {
   adminStatus: number;
 }
 
+export interface IWalletSettings {
+  _id: string;
+  parentId?: string; // Ref to Wallet._id
+  slug: string;
+  name?: string;
+  wallet?: string;
+  type?: string;
+  binary: number;
+  matrix: number;
+  universal: number;
+  singleLeg: number;
+  status: number;
+  adminStatus: number;
+  column?: string;
+  createdAt: string;
+  updatedAt: string;
+}

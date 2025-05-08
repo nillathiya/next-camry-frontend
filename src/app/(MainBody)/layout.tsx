@@ -5,6 +5,7 @@ import ThemeCustomizer from "@/layout/theme-customizer";
 import Header from "@/layout/Header";
 import Sidebar from "@/layout/sidebar";
 import FooterLayout from "@/layout/footer";
+import MainProvider from "../MainProvider";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (

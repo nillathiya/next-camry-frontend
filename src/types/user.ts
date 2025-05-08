@@ -93,13 +93,16 @@ export interface IUser {
   status: number;
 }
 
-
 //  User Wallet
 export interface ICheckWalletQuery {
   address: string;
 }
 
-export interface IRegisterUserResponse{
-  token:string;
-  user:IUser
+export interface IRegisterUserResponse {
+  token: string;
+  user: IUser;
+}
+
+export interface IUserWalletInfo {
+  [key: string]: string | number | null;
 }

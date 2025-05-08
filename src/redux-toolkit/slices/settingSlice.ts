@@ -1,10 +1,17 @@
 import { apiClient } from "@/api/apiClient";
 import { ROUTES } from "@/api/route";
-import { IApiResponse, IWebsiteSettings, IUserSetting } from "@/types";
+import {
+  IApiResponse,
+  IWebsiteSettings,
+  IUserSetting,
+  IWalletSettings,
+} from "@/types";
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 
-interface SettingState { // Fixed typo: SettingState → SettingState
+interface SettingState {
+  // Fixed typo: SettingState → SettingState
   websiteSettings: IWebsiteSettings[];
+  walletSettings: IWalletSettings[];
   userSettings: IUserSetting[];
   loading: boolean; // Changed Boolean to boolean
   error: any;
@@ -12,6 +19,7 @@ interface SettingState { // Fixed typo: SettingState → SettingState
 
 const initialState: SettingState = {
   websiteSettings: [],
+  walletSettings: [],
   userSettings: [],
   loading: false,
   error: null,
@@ -35,11 +43,28 @@ export const getWebsiteSettingsAsync = createAsyncThunk(
 );
 
 export const getUsersiteSettingsAsync = createAsyncThunk(
-  "setting/getUsersiteSettingsAsync",
+  "setting/getUsersiteSettings",
   async (_, { rejectWithValue }) => {
     try {
       const response = await apiClient.get<IApiResponse<IUserSetting[]>>(
         ROUTES.SETTINGS.GET_USER_SETTINGS
+      );
+      return response.data;
+    } catch (error: any) {
+      console.log("Setting slice error", error);
+      return rejectWithValue(
+        error.response?.data?.message || "An unknown error occurred"
+      );
+    }
+  }
+);
+
+export const getWalletSettingsAsync = createAsyncThunk(
+  "setting/getWalletSettings",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get<IApiResponse<IWalletSettings[]>>(
+        ROUTES.SETTINGS.GET_WALLET_SETTINGS
       );
       return response.data;
     } catch (error: any) {
@@ -81,6 +106,20 @@ const settingSlice = createSlice({
         state.userSettings = action.payload.data;
       })
       .addCase(getUsersiteSettingsAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      //  getWalletSettingsAsync
+      .addCase(getWalletSettingsAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getWalletSettingsAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        state.walletSettings = action.payload.data;
+      })
+      .addCase(getWalletSettingsAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

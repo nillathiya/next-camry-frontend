@@ -104,33 +104,28 @@ export const EarningChartOptions: ApexOptions = {
   ],
 };
 
-export const UserCardData = [
+export const UserWalletInfo = [
   {
     svg: "crown",
-    heading: "User Profile",
-    title: "Consectetur adipiscing ",
+    wallet: "fund_wallet",
     color: "primary",
   },
   {
     svg: "flash",
-    heading: "Latest Trends",
-    title: "Minim veniam",
+    wallet: "main_wallet",
     color: "success",
   },
   {
     svg: "blend-2",
-    heading: "New Arrivals",
-    title: "Excepteur sint",
+    wallet: "fund_wallet",
     color: "warning",
   },
   {
     svg: "color-filter",
-    heading: "Best Referrals",
-    title: "Quis nostrud exercitation",
+    wallet: "roi",
     color: "secondary",
   },
 ];
-
 export const RevenueChartOptions: ApexOptions = {
   series: [
     {

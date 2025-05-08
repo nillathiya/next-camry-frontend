@@ -2,7 +2,7 @@
 "use client";
 
 import InterceptorInitializer from "@/lib/InterceptorInitializer";
-import { useAppDispatch } from "@/redux-toolkit/Hooks";
+import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
 import { getWebsiteSettingsAsync } from "@/redux-toolkit/slices/settingSlice";
 import { useEffect, useState } from "react";
 
@@ -14,6 +14,7 @@ const InitialApiProvider: React.FC<InitialApiProviderProps> = ({
   children,
 }) => {
   const dispatch = useAppDispatch();
+  const { websiteSettings } = useAppSelector((state) => state.setting);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -22,7 +23,9 @@ const InitialApiProvider: React.FC<InitialApiProviderProps> = ({
 
     const fetchData = async () => {
       try {
-        await dispatch(getWebsiteSettingsAsync()).unwrap();
+        if (websiteSettings.length === 0) {
+          await dispatch(getWebsiteSettingsAsync()).unwrap();
+        }
       } catch (error) {
         console.error("Error fetching website settings:", error);
       }
