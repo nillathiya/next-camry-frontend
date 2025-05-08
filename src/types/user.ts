@@ -112,9 +112,9 @@ export interface CommonUserFormGroupProps {
   value: string | undefined;
   disabled: boolean | undefined;
   readOnly: boolean | undefined;
-  tag: string;
+  tag?: React.ElementType;
   name: string | undefined;
-  onChange: ChangeEventHandler<HTMLInputElement> | undefined;
+  onChange?: (e: React.ChangeEvent<HTMLFormElement>) => void;
   title: string;
   type: InputType;
   placeholder?: string;
@@ -144,4 +144,4 @@ export interface IUserProfile {
 }
 
 export type ProfileUpdatePayload = Partial<IUserProfile> | FormData;
-export type ProfileUpdateType = 'data' | 'avatar';
+export type ProfileUpdateType = "data" | "avatar";

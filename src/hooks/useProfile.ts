@@ -1,8 +1,11 @@
 "use client";
 
-import { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '@/redux-toolkit/Hooks';
-import { getProfileAsync, updateProfileAsync } from '@/redux-toolkit/slices/userSlice';
+import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
+import {
+  getProfileAsync,
+  updateProfileAsync,
+} from "@/redux-toolkit/slices/userSlice";
 
 interface AddressData {
   line1?: string;
@@ -14,21 +17,12 @@ interface AddressData {
   postalCode?: string;
 }
 
-interface UpdateProfileData {
-  username?: string;
-  name?: string;
-  email?: string;
-  mobile?: string;
-  address?: AddressData;
-  password?: string;
-}
-
 export const useProfile = () => {
   const dispatch = useAppDispatch();
-  const { user, status, error } = useAppSelector((state) => state.user);
+  const { user, loading, error } = useAppSelector((state) => state.user);
 
   useEffect(() => {
-    if (!user && status === 'idle') {
+    if (!user && !loading) {
       fetchProfile();
     }
   }, [user, status]);
@@ -37,13 +31,15 @@ export const useProfile = () => {
     return dispatch(getProfileAsync()).unwrap();
   };
 
-  const updateUserProfile = async (profileData: UpdateProfileData) => {
+  const updateUserProfile = async (profileData: any) => {
     try {
-      const result = await dispatch(updateProfileAsync({
-        payload: profileData,
-        type: 'data'
-      })).unwrap();
-      
+      const result = await dispatch(
+        updateProfileAsync({
+          payload: profileData,
+          type: "data",
+        })
+      ).unwrap();
+
       // Refetch profile to ensure UI has latest data
       await fetchProfile();
       return result;
@@ -54,19 +50,21 @@ export const useProfile = () => {
 
   const updateProfilePicture = async (file: File) => {
     const formData = new FormData();
-    formData.append('profilePicture', file);
-    formData.append('field', 'profilePicture');
-    formData.append('action', 'update');
-  
-    return dispatch(updateProfileAsync({
-      payload: formData,
-      type: 'avatar'
-    })).unwrap();
+    formData.append("profilePicture", file);
+    // formData.append("field", "profilePicture");
+    // formData.append("action", "update");
+
+    return dispatch(
+      updateProfileAsync({
+        payload: formData,
+        type: "avatar",
+      })
+    ).unwrap();
   };
 
   return {
     user,
-    isLoading: status === 'loading',
+    isLoading: loading,
     error,
     fetchProfile,
     updateUserProfile,

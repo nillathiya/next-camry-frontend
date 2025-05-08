@@ -16,8 +16,8 @@ const MyProfile = () => {
         <CardBody>
           <Form onSubmit={(event) => event.preventDefault()}>
             <UserFormHead 
-              name={user?.data?._doc?.name || ''}
-              email={user?.data?._doc?.email || ''}
+              name={user?.name || ''}
+              email={user?.email || ''}
               profilePicture={`${ImagePath}/user/7.jpg`}
             />
             
@@ -25,7 +25,7 @@ const MyProfile = () => {
               <Label>Email Address</Label>
               <Input
                 type="email"
-                value={user?.data?._doc?.email || ''}
+                value={user?.email || ''}
                 readOnly
                 placeholder="Email Address"
               />

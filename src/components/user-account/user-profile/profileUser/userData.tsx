@@ -8,6 +8,7 @@ import { InfoSection } from "./InfoSection";
 import UserSocialMedia from "./userSocialMedia";
 import { useProfile } from "@/hooks/useProfile";
 import { useRef, useState } from "react";
+import { API_URL } from "@/api/route";
 
 const UserData = () => {
   const { user, updateProfilePicture } = useProfile();
@@ -37,6 +38,21 @@ const UserData = () => {
     }
   };
 
+  // Define the image source
+  const imageSrc =
+    previewImage || // Use previewImage if available
+    (user?.profilePicture ? `${API_URL}${user.profilePicture}` : null) || // Check if profilePicture exists
+    `${ImagePath}/user/7.jpg`; // Fallback image
+
+  // Debug the image source values
+  console.log({
+    previewImage,
+    profilePicture: user?.profilePicture,
+    API_URL,
+    ImagePath,
+    imageSrc,
+  });
+
   return (
     <Col sm="12">
       <Card className="hovercard text-center">
@@ -44,14 +60,11 @@ const UserData = () => {
         <div className="user-image">
           <div className="avatar">
             <Image
-              width={1599}
-              height={470}
+              width={150} // Adjusted to a reasonable size for an avatar
+              height={150} // Adjusted to a reasonable size for an avatar
               alt="Profile"
-              src={
-                previewImage || 
-                user?.profilePicture || 
-                `${ImagePath}/user/7.jpg`
-              }
+              src={imageSrc}
+              style={{ objectFit: "cover" }} // Ensure image fits well
             />
           </div>
           <div className="icon-wrapper" onClick={handleImageClick}>

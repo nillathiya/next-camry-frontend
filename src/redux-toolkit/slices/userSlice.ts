@@ -64,7 +64,9 @@ export const getProfileAsync = createAsyncThunk(
   "user/getProfile",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await apiClient.get<IUser>(ROUTES.USER.GET_PROFILE);
+      const response = await apiClient.get<IApiResponse<IUser>>(
+        ROUTES.USER.GET_PROFILE
+      );
       return response.data;
     } catch (error: any) {
       return rejectWithValue(
@@ -87,9 +89,9 @@ export const updateProfileAsync = createAsyncThunk(
             type === "avatar" ? "multipart/form-data" : "application/json",
         },
       };
-      if (type === "avatar" && payload instanceof FormData) {
-        payload.append("updateAction", "profileImageUpdate");
-      }
+      // if (type === "avatar" && payload instanceof FormData) {
+      //   payload.append("updateAction", "profileImageUpdate");
+      // }
 
       const response = await apiClient.post(
         ROUTES.USER.EDIT_PROFILE,
@@ -177,7 +179,7 @@ const userSlice = createSlice({
       })
       .addCase(getProfileAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        state.user = action.payload.data;
       })
       .addCase(getProfileAsync.rejected, (state, action) => {
         state.loading = false;
@@ -196,8 +198,8 @@ const userSlice = createSlice({
             ...action.payload.data,
             address: {
               ...state.user.address,
-              ...action.payload.data.address
-            }
+              ...action.payload.data.address,
+            },
           };
         }
       })
