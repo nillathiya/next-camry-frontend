@@ -169,6 +169,35 @@ const userSlice = createSlice({
       state.user = null;
       state.error = null;
     },
+    addAmountToWallet: (state, action) => {
+      console.log("action payload", action.payload);
+      const { walletType, amount } = action.payload;
+      if (state.userWallet && walletType && amount > 0) {
+        state.userWallet[walletType] =
+          (Number(state.userWallet[walletType]) || 0) + parseFloat(amount);
+      } else {
+        console.error("Invalid wallet or amount");
+      }
+    },
+    removeAmountFromWallet: (state, action) => {
+      const { walletType, amount } = action.payload;
+      if (
+        state.userWallet &&
+        walletType &&
+        amount > 0 &&
+        (state.userWallet[walletType] || 0) >= amount
+      ) {
+        state.userWallet[walletType] =
+          Number(state.userWallet[walletType]) - parseFloat(amount);
+      } else {
+        console.error(
+          `Insufficient balance in ${walletType} or invalid wallet`
+        );
+      }
+    },
+    clearUserWallet: (state) => {
+      state.userWallet = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -277,7 +306,7 @@ const userSlice = createSlice({
       });
   },
 });
-export const { resetUserState } = userSlice.actions;
+export const { resetUserState ,addAmountToWallet,removeAmountFromWallet} = userSlice.actions;
 
 // export const handleUnauthorized = () => async (dispatch: any) => {
 //   try {

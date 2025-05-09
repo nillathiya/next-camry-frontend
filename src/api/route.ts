@@ -58,6 +58,7 @@ interface Routes {
     GET_BY_ID: (orderId: string) => string;
   };
   TRANSACTION: {
+    VERIFY: string;
     GET_ALL: string;
     FUND: {
       GET_ALL: string;
@@ -73,6 +74,7 @@ interface Routes {
     GET_ADMIN_SETTINGS: string;
     GET_WEBSITE_SETTINGS: string;
     GET_WALLET_SETTINGS: string;
+    GET_COMPANY_INFO_SETTINGS: string;
     UPDATE_USER_SETTING: (id: string) => string;
     UPDATE_ADMIN_SETTING: (id: string) => string;
     CREATE: string;
@@ -185,6 +187,7 @@ export const ROUTES: Routes = {
     GET_BY_ID: (orderId: string) => `${API_URL}/api/orders/get/${orderId}`,
   },
   TRANSACTION: {
+    VERIFY: `${API_URL}/api/transaction/verify`,
     GET_ALL: `${API_URL}/api/transaction/get-all`,
     FUND: {
       GET_ALL: `${API_URL}/api/transaction/fund/all`,
@@ -200,6 +203,7 @@ export const ROUTES: Routes = {
     GET_ADMIN_SETTINGS: `${API_URL}/api/admin-settings/get`,
     GET_WEBSITE_SETTINGS: `${API_URL}/api/website-setting/global`,
     GET_WALLET_SETTINGS: `${API_URL}/api/wallet-setting`,
+    GET_COMPANY_INFO_SETTINGS: `${API_URL}/api/company-info`,
     UPDATE_USER_SETTING: (id: string) =>
       `${API_URL}/api/user-settings/update/${id}`,
     UPDATE_ADMIN_SETTING: (id: string) =>

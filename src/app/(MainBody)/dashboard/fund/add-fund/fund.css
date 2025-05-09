@@ -1,0 +1,199 @@
+/* Main Section Styling */
+.add_fund_sec {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  
+  /* Form Container Styling */
+  .fund-form {
+    height: auto;
+    position: absolute;
+    top: 18%;
+    padding: 30px;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 7px 7px 21px rgba(0, 0, 0, 0.6);
+    width: 100%;
+    max-width: 600px;
+    box-sizing: border-box;
+  }
+  
+  /* .payment-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 50%;
+    gap: 15px;
+    padding: 20px;
+    border-radius: 30px;
+    margin-left: 270px;
+  } */
+  
+  .payment-dropdown {
+    width: 100%;
+    padding: 10px;
+    border-radius: 15px;
+    border: 1px solid #ccc;
+    background: white;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
+  }
+  
+  .payment-box {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 7px 7px 21px rgba(0, 0, 0, 0.6);
+    width: 100%;
+    max-width: 650px;
+  }
+  
+  label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 15px;
+  }
+  
+  .amount-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  /* .token-select {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+  } */
+  /* .token-selectarb{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+  } */
+  
+  .token-dropdown {
+    display: flex;
+    align-items: center;
+    height: 50px;
+    border-radius: 10px;
+    border: 1px solid rgb(104, 102, 102);
+    padding: 8px;
+  }
+  .token-dropdownarb {
+    display: flex;
+    align-items: center;
+    height: 50px;
+    border-radius: 10px;
+    border: 1px solid rgb(104, 102, 102);
+    padding: 8px;
+  }
+  
+  .token-icon {
+    margin-right: 5px;
+  }
+  
+  .balance {
+    font-size: 12px;
+    color: #666;
+    font-weight: bold;
+  }
+  
+  .submit-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 15px;
+    font-weight: bold;
+    background: #d3d3d3;
+    border: none;
+    text-align: center;
+    border-radius: 15px;
+    cursor: pointer;
+  }
+  .submit-btn.active-btn {
+    background-color: rgb(153, 23, 23);
+    color: white;
+    cursor: pointer;
+  }
+  
+  /* Input and Select Fields Styling */
+  .input-field,
+  .select-field {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #747474;
+    font-size: 16px;
+    box-sizing: border-box;
+  }
+  
+  /* Button Styling */
+  .connect-wallet-btn {
+    width: 30%;
+    padding: 12px;
+    text-align: center;
+    background-color: #0041b1;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .connect-wallet-btn:hover {
+    background-color: #6a11cb;
+  }
+  
+  /* transfer fund section */
+  .fund_wallet_show {
+    margin-bottom: 10px;
+  }
+  
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Responsiveness */
+  @media (max-width: 768px) {
+    .fund-form {
+      padding: 20px;
+    }
+  
+    .input-field,
+    .select-field,
+    .connect-wallet-btn {
+      padding: 10px;
+      font-size: 14px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .fund-form {
+      max-width: 100%;
+      padding: 15px;
+    }
+  
+    .input-field,
+    .select-field,
+    .connect-wallet-btn {
+      font-size: 12px;
+    }
+    .payment-container {
+      width: 100%;
+      margin-left: 0px;
+    }
+    .amount-section {
+      display: block !important;
+    }
+    .token-select {
+      width: 100%;
+    }
+  }
+  

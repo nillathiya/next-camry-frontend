@@ -25,7 +25,7 @@ export interface SidebarItemType {
   badge?: boolean;
   badgeName?: string;
   badgeColor?: string;
-  type?: string;
+  type: string;
   active?: boolean;
   url?: string;
   pathName?:string;
