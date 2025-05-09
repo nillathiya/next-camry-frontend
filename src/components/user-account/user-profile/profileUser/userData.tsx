@@ -22,14 +22,12 @@ const UserData = () => {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Create preview
       const reader = new FileReader();
       reader.onload = (event) => {
         setPreviewImage(event.target?.result as string);
       };
       reader.readAsDataURL(file);
-
-      // Upload to server
+  
       try {
         await updateProfilePicture(file);
       } catch (error) {
@@ -40,31 +38,29 @@ const UserData = () => {
 
   // Define the image source
   const imageSrc =
-    previewImage || // Use previewImage if available
-    (user?.profilePicture ? `${API_URL}${user.profilePicture}` : null) || // Check if profilePicture exists
-    `${ImagePath}/user/7.jpg`; // Fallback image
-
-  // Debug the image source values
-  console.log({
-    previewImage,
-    profilePicture: user?.profilePicture,
-    API_URL,
-    ImagePath,
-    imageSrc,
-  });
+  previewImage ||
+  (user?.profilePicture ? `${API_URL}${user.profilePicture}?t=${new Date().getTime()}` : null) ||
+  `${ImagePath}/user/7.jpg`;
 
   return (
     <Col sm="12">
       <Card className="hovercard text-center">
-        <div className="cardheader"></div>
+        <div 
+          className="cardheader" 
+          style={{
+            backgroundImage: `url(${imageSrc})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
         <div className="user-image">
           <div className="avatar">
             <Image
-              width={150} // Adjusted to a reasonable size for an avatar
-              height={150} // Adjusted to a reasonable size for an avatar
+              width={150}
+              height={150}
               alt="Profile"
               src={imageSrc}
-              style={{ objectFit: "cover" }} // Ensure image fits well
+              style={{ objectFit: "cover" }}
             />
           </div>
           <div className="icon-wrapper" onClick={handleImageClick}>
