@@ -126,7 +126,7 @@ export default function SidebarNav({
                         }`}
                       >
                         <div>
-                          <h6 className="lan-1">{(mainMenu.title)}</h6>
+                          <h6 className="lan-1">{mainMenu.title}</h6>
                         </div>
                       </li>
                       <SidebarSubMenu

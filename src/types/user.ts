@@ -145,3 +145,28 @@ export interface IUserProfile {
 
 export type ProfileUpdatePayload = Partial<IUserProfile> | FormData;
 export type ProfileUpdateType = "data" | "avatar";
+
+
+export interface IUserDirectsQuery {
+  userId: string;
+  limit?: number | string;
+  sortOrder?: "asc" | "desc";
+  sortBy?: string;
+  page?: number | string; 
+}
+
+export interface IGetUserGenerationPayload {
+  userId: string;
+  maxDepth?:number;
+}
+
+export interface IUserHierarchy{
+  _id:string;
+  username:string;
+  name:string;
+  sponsorUCode:string;
+  planType: "unilevel" | "binary" | "matrix";
+  createdAt:string;
+  depth:number
+}
+export type IHierarchyNode = IUserHierarchy & { children: IHierarchyNode[] };

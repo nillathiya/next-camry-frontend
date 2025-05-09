@@ -1,4 +1,4 @@
-import { ICheckWalletQuery } from "@/types";
+import { ICheckWalletQuery, IUserDirectsQuery } from "@/types";
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -44,6 +44,7 @@ interface Routes {
     GET_ALL: string;
     UPDATE_USER: any;
     CHECK_WALLET: (params: ICheckWalletQuery) => string;
+    GET_USER_DIRECTS: (params: IUserDirectsQuery) => string;
     GET_PROFILE: string;
     EDIT_PROFILE: string;
     CHECK_NAME: string;
@@ -160,6 +161,16 @@ export const ROUTES: Routes = {
         }
       });
       return `${API_URL}/api/user/check-wallet?${query.toString()}`;
+    },
+    GET_USER_DIRECTS: (params: IUserDirectsQuery) => {
+      const query = new URLSearchParams();
+      (Object.keys(params) as (keyof IUserDirectsQuery)[]).forEach((param) => {
+        const value = params[param];
+        if (value !== undefined && value !== null) {
+          query.append(param, String(value));
+        }
+      });
+      return `${API_URL}/api/user/list/directs?${query.toString()}`;
     },
     GET_PROFILE: `${API_URL}/api/user/profile`,
     EDIT_PROFILE: `${API_URL}/api/user/edit-profile`,

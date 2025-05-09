@@ -3,8 +3,11 @@ import { ROUTES } from "@/api/route";
 import {
   IApiResponse,
   ICheckWalletQuery,
+  IGetUserGenerationPayload,
   IRegisterUserResponse,
   IUser,
+  IUserDirectsQuery,
+  IUserHierarchy,
   IUserWalletInfo,
   IWebsiteSettings,
   ProfileUpdatePayload,
@@ -17,6 +20,8 @@ import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 interface UserState {
   user: IUser | null;
   userWallet: IUserWalletInfo | null;
+  userDirects: IUser[];
+  hierarchy: IUserHierarchy[];
   loading: boolean;
   error: any;
 }
@@ -24,6 +29,8 @@ interface UserState {
 const initialState: UserState = {
   user: null,
   userWallet: null,
+  userDirects: [],
+  hierarchy: [],
   loading: false,
   error: null,
 };
@@ -121,6 +128,39 @@ export const getUserWalletAsync = createAsyncThunk(
   }
 );
 
+export const getUserDirectsAsync = createAsyncThunk(
+  "user/getUserDirects",
+  async (params: IUserDirectsQuery, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get<IApiResponse<IUser[]>>(
+        ROUTES.USER.GET_USER_DIRECTS(params)
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "An unknown error occurred"
+      );
+    }
+  }
+);
+
+export const getUserHierarchyAsync = createAsyncThunk(
+  "user/getUserHierarchy",
+  async (formData: IGetUserGenerationPayload, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.post<IApiResponse<IUserHierarchy[]>>(
+        ROUTES.USER.GET_GENERATION_TREE,
+        formData
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "An unknown error occurred"
+      );
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState,
@@ -204,6 +244,34 @@ const userSlice = createSlice({
         }
       })
       .addCase(updateProfileAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      // getUserDirectsAsync
+      .addCase(getUserDirectsAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getUserDirectsAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        state.userDirects = action.payload.data;
+      })
+      .addCase(getUserDirectsAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      // getUserHierarchyAsync
+      .addCase(getUserHierarchyAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getUserHierarchyAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        state.hierarchy = action.payload.data;
+      })
+      .addCase(getUserHierarchyAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

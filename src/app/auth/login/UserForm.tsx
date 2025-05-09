@@ -282,7 +282,7 @@ const UserForm = () => {
       <UserSocialApp />
       <p className="mt-4 mb-0 text-center">
         {DontHaveAccount}
-        <Link className="ms-2" href={Href}>
+        <Link className="ms-2" href={"/auth/register"}>
           {CreateAccount}
         </Link>
       </p>
