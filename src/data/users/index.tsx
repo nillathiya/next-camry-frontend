@@ -2,12 +2,12 @@ export const UserProfileData = [
     {
       iconClass: "envelope",
       text: "Email",
-      spanText: "Marekjecno@yahoo.com",
+      key: "email",
     },
     {
       iconClass: "calendar",
       text: "BOD",
-      spanText: "02 January 1988",
+      key: "dob",
     },
   ];
   
