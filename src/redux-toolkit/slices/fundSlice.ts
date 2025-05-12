@@ -20,7 +20,7 @@ export const verifyTransactionAsync = createAsyncThunk(
   async (formData: any, { rejectWithValue }) => {
     try {
       const response = await apiClient.post<IApiResponse<IFundTransaction>>(
-        ROUTES.TRANSACTION.VERIFY,
+        ROUTES.TRANSACTION.FUND.VERIFY,
         formData
       );
       return response.data;

@@ -58,9 +58,9 @@ interface Routes {
     GET_BY_ID: (orderId: string) => string;
   };
   TRANSACTION: {
-    VERIFY: string;
     GET_ALL: string;
     FUND: {
+      VERIFY: string;
       GET_ALL: string;
       DIRECT_TRANSFER: string;
     };
@@ -187,9 +187,9 @@ export const ROUTES: Routes = {
     GET_BY_ID: (orderId: string) => `${API_URL}/api/orders/get/${orderId}`,
   },
   TRANSACTION: {
-    VERIFY: `${API_URL}/api/transaction/verify`,
     GET_ALL: `${API_URL}/api/transaction/get-all`,
     FUND: {
+      VERIFY: `${API_URL}/api/fund/transactions/verify`,
       GET_ALL: `${API_URL}/api/transaction/fund/all`,
       DIRECT_TRANSFER: `${API_URL}/api/transaction/direct-fund-transfer`,
     },
