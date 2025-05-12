@@ -449,18 +449,25 @@ const ChatMessageLayer = () => {
                     {messages.map((msg) => (
                       <p
                         key={msg._id || msg.createdAt}
-                        className={`p-2 rounded-lg mb-2 d-flex justify-content-end ${
-                          msg.sender === "user"
-                            ? "chat-bubble text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                            : "bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+                        className={`p-2 rounded mb-2 d-flex justify-content-${
+                          msg.sender === "user" ? "end" : "start"
                         }`}
                       >
-                        <strong>{msg.sender} : </strong> {msg.text}
-                        <span className="ml-2 text-xs">
-                          {msg.isRead ? "✔✔" : "✔"}
+                        <span
+                          className={`px-3 py-2 rounded ${
+                            msg.sender === "user"
+                              ? "bg-primary text-white"
+                              : "bg-light text-dark"
+                          }`}
+                        >
+                          <strong>{msg.sender}:</strong> {msg.text}
+                          <span className="ms-2 small">
+                            {msg.isRead ? "✔✔" : "✔"}
+                          </span>
                         </span>
                       </p>
                     ))}
+
                     <div ref={messagesEndRef} />
                   </div>
                   <form className="chat-message-box">
