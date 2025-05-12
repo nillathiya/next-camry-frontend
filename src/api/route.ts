@@ -47,6 +47,7 @@ interface Routes {
     GET_USER_DIRECTS: (params: IUserDirectsQuery) => string;
     GET_PROFILE: string;
     EDIT_PROFILE: string;
+    GET_NEWS_EVENTS: string;
     CHECK_NAME: string;
     GET_GENERATION_TREE: string;
     GET_DETAILS_WITH_INVEST_INFO: string;
@@ -174,6 +175,7 @@ export const ROUTES: Routes = {
     },
     GET_PROFILE: `${API_URL}/api/user/profile`,
     EDIT_PROFILE: `${API_URL}/api/user/edit-profile`,
+    GET_NEWS_EVENTS: `${API_URL}/api/news-events  `,
     CHECK_NAME: `${API_URL}/api/user/check-name`,
     GET_GENERATION_TREE: `${API_URL}/api/user/generation-tree`,
     GET_DETAILS_WITH_INVEST_INFO: `${API_URL}/api/user/details-with-investment`,
