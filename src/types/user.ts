@@ -166,6 +166,7 @@ export interface INewsEvent {
   description: string;
   images: string[];
   hotlinks?: Hotlink[];
+  tags?: string[];
   category: "news" | "event";
   date: string;
   eventDate?: string;

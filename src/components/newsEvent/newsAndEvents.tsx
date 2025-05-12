@@ -5,10 +5,11 @@ import { useSelector, useDispatch } from "react-redux";
 import toast from "react-hot-toast";
 import { getUserNewsAndEventsAsync } from "@/redux-toolkit/slices/userSlice";
 import { FaAngleUp } from "react-icons/fa";
-import "./newsAndEvents.css";
+import { FaRegCopy } from "react-icons/fa6";
 import { API_URL } from "@/api/route";
 import { INewsEvent, UserState } from "@/types";
 import { AppDispatch } from "@/redux-toolkit/store";
+import "./newsAndEvents.css";
 
 interface RootState {
   user: UserState;
@@ -159,36 +160,41 @@ const NewsAndEvents: React.FC = () => {
                             ? new Date(newsData.createdAt).toLocaleDateString()
                             : "TBD"}
                         </span>
+                        {newsData.tags && newsData.tags.length > 0 && (
+                          <div className="tags-container">
+                            {newsData.tags.map((tag, index) => (
+                              <span key={index} className="news-tag">
+                                <span style={{fontSize:"10px", marginRight:"5px"}}><FaRegCopy /></span>
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                         {/* Hotlinks for News */}
                         {newsData.hotlinks && newsData.hotlinks.length > 0 && (
-                          <div className="hotlinks">
-                            <strong>Related Links:</strong>
-                            <ul>
+                          <div className="hotlinks-container">
+                            <div className="hotlinks-grid">
                               {newsData.hotlinks.map((link, index) => (
-                                <li key={index}>
-                                  <a
-                                    href={link.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    style={{
-                                      color: "#007bff",
-                                      marginLeft: "5px",
-                                    }}
-                                    onClick={(e) => {
-                                      if (
-                                        !link.url ||
-                                        !/^https?:\/\//i.test(link.url)
-                                      ) {
-                                        e.preventDefault();
-                                        toast.error("Invalid link URL");
-                                      }
-                                    }}
-                                  >
-                                    {link.label || `Link ${index + 1}`}
-                                  </a>
-                                </li>
+                                <a
+                                  key={index}
+                                  href={link.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="hotlink-button"
+                                  onClick={(e) => {
+                                    if (
+                                      !link.url ||
+                                      !/^https?:\/\//i.test(link.url)
+                                    ) {
+                                      e.preventDefault();
+                                      toast.error("Invalid link URL");
+                                    }
+                                  }}
+                                >
+                                  {link.label || `Link ${index + 1}`}
+                                </a>
                               ))}
-                            </ul>
+                            </div>
                           </div>
                         )}
                       </div>
