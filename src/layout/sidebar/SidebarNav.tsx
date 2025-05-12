@@ -31,6 +31,8 @@ export default function SidebarNav({
   const DEFAULT_ICON = "circle";
   const pathname = usePathname(); // Added pathname hook
 
+  console.log("userSettings",userSettings);
+
   // Get menu items from API response
   const menuSettings = userSettings.find(
     (setting) => setting.slug === "menu_items"

@@ -1,3 +1,5 @@
+"use client";
+
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useState, useEffect, useRef } from "react";
 import toast, { Toaster } from "react-hot-toast";
@@ -57,16 +59,19 @@ const ChatMessageLayer = () => {
     // Handle new messages
     socket.on("newMessage", (data) => {
       console.log("New message received:", data);
+      console.log("selectedTicket", selectedTicket);
       if (selectedTicket && selectedTicket._id === data.ticketId) {
         setMessages((prev) => {
-          // Prevent duplicates
           const messageExists = prev.some(
             (msg) =>
               msg._id === data._id ||
               (msg.text === data.text && msg.createdAt === data.createdAt)
           );
+          console.log("messageExists", messageExists);
           if (messageExists) return prev;
-          return [...prev, data];
+          const updatedMessages = [...prev, data];
+          console.log("Updated Messages", updatedMessages);
+          return updatedMessages;
         });
         // Update tickets state to sync messages
         setTickets((prev) =>
@@ -151,9 +156,7 @@ const ChatMessageLayer = () => {
   // Fetch all tickets
   const fetchTickets = async () => {
     try {
-      const response = await axios.post(
-        `${API_URL}/api/tickets/user/${userId}`
-      );
+      const response = await axios.get(`${API_URL}/api/tickets/user/${userId}`);
       const fetchedTickets = response.data.tickets;
       console.log("Fetched tickets:", fetchedTickets);
       setTickets(fetchedTickets);
@@ -166,7 +169,7 @@ const ChatMessageLayer = () => {
       setUnreadTickets(unreadSet);
     } catch (error) {
       console.error("Error fetching tickets:", error);
-      toast.error("Failed to fetch tickets");
+      toast.error(error || "Failed to fetch tickets");
     }
   };
 
@@ -180,17 +183,19 @@ const ChatMessageLayer = () => {
         return updated;
       });
 
-      await axios.post(`${API_URL}/api/tickets/mark-read`, {
+      await axios.patch(`${API_URL}/api/tickets/mark-read`, {
         ticketId: ticket._id,
         userId,
       });
 
-      const response = await axios.post(
-        `${API_URL}/api/tickets/${ticket._id}/messages`
+      const response = await axios.get(
+        `${API_URL}/api/tickets/${ticket._id}/messages?role=user`
       );
-      if (response.data.success) {
-        console.log("Fetched messages:", response.data.messages);
-        setMessages(response.data.messages);
+
+      console.log("response", response);
+      if (response.data.status === "success") {
+        console.log("Fetched messages:", response.data.data.messages);
+        setMessages(response.data.data.messages);
       } else {
         console.error("Failed to fetch messages:", response.data.error);
         toast.error("Failed to fetch messages");
@@ -297,7 +302,7 @@ const ChatMessageLayer = () => {
   // Update ticket status
   const updateTicketStatus = async (ticketId, newStatus) => {
     try {
-      await axios.post(`${API_URL}/api/tickets/status/${ticketId}`, {
+      await axios.patch(`${API_URL}/api/tickets/status/${ticketId}`, {
         status: newStatus,
       });
       fetchTickets();

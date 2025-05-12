@@ -11,7 +11,9 @@ interface UserSettingsState {
 
 export const useUserSettings = (): UserSettingsState => {
   const dispatch = useAppDispatch();
-  const { userSettings, loading, error } = useAppSelector((state) => state.setting);
+  const { userSettings, loading, error } = useAppSelector(
+    (state) => state.setting
+  );
 
   useEffect(() => {
     if (!userSettings.length) {
