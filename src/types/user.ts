@@ -160,6 +160,30 @@ export interface IGetUserGenerationPayload {
   maxDepth?:number;
 }
 
+export interface INewsEvent {
+  _id: string;
+  title: string;
+  description: string;
+  images: string[];
+  category: 'news' | 'event';
+  date: string;
+  eventDate?: string;
+  createdAt?: string;
+}
+
+export interface UserState {
+  user: IUser | null;
+  userWallet: IUserWalletInfo | null;
+  userDirects: IUser[];
+  hierarchy: IUserHierarchy[];
+  loading: boolean;
+  isLoading: boolean;
+  error: string | null;
+  newsEvents: INewsEvent[];
+  newsThumbnails: string[];
+  latestNews: INewsEvent[];
+}
+
 export interface IUserHierarchy{
   _id:string;
   username:string;

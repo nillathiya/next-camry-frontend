@@ -17,13 +17,16 @@ import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 // import { persistor } from "../store";
 // import { signOut } from "next-auth/react";
 
-interface UserState {
+export interface UserState {
   user: IUser | null;
   userWallet: IUserWalletInfo | null;
   userDirects: IUser[];
   hierarchy: IUserHierarchy[];
   loading: boolean;
   error: any;
+  newsEvents: INewsEvent[];
+  newsThumbnails: string[];
+  latestNews: INewsEvent[];
 }
 
 const initialState: UserState = {
@@ -33,7 +36,21 @@ const initialState: UserState = {
   hierarchy: [],
   loading: false,
   error: null,
+  newsEvents: [],
+  newsThumbnails: [],
+  latestNews: [],
 };
+export interface INewsEvent {
+  thumbnail: any;
+  _id: string;
+  title: string;
+  description: string;
+  images: string[];
+  category: 'news' | 'event';
+  date: string;
+  eventDate?: string;
+  createdAt?: string;
+}
 
 export const registerUserAsync = createAsyncThunk(
   "user/registerUser",
@@ -161,6 +178,26 @@ export const getUserHierarchyAsync = createAsyncThunk(
   }
 );
 
+export const getUserNewsAndEventsAsync = createAsyncThunk(
+  'user/getUserNewsAndEvents',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get<IApiResponse<INewsEvent[]>>(
+        ROUTES.USER.GET_NEWS_EVENTS
+      );
+      const transformedData = response.data.data.map(item => ({
+        ...item,
+        images: item.images || item.images || [],
+      }));
+      return { ...response.data, data: transformedData };
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Get User news and events failed.'
+      );
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState,
@@ -272,6 +309,27 @@ const userSlice = createSlice({
         state.hierarchy = action.payload.data;
       })
       .addCase(getUserHierarchyAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      // getUserNewsAndEventsAsync
+      .addCase(getUserNewsAndEventsAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getUserNewsAndEventsAsync.fulfilled, (state, action) => {
+        console.log('Raw API response:', action.payload.data);
+        state.loading = false;
+        state.newsEvents = action.payload.data;
+        state.newsThumbnails = action.payload.data.map(
+          (item) => item.thumbnail
+        );
+        state.latestNews = [...action.payload.data].sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+      })
+      .addCase(getUserNewsAndEventsAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });
