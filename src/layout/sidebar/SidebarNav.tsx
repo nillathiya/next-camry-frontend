@@ -9,7 +9,6 @@ import { useMenuItems } from "@/hooks/useUserSettings";
 import { RootState } from "../../redux-toolkit/store";
 import { usePathname } from "next/navigation";
 
-// Define a type for positive numbers
 type PositiveNumber = number & { __brand: "PositiveNumber" };
 
 export default function SidebarNav({
@@ -17,7 +16,6 @@ export default function SidebarNav({
 }: {
   sidebarMargin: PositiveNumber;
 }) {
-  // Align activeMenu with SidebarItemType
   const [activeMenu, setActiveMenu] = useState<SidebarItemType[]>([]);
   const { pinedMenu, sidebarSearchTerm } = useSelector(
     (state: RootState) => state.layout
@@ -26,12 +24,8 @@ export default function SidebarNav({
   const DEFAULT_ICON = "circle";
   const pathname = usePathname();
 
-  console.log("menuItems",menuItems);
-  // Convert API menu items to SidebarMenuType
   const convertedMenuList = useMemo(() => {
     if (!menuItems?.length) return [];
-
-    console.log("menuItems", menuItems);
 
     const getSafeIcon = (icon?: string) =>
       icon ? icon.replace("Icon", "").toLowerCase() : DEFAULT_ICON;
@@ -41,32 +35,40 @@ export default function SidebarNav({
         title: "Main Menu",
         menu: menuItems
           .filter((item) => item.status)
-          .map((item) => ({
-            title: item.label,
-            name: item.label,
-            icon: getSafeIcon(item.icon),
-            url: item.key,
-            type: "link",
-            active: undefined, // Explicitly set to undefined to avoid type issues
-            subMenu: item.children
-              ? item.children
-                  .filter((child) => child.status)
-                  .map((child) => ({
-                    title: child.label,
-                    url: child.key,
-                    icon: getSafeIcon(child.icon),
-                    type: "sub",
-                    active: undefined, // Explicitly set to undefined
-                  }))
-              : undefined,
-          })),
+          .map((item) => {
+            const parentKey = item.key ? `/${item.key}` : "";
+            return {
+              title: item.label,
+              name: item.label,
+              icon: getSafeIcon(item.icon),
+              url: item.key ? `/dashboard${parentKey}` : undefined,
+              type: "link",
+              active: undefined,
+              subMenu: item.children
+                ? item.children
+                    .filter((child) => child.status)
+                    .map((child) => {
+                      const childUrl = parentKey
+                        ? `${parentKey}/${child.key.replace(
+                            `${item.key}/`,
+                            ""
+                          )}`
+                        : `/${child.key}`;
+                      return {
+                        title: child.label,
+                        url: `/dashboard${childUrl}`,
+                        icon: getSafeIcon(child.icon),
+                        type: "sub",
+                        active: undefined,
+                      };
+                    })
+                : undefined,
+            };
+          }),
       },
     ] as SidebarMenuType[];
   }, [menuItems]);
 
-  console.log("convertedMenuList", convertedMenuList);
-
-  // Filter menu based on search term
   const filteredMenuList = useMemo(() => {
     if (!sidebarSearchTerm) return convertedMenuList;
 
@@ -81,10 +83,12 @@ export default function SidebarNav({
   const shouldHideMenu = (mainMenu: SidebarMenuType) =>
     mainMenu.menu.every((item) => pinedMenu.includes(item.title || ""));
 
-  // Highlight active menu item based on pathname
-  const isActive = (url?: string): boolean => !!url && pathname === url;
-
-  console.log("filteredMenuList", filteredMenuList);
+  const isActive = (url?: string): boolean => {
+    if (!url) return false;
+    const normalizedPathname = pathname.replace(/\/$/, "");
+    const normalizedUrl = url.replace(/\/$/, "");
+    return normalizedPathname === normalizedUrl;
+  };
 
   return (
     <ul className="sidebar-links simple-list custom-scrollbar" id="simple-bar">
@@ -128,7 +132,7 @@ export default function SidebarNav({
                       menu={mainMenu.menu.map((item) => ({
                         ...item,
                         title: item.name || item.title,
-                        active: isActive(item.url), // Explicitly boolean
+                        active: isActive(item.url),
                       }))}
                       activeMenu={activeMenu}
                       setActiveMenu={setActiveMenu}

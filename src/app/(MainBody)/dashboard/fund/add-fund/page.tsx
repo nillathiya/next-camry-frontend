@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
   Row,
+  Col,
   Container,
   Card,
   CardBody,
@@ -32,7 +33,6 @@ import {
 } from "@/redux-toolkit/slices/userSlice";
 import { contractAbi } from "@/ABI/contract";
 import { abi as usdtAbi } from "@/ABI/usdtAbi";
-import "bootstrap/dist/css/bootstrap.min.css";
 // import "./fund.css";
 import { toast } from "react-toastify";
 import { useWalletSettings } from "@/hooks/useWalletSettings";
@@ -342,153 +342,157 @@ const AddFund = () => {
   );
 
   return (
-    <Container className="my-5">
+    <Container>
       <Row>
         <h2 className="mb-4">Add Fund</h2>
-        <Card>
-          <CardBody>
-            <div className="d-flex justify-content-end mb-3">
-              <ConnectButton />
-            </div>
-            {isWalletLoading ? (
-              <SkeletonLoader />
-            ) : (
-              <>
-                <div className="row mb-4">
-                  <div className="col-md-6">
-                    <Card className="p-3">
-                      <h5>
-                        {addFundWallet
-                          ? getWalletNameBySlug(addFundWallet.key)
-                          : "Add Fund Wallet"}
-                      </h5>
-                      <p className="mb-0">
-                        <span>{companyCurrency}</span>{" "}
-                        <span>
+        <Col sm="12">
+          <Card>
+            <CardBody>
+              <div className="d-flex justify-content-end mb-3">
+                <ConnectButton />
+              </div>
+              {isWalletLoading ? (
+                <SkeletonLoader />
+              ) : (
+                <>
+                  <div className="row mb-4">
+                    <div className="col-md-6">
+                      <Card className="p-3">
+                        <h5>
                           {addFundWallet
-                            ? getWalletBalanceBySlug(addFundWallet?.key)
-                            : "0"}
-                        </span>
-                      </p>
-                    </Card>
+                            ? getWalletNameBySlug(addFundWallet.key)
+                            : "Add Fund Wallet"}
+                        </h5>
+                        <p className="mb-0">
+                          <span>{companyCurrency}</span>{" "}
+                          <span>
+                            {addFundWallet
+                              ? getWalletBalanceBySlug(addFundWallet?.key)
+                              : "0"}
+                          </span>
+                        </p>
+                      </Card>
+                    </div>
                   </div>
-                </div>
 
-                <FormGroup>
-                  <Label for="amount">Amount</Label>
-                  <Input
-                    type="text"
-                    id="amount"
-                    placeholder="0.00"
-                    value={amountInput}
-                    onChange={handleAmountChange}
-                  />
-                </FormGroup>
+                  <FormGroup>
+                    <Label for="amount">Amount</Label>
+                    <Input
+                      type="text"
+                      id="amount"
+                      placeholder="0.00"
+                      value={amountInput}
+                      onChange={handleAmountChange}
+                    />
+                  </FormGroup>
 
-                <FormGroup>
-                  <Label for="token">
-                    Token
-                    <span className="ms-2">
-                      Balance:{" "}
-                      {tokenBalances.find((t) => t.name === selectedToken)
-                        ?.balance.data
-                        ? formatUnits(
-                            tokenBalances.find((t) => t.name === selectedToken)!
-                              .balance.data as bigint,
-                            tokenBalances.find((t) => t.name === selectedToken)
-                              ?.decimals || 18
-                          )
-                        : "0.00"}
-                    </span>
-                  </Label>
-                  <Dropdown
-                    isOpen={isDropdownOpen}
-                    toggle={() => setIsDropdownOpen(!isDropdownOpen)}
-                    innerRef={dropdownRef}
-                  >
-                    <DropdownToggle caret className="w-100 text-start">
-                      {selectedToken === "token"
-                        ? "Select Token"
-                        : selectedToken}
-                    </DropdownToggle>
-                    <DropdownMenu className="w-100">
-                      {tokens.map((group) => (
-                        <div key={group.category}>
-                          <DropdownItem header>{group.category}</DropdownItem>
-                          {group.items.map((token) => {
-                            const balanceData = tokenBalances.find(
-                              (t) => t.name === token.name
-                            )?.balance;
-                            return (
-                              <DropdownItem
-                                key={token.name}
-                                onClick={() => {
-                                  setSelectedToken(token.name);
-                                  setIsDropdownOpen(false);
-                                }}
-                              >
-                                <div className="d-flex justify-content-between align-items-center">
-                                  <div className="d-flex align-items-center">
-                                    <img
-                                      src={token.icon}
-                                      alt={token.name}
-                                      className="me-2"
-                                      style={{
-                                        width: "24px",
-                                        height: "24px",
-                                        borderRadius: "50%",
-                                      }}
-                                    />
-                                    {token.name}
+                  <FormGroup>
+                    <Label for="token">
+                      Token
+                      <span className="ms-2">
+                        Balance:{" "}
+                        {tokenBalances.find((t) => t.name === selectedToken)
+                          ?.balance.data
+                          ? formatUnits(
+                              tokenBalances.find(
+                                (t) => t.name === selectedToken
+                              )!.balance.data as bigint,
+                              tokenBalances.find(
+                                (t) => t.name === selectedToken
+                              )?.decimals || 18
+                            )
+                          : "0.00"}
+                      </span>
+                    </Label>
+                    <Dropdown
+                      isOpen={isDropdownOpen}
+                      toggle={() => setIsDropdownOpen(!isDropdownOpen)}
+                      innerRef={dropdownRef}
+                    >
+                      <DropdownToggle caret className="w-100 text-start">
+                        {selectedToken === "token"
+                          ? "Select Token"
+                          : selectedToken}
+                      </DropdownToggle>
+                      <DropdownMenu className="w-100">
+                        {tokens.map((group) => (
+                          <div key={group.category}>
+                            <DropdownItem header>{group.category}</DropdownItem>
+                            {group.items.map((token) => {
+                              const balanceData = tokenBalances.find(
+                                (t) => t.name === token.name
+                              )?.balance;
+                              return (
+                                <DropdownItem
+                                  key={token.name}
+                                  onClick={() => {
+                                    setSelectedToken(token.name);
+                                    setIsDropdownOpen(false);
+                                  }}
+                                >
+                                  <div className="d-flex justify-content-between align-items-center">
+                                    <div className="d-flex align-items-center">
+                                      <img
+                                        src={token.icon}
+                                        alt={token.name}
+                                        className="me-2"
+                                        style={{
+                                          width: "24px",
+                                          height: "24px",
+                                          borderRadius: "50%",
+                                        }}
+                                      />
+                                      {token.name}
+                                    </div>
+                                    <span>
+                                      {balanceData?.data
+                                        ? formatUnits(
+                                            balanceData.data as bigint,
+                                            token.decimals
+                                          )
+                                        : "0.00"}
+                                    </span>
                                   </div>
-                                  <span>
-                                    {balanceData?.data
-                                      ? formatUnits(
-                                          balanceData.data as bigint,
-                                          token.decimals
-                                        )
-                                      : "0.00"}
-                                  </span>
-                                </div>
-                              </DropdownItem>
-                            );
-                          })}
-                        </div>
-                      ))}
-                    </DropdownMenu>
-                  </Dropdown>
-                </FormGroup>
+                                </DropdownItem>
+                              );
+                            })}
+                          </div>
+                        ))}
+                      </DropdownMenu>
+                    </Dropdown>
+                  </FormGroup>
 
-                <Button
-                  color="primary"
-                  className="w-100"
-                  disabled={
-                    isWriting ||
-                    !amountInput ||
-                    isApprovalConfirming ||
-                    isDepositConfirming ||
-                    transactionVerificationLoading ||
-                    isMetaMaskOpen ||
-                    !isConnected
-                  }
-                  onClick={handleFundTransfer}
-                >
-                  {isMetaMaskOpen
-                    ? "Waiting for Wallet..."
-                    : isWriting
-                    ? "Processing..."
-                    : isApprovalConfirming
-                    ? "Confirming Approval..."
-                    : isDepositConfirming
-                    ? "Confirming Deposit..."
-                    : transactionVerificationLoading
-                    ? "Verifying Transaction..."
-                    : "Send"}
-                </Button>
-              </>
-            )}
-          </CardBody>
-        </Card>
+                  <Button
+                    color="primary"
+                    className="w-100"
+                    disabled={
+                      isWriting ||
+                      !amountInput ||
+                      isApprovalConfirming ||
+                      isDepositConfirming ||
+                      transactionVerificationLoading ||
+                      isMetaMaskOpen ||
+                      !isConnected
+                    }
+                    onClick={handleFundTransfer}
+                  >
+                    {isMetaMaskOpen
+                      ? "Waiting for Wallet..."
+                      : isWriting
+                      ? "Processing..."
+                      : isApprovalConfirming
+                      ? "Confirming Approval..."
+                      : isDepositConfirming
+                      ? "Confirming Deposit..."
+                      : transactionVerificationLoading
+                      ? "Verifying Transaction..."
+                      : "Send"}
+                  </Button>
+                </>
+              )}
+            </CardBody>
+          </Card>
+        </Col>
       </Row>
     </Container>
   );

@@ -53,4 +53,5 @@ const fundSlice = createSlice({
       });
   },
 });
+
 export default fundSlice.reducer;
