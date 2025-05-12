@@ -61,6 +61,8 @@ interface Routes {
     GET_ALL: string;
     FUND: {
       VERIFY: string;
+      CONVERT: string;
+      TRANSFER:string;
       GET_ALL: string;
       DIRECT_TRANSFER: string;
     };
@@ -190,6 +192,8 @@ export const ROUTES: Routes = {
     GET_ALL: `${API_URL}/api/transaction/get-all`,
     FUND: {
       VERIFY: `${API_URL}/api/fund/transactions/verify`,
+      CONVERT: `${API_URL}/api/fund/convert/user`,
+      TRANSFER:`${API_URL}/api/fund/transfer/user`,
       GET_ALL: `${API_URL}/api/transaction/fund/all`,
       DIRECT_TRANSFER: `${API_URL}/api/transaction/direct-fund-transfer`,
     },

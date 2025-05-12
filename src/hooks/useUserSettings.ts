@@ -109,3 +109,27 @@ export const useAddFundWallet = (): SettingOption | undefined => {
     return undefined;
   }, [setting]);
 };
+
+export const useFundConvertWallets = (): SettingOption[] | undefined => {
+  const setting = useUserSetting("Fund", "convert_fund_to_wallets");
+
+  // Ensure the return type is SettingOption[] | undefined
+  return useMemo(() => {
+    if (Array.isArray(setting)) {
+      return setting as SettingOption[];
+    }
+    return undefined;
+  }, [setting]);
+};
+
+export const useFundTransferWallets = (): SettingOption[] | undefined => {
+  const setting = useUserSetting("Fund", "transfer_fund_wallet");
+
+  // Ensure the return type is SettingOption[] | undefined
+  return useMemo(() => {
+    if (Array.isArray(setting)) {
+      return setting as SettingOption[];
+    }
+    return undefined;
+  }, [setting]);
+};

@@ -26,3 +26,18 @@ export interface IFundTransaction {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
+export interface IFundConvertPayload {
+  amount: number;
+  fromWalletType: string;
+  walletType: string;
+  txType: string;
+}
+
+export interface IFundTransferPayload {
+  username: string;
+  amount: number;
+  walletType: string;
+  debitCredit: string;
+  txType: string;
+}

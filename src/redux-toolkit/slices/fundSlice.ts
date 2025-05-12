@@ -1,6 +1,11 @@
 import { apiClient } from "@/api/apiClient";
 import { ROUTES } from "@/api/route";
-import { IApiResponse, IFundTransaction } from "@/types";
+import {
+  IApiResponse,
+  IFundConvertPayload,
+  IFundTransaction,
+  IFundTransferPayload,
+} from "@/types";
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 
 interface FundState {
@@ -21,6 +26,40 @@ export const verifyTransactionAsync = createAsyncThunk(
     try {
       const response = await apiClient.post<IApiResponse<IFundTransaction>>(
         ROUTES.TRANSACTION.FUND.VERIFY,
+        formData
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "An unknown error occurred"
+      );
+    }
+  }
+);
+
+export const fundConvertAsync = createAsyncThunk(
+  "fund/fundConvert",
+  async (formData: IFundConvertPayload, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.post<IApiResponse<IFundTransaction>>(
+        ROUTES.TRANSACTION.FUND.CONVERT,
+        formData
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "An unknown error occurred"
+      );
+    }
+  }
+);
+
+export const fundTransferAsync = createAsyncThunk(
+  "fund/fundTransfer",
+  async (formData: IFundTransferPayload, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.post<IApiResponse<IFundTransaction>>(
+        ROUTES.TRANSACTION.FUND.TRANSFER,
         formData
       );
       return response.data;

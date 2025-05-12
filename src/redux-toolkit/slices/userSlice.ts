@@ -161,6 +161,23 @@ export const getUserHierarchyAsync = createAsyncThunk(
   }
 );
 
+export const checkUsernameAsync = createAsyncThunk(
+  "user/checkUsername",
+  async (username: string, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.post<IApiResponse<{valid:boolean,activeStatus:number}>>(
+        ROUTES.USER.CHECK_NAME,
+        { username }
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "An unknown error occurred"
+      );
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState,
@@ -306,7 +323,8 @@ const userSlice = createSlice({
       });
   },
 });
-export const { resetUserState ,addAmountToWallet,removeAmountFromWallet} = userSlice.actions;
+export const { resetUserState, addAmountToWallet, removeAmountFromWallet } =
+  userSlice.actions;
 
 // export const handleUnauthorized = () => async (dispatch: any) => {
 //   try {
