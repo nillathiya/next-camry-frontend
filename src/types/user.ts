@@ -165,10 +165,12 @@ export interface INewsEvent {
   title: string;
   description: string;
   images: string[];
-  category: 'news' | 'event';
+  hotlinks?: Hotlink[];
+  category: "news" | "event";
   date: string;
   eventDate?: string;
   createdAt?: string;
+  expiresAt: string | null;
 }
 
 export interface UserState {
@@ -183,7 +185,11 @@ export interface UserState {
   newsThumbnails: string[];
   latestNews: INewsEvent[];
 }
-
+interface Hotlink {
+  label: string;
+  url: string;
+  _id?: string;
+}
 export interface IUserHierarchy{
   _id:string;
   username:string;

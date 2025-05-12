@@ -20,7 +20,7 @@
     border-radius: 8px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   }
-  html.dark .tab-news {
+   html body.dark-only .tab-news {
     background: #273142;
     color: rgb(255, 255, 255);
   }
@@ -46,7 +46,7 @@
     font-size: 20px;
     font-weight: 700;
   }
-  html.dark .title a {
+   html body.dark-only .title a {
     color: rgb(255, 255, 255);
   }
   
@@ -98,7 +98,7 @@
     background-color: #f0f0f0;
     box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.4);
   }
-  html.dark .news-wrap img {
+   html body.dark-only .news-wrap img {
     background-color: #586172;
   }
   .news-wrap:hover img {
@@ -146,6 +146,24 @@
     border-radius: 5px;
     color: white;
     margin-right: 5px;
+  }
+  .hotlinks {
+    display: flex;
+    margin-top: 10px;
+  }
+  .hotlinks ul {
+    list-style: none;
+    padding: 0;
+  }
+  .hotlinks li {
+    margin-bottom: 5px;
+  }
+  .hotlinks a {
+    color: #007bff;
+    text-decoration: underline;
+  }
+  .hotlinks a:hover {
+    color: #0056b3;
   }
   
   .bg-pink {
@@ -241,11 +259,11 @@
     border-radius: 8px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   }
-  html.dark .right_sidebar {
+   html body.dark-only .right_sidebar {
     background: #273142;
     color: rgb(255, 255, 255);
   }
-  html.dark .thumb-content a {
+   html body.dark-only .thumb-content a {
     color: rgb(255, 255, 255);
   }
   .widget-title {
@@ -284,7 +302,7 @@
     margin: 10px 10px 10px 0px;
     box-shadow: 1px 4px 10px 1px rgba(0, 0, 0, 0.1);
   }
-  html.dark .thumbnail-widget li {
+   html body.dark-only .thumbnail-widget li {
     width: 100%;
     background-color: #586172;
     border-radius: 15px;
@@ -305,7 +323,7 @@
     margin: 10px 10px 10px 0px;
     box-shadow: 1px 4px 10px 1px rgba(0, 0, 0, 0.1);
   }
-  html.dark .thumbnail_latest_widget li {
+   html body.dark-only .thumbnail_latest_widget li {
     width: 95%;
     background-color: #586172;
     border-radius: 15px;
@@ -413,18 +431,18 @@
     margin-left: 10px;
   }
   
-  html.dark .events-wrap {
+   html body.dark-only .events-wrap {
     background: #273142;
     color: rgb(255, 255, 255);
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   }
-  html.dark .events-wrap h5 {
+   html body.dark-only .events-wrap h5 {
     font-size: 20px;
     font-weight: 600;
   }
-  html.dark .events-list li {
+   html body.dark-only .events-list li {
     background: #273142;
     color: rgb(255, 255, 255);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);

@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import toast from 'react-hot-toast';
-import { getUserNewsAndEventsAsync } from '@/redux-toolkit/slices/userSlice';
-import { FaAngleUp } from 'react-icons/fa';
-import './newsAndEvents.css';
-import { API_URL } from '@/api/route';
-import { INewsEvent, UserState } from '@/types';
-import { AppDispatch } from '@/redux-toolkit/store';
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import toast from "react-hot-toast";
+import { getUserNewsAndEventsAsync } from "@/redux-toolkit/slices/userSlice";
+import { FaAngleUp } from "react-icons/fa";
+import "./newsAndEvents.css";
+import { API_URL } from "@/api/route";
+import { INewsEvent, UserState } from "@/types";
+import { AppDispatch } from "@/redux-toolkit/store";
 
 interface RootState {
   user: UserState;
@@ -16,10 +16,9 @@ interface RootState {
 
 const NewsAndEvents: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { newsThumbnails, latestNews, newsEvents, isLoading, error } = useSelector(
-    (state: RootState) => state.user
-  );
-  const [activeTab, setActiveTab] = useState<'news' | 'events'>('news');
+  const { newsThumbnails, latestNews, newsEvents, isLoading, error } =
+    useSelector((state: RootState) => state.user);
+  const [activeTab, setActiveTab] = useState<"news" | "events">("news");
   const [newsData, setNewsData] = useState<INewsEvent | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -28,7 +27,7 @@ const NewsAndEvents: React.FC = () => {
       try {
         await dispatch(getUserNewsAndEventsAsync()).unwrap();
       } catch (err) {
-        toast.error((err as string) || 'Server error');
+        toast.error((err as string) || "Server error");
       }
     };
     if (newsEvents.length === 0) {
@@ -38,14 +37,14 @@ const NewsAndEvents: React.FC = () => {
 
   useEffect(() => {
     if (newsEvents.length > 0 && !newsData) {
-      // Prefer an item with images
-      const newsWithImages = newsEvents.find(event => event.images.length > 0);
+      const newsWithImages = newsEvents.find(
+        (event) => event.images.length > 0
+      );
       setNewsData(newsWithImages || newsEvents[0]);
     }
   }, [newsEvents, newsData]);
 
   const handleNewsClick = (news: INewsEvent) => {
-
     setNewsData(news);
   };
 
@@ -74,16 +73,16 @@ const NewsAndEvents: React.FC = () => {
             <div className="tab-news">
               <div className="title-bg-line">
                 <h6
-                  className={`title ${activeTab === 'news' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('news')}
+                  className={`title ${activeTab === "news" ? "active" : ""}`}
+                  onClick={() => setActiveTab("news")}
                 >
                   <a href="#" onClick={(e) => e.preventDefault()}>
                     News
                   </a>
                 </h6>
                 <h6
-                  className={`title ${activeTab === 'events' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('events')}
+                  className={`title ${activeTab === "events" ? "active" : ""}`}
+                  onClick={() => setActiveTab("events")}
                 >
                   <a href="#" onClick={(e) => e.preventDefault()}>
                     Events
@@ -91,7 +90,7 @@ const NewsAndEvents: React.FC = () => {
                 </h6>
               </div>
 
-              {activeTab === 'news' && (
+              {activeTab === "news" && (
                 <div className="row">
                   <div className="col-sm-6">
                     <div className="news-wrap">
@@ -99,17 +98,17 @@ const NewsAndEvents: React.FC = () => {
                         <div className="image-container">
                           {newsData.images.length > 0 ? (
                             newsData.images.map((image, index) => (
-                              <>
-                              {console.log("test image ",`${API_URL}${encodeURI(image)}`)
-                              }
                               <img
                                 key={index}
                                 className="news-image"
                                 src={`${API_URL}${encodeURI(image)}`}
                                 alt={`News ${index}`}
-                                onError={() => console.error(`Failed to load image: ${API_URL}${image}`)}
+                                onError={() =>
+                                  console.error(
+                                    `Failed to load image: ${API_URL}${image}`
+                                  )
+                                }
                               />
-                              </>
                             ))
                           ) : (
                             <img
@@ -136,16 +135,17 @@ const NewsAndEvents: React.FC = () => {
                                 href="#"
                                 onClick={handleLoadMore}
                                 style={{
-                                  color: 'white',
-                                  fontSize: '15px',
+                                  color: "white",
+                                  fontSize: "15px",
                                 }}
                               >
                                 {isExpanded ? (
                                   <span className="d-flex">
-                                    Show less <FaAngleUp style={{ margin: '5px' }} />
+                                    Show less{" "}
+                                    <FaAngleUp style={{ margin: "5px" }} />
                                   </span>
                                 ) : (
-                                  'Load more...'
+                                  "Load more..."
                                 )}
                               </a>
                             </>
@@ -154,8 +154,43 @@ const NewsAndEvents: React.FC = () => {
                           )}
                         </span>
                         <span className="news-meta">
-                          {new Date(newsData.date).toLocaleDateString()}
+                          {newsData.createdAt &&
+                          !isNaN(new Date(newsData.createdAt).getTime())
+                            ? new Date(newsData.createdAt).toLocaleDateString()
+                            : "TBD"}
                         </span>
+                        {/* Hotlinks for News */}
+                        {newsData.hotlinks && newsData.hotlinks.length > 0 && (
+                          <div className="hotlinks">
+                            <strong>Related Links:</strong>
+                            <ul>
+                              {newsData.hotlinks.map((link, index) => (
+                                <li key={index}>
+                                  <a
+                                    href={link.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                      color: "#007bff",
+                                      marginLeft: "5px",
+                                    }}
+                                    onClick={(e) => {
+                                      if (
+                                        !link.url ||
+                                        !/^https?:\/\//i.test(link.url)
+                                      ) {
+                                        e.preventDefault();
+                                        toast.error("Invalid link URL");
+                                      }
+                                    }}
+                                  >
+                                    {link.label || `Link ${index + 1}`}
+                                  </a>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -164,12 +199,12 @@ const NewsAndEvents: React.FC = () => {
                     <div className="widget_no_box">
                       <ul className="thumbnail-widget">
                         {newsEvents
-                          .filter((news) => news.category === 'news')
+                          .filter((news) => news.category === "news")
                           .map((news) => (
                             <li
                               key={news._id}
                               onClick={() => handleNewsClick(news)}
-                              style={{ cursor: 'pointer' }}
+                              style={{ cursor: "pointer" }}
                             >
                               <div className="thumb-wrap">
                                 {news.images.length > 0 && (
@@ -192,11 +227,16 @@ const NewsAndEvents: React.FC = () => {
                                   <span className="color">{news.title}</span>
                                   <p>
                                     {news.description.length > 80
-                                      ? news.description.slice(0, 80) + '...'
+                                      ? news.description.slice(0, 80) + "..."
                                       : news.description}
                                   </p>
                                   <small>
-                                    {new Date(news.date).toLocaleDateString()}
+                                    {news.createdAt &&
+                                    !isNaN(new Date(news.createdAt).getTime())
+                                      ? new Date(
+                                          news.createdAt
+                                        ).toLocaleDateString()
+                                      : "TBD"}
                                   </small>
                                 </div>
                               </div>
@@ -208,25 +248,81 @@ const NewsAndEvents: React.FC = () => {
                 </div>
               )}
 
-              {activeTab === 'events' && (
+              {activeTab === "events" && (
                 <div className="row">
                   <div className="col-sm-12">
                     <div className="events-wrap">
                       <h5>Upcoming Events</h5>
-                      <ul className="events-list">
-                        {newsEvents
-                          .filter((item) => item.category === 'event')
-                          .map((item) => (
-                            <li key={item._id}>
-                              <strong>Event Name:</strong> {item.title}
-                              <br />
-                              <strong>Date:</strong>{' '}
-                              {item.eventDate
-                                ? new Date(item.eventDate).toLocaleDateString()
-                                : 'TBD'}
-                            </li>
-                          ))}
-                      </ul>
+                      {(() => {
+                        const upcomingEvents = newsEvents.filter(
+                          (item) =>
+                            item.category === "event" &&
+                            item.expiresAt &&
+                            !isNaN(new Date(item.expiresAt).getTime()) &&
+                            new Date(item.expiresAt).getTime() > Date.now()
+                        );
+                        return upcomingEvents.length > 0 ? (
+                          <ul className="events-list">
+                            {upcomingEvents.map((item) => (
+                              <li key={item._id}>
+                                <strong>Event Name:</strong> {item.title}
+                                <br />
+                                <strong>Event Date:</strong>{" "}
+                                {item.eventDate &&
+                                !isNaN(new Date(item.eventDate).getTime())
+                                  ? new Date(
+                                      item.eventDate
+                                    ).toLocaleDateString()
+                                  : "TBD"}
+                                <br />
+                                <strong>Expire Date:</strong>{" "}
+                                {item.expiresAt &&
+                                !isNaN(new Date(item.expiresAt).getTime())
+                                  ? new Date(
+                                      item.expiresAt
+                                    ).toLocaleDateString()
+                                  : "TBD"}
+                                {/* Hotlinks for Events */}
+                                {item.hotlinks && item.hotlinks.length > 0 && (
+                                  <div className="hotlinks">
+                                    <strong>Related Links:</strong>
+                                    <ul>
+                                      {item.hotlinks.map((link, index) => (
+                                        <li key={index}>
+                                          <a
+                                            href={link.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{
+                                              color: "#007bff",
+                                              marginLeft: "5px",
+                                            }}
+                                            onClick={(e) => {
+                                              if (
+                                                !link.url ||
+                                                !/^https?:\/\//i.test(link.url)
+                                              ) {
+                                                e.preventDefault();
+                                                toast.error("Invalid link URL");
+                                              }
+                                            }}
+                                          >
+                                            {link.label || `Link ${index + 1}`}
+                                          </a>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="no-events-message">
+                            No upcoming events available
+                          </p>
+                        );
+                      })()}
                     </div>
                   </div>
                 </div>
@@ -234,7 +330,7 @@ const NewsAndEvents: React.FC = () => {
             </div>
           </div>
 
-          {activeTab !== 'events' && (
+          {activeTab !== "events" && (
             <div className="col-md-3">
               <aside className="right_sidebar">
                 <div className="widget_lates_box">
@@ -244,13 +340,13 @@ const NewsAndEvents: React.FC = () => {
                   <ul className="thumbnail_latest_widget">
                     {latestNews.length > 0 ? (
                       latestNews
-                        .filter((news) => news.category === 'news')
+                        .filter((news) => news.category === "news")
                         .slice(0, 5)
                         .map((news) => (
                           <li
                             key={news._id}
                             onClick={() => handleNewsClick(news)}
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: "pointer" }}
                           >
                             <div className="thumb-wrap">
                               {news.images.length > 0 && (
@@ -275,18 +371,25 @@ const NewsAndEvents: React.FC = () => {
                                 </a>
                                 <p className="latest_grid_description">
                                   {news.description.length > 60
-                                    ? news.description.substring(0, 60) + '...'
+                                    ? news.description.substring(0, 60) + "..."
                                     : news.description}
                                 </p>
                                 <span>
-                                  {new Date(news.date).toLocaleDateString()}
+                                  {news.createdAt &&
+                                  !isNaN(new Date(news.createdAt).getTime())
+                                    ? new Date(
+                                        news.createdAt
+                                      ).toLocaleDateString()
+                                    : "TBD"}
                                 </span>
                               </div>
                             </div>
                           </li>
                         ))
                     ) : (
-                      <p className="no-news-message">No latest news available</p>
+                      <p className="no-news-message">
+                        No latest news available
+                      </p>
                     )}
                   </ul>
                 </div>

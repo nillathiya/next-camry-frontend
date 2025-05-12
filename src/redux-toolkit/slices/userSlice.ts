@@ -50,6 +50,7 @@ export interface INewsEvent {
   date: string;
   eventDate?: string;
   createdAt?: string;
+  expireDate? : string;
 }
 
 export const registerUserAsync = createAsyncThunk(
