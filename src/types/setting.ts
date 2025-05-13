@@ -70,3 +70,17 @@ export interface IWalletSettings {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface ICompanyInfo {
+  _id: string;
+  name: string;
+  title: string;
+  slug: string;
+  type: string;
+  value?: string;
+  description?: string;
+  adminStatus: number;
+  status: number;
+  createdAt: string;
+  updatedAt: string;
+}
