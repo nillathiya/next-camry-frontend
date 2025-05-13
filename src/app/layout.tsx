@@ -24,7 +24,7 @@ export default async function RootLayout({
     <I18nProvider language={lng}>
       <html lang={lng}>
         <head>
-          <title>Yuri - Premium Admin Template</title>
+          <title>Camry</title>
           <link
             rel="icon"
             href={`/assets/images/logo/logo-icon.png`}
