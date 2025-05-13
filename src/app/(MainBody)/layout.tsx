@@ -8,6 +8,13 @@ import FooterLayout from "@/layout/footer";
 import MainProvider from "../MainProvider";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
+  useEffect(() => {
+    const handleResize = () => {
+      window.dispatchEvent(new Event('resize'));
+    };
+    handleResize();
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   return (
     <>
       <Taptop />
