@@ -46,11 +46,11 @@ export interface INewsEvent {
   title: string;
   description: string;
   images: string[];
-  category: 'news' | 'event';
+  category: "news" | "event";
   date: string;
   eventDate?: string;
   createdAt?: string;
-  expireDate? : string;
+  expireDate?: string;
 }
 
 export const registerUserAsync = createAsyncThunk(
@@ -180,20 +180,35 @@ export const getUserHierarchyAsync = createAsyncThunk(
 );
 
 export const getUserNewsAndEventsAsync = createAsyncThunk(
-  'user/getUserNewsAndEvents',
+  "user/getUserNewsAndEvents",
   async (_, { rejectWithValue }) => {
     try {
       const response = await apiClient.get<IApiResponse<INewsEvent[]>>(
         ROUTES.USER.GET_NEWS_EVENTS
       );
-      const transformedData = response.data.data.map(item => ({
+      const transformedData = response.data.data.map((item) => ({
         ...item,
         images: item.images || item.images || [],
       }));
       return { ...response.data, data: transformedData };
     } catch (error: any) {
       return rejectWithValue(
-        error.response?.data?.message || 'Get User news and events failed.'
+        error.response?.data?.message || "Get User news and events failed."
+      );
+    }
+  }
+);
+export const checkUsernameAsync = createAsyncThunk(
+  "user/checkUsername",
+  async (username: string, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.post<
+        IApiResponse<{ valid: boolean; activeStatus: number }>
+      >(ROUTES.USER.CHECK_NAME, { username });
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "An unknown error occurred"
       );
     }
   }
@@ -206,6 +221,35 @@ const userSlice = createSlice({
     resetUserState(state) {
       state.user = null;
       state.error = null;
+    },
+    addAmountToWallet: (state, action) => {
+      console.log("action payload", action.payload);
+      const { walletType, amount } = action.payload;
+      if (state.userWallet && walletType && amount > 0) {
+        state.userWallet[walletType] =
+          (Number(state.userWallet[walletType]) || 0) + parseFloat(amount);
+      } else {
+        console.error("Invalid wallet or amount");
+      }
+    },
+    removeAmountFromWallet: (state, action) => {
+      const { walletType, amount } = action.payload;
+      if (
+        state.userWallet &&
+        walletType &&
+        amount > 0 &&
+        (state.userWallet[walletType] || 0) >= amount
+      ) {
+        state.userWallet[walletType] =
+          Number(state.userWallet[walletType]) - parseFloat(amount);
+      } else {
+        console.error(
+          `Insufficient balance in ${walletType} or invalid wallet`
+        );
+      }
+    },
+    clearUserWallet: (state) => {
+      state.userWallet = null;
     },
   },
   extraReducers: (builder) => {
@@ -320,7 +364,7 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(getUserNewsAndEventsAsync.fulfilled, (state, action) => {
-        console.log('Raw API response:', action.payload.data);
+        console.log("Raw API response:", action.payload.data);
         state.loading = false;
         state.newsEvents = action.payload.data;
         state.newsThumbnails = action.payload.data.map(
@@ -336,7 +380,8 @@ const userSlice = createSlice({
       });
   },
 });
-export const { resetUserState } = userSlice.actions;
+export const { resetUserState, addAmountToWallet, removeAmountFromWallet } =
+  userSlice.actions;
 
 // export const handleUnauthorized = () => async (dispatch: any) => {
 //   try {

@@ -1,4 +1,9 @@
-import { ICheckWalletQuery, IUserDirectsQuery } from "@/types";
+import {
+  ICheckWalletQuery,
+  IGetAllFundTransactionQuery,
+  IUserDirectsQuery,
+} from "@/types";
+import { VerifyParamsKeys } from "siwe";
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -61,7 +66,11 @@ interface Routes {
   TRANSACTION: {
     GET_ALL: string;
     FUND: {
-      GET_ALL: string;
+      VERIFY: string;
+      CONVERT: string;
+      TRANSFER: string;
+      WITHDRAWAL: string;
+      GET_ALL: (params: IGetAllFundTransactionQuery) => string;
       DIRECT_TRANSFER: string;
     };
     INCOME: {
@@ -74,6 +83,7 @@ interface Routes {
     GET_ADMIN_SETTINGS: string;
     GET_WEBSITE_SETTINGS: string;
     GET_WALLET_SETTINGS: string;
+    GET_COMPANY_INFO_SETTINGS: string;
     UPDATE_USER_SETTING: (id: string) => string;
     UPDATE_ADMIN_SETTING: (id: string) => string;
     CREATE: string;
@@ -189,7 +199,22 @@ export const ROUTES: Routes = {
   TRANSACTION: {
     GET_ALL: `${API_URL}/api/transaction/get-all`,
     FUND: {
-      GET_ALL: `${API_URL}/api/transaction/fund/all`,
+      VERIFY: `${API_URL}/api/fund/transactions/verify`,
+      CONVERT: `${API_URL}/api/fund/convert/user`,
+      TRANSFER: `${API_URL}/api/fund/transfer/user`,
+      WITHDRAWAL: `${API_URL}/api/fund/withdrawal/user`,
+      GET_ALL: (params: IGetAllFundTransactionQuery) => {
+        const query = new URLSearchParams();
+        (Object.keys(params) as (keyof IGetAllFundTransactionQuery)[]).forEach(
+          (param) => {
+            const value = params[param];
+            if (value !== undefined && value !== null) {
+              query.append(param, String(value));
+            }
+          }
+        );
+        return `${API_URL}/api/fund/transactions?${query.toString()}`;
+      },
       DIRECT_TRANSFER: `${API_URL}/api/transaction/direct-fund-transfer`,
     },
     INCOME: {
@@ -202,6 +227,7 @@ export const ROUTES: Routes = {
     GET_ADMIN_SETTINGS: `${API_URL}/api/admin-settings/get`,
     GET_WEBSITE_SETTINGS: `${API_URL}/api/website-setting/global`,
     GET_WALLET_SETTINGS: `${API_URL}/api/wallet-setting`,
+    GET_COMPANY_INFO_SETTINGS: `${API_URL}/api/company-info`,
     UPDATE_USER_SETTING: (id: string) =>
       `${API_URL}/api/user-settings/update/${id}`,
     UPDATE_ADMIN_SETTING: (id: string) =>

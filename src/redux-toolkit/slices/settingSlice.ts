@@ -5,6 +5,7 @@ import {
   IWebsiteSettings,
   IUserSetting,
   IWalletSettings,
+  ICompanyInfo,
 } from "@/types";
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 
@@ -13,6 +14,7 @@ interface SettingState {
   websiteSettings: IWebsiteSettings[];
   walletSettings: IWalletSettings[];
   userSettings: IUserSetting[];
+  companyInfo:ICompanyInfo[];
   loading: boolean; // Changed Boolean to boolean
   error: any;
 }
@@ -21,6 +23,7 @@ const initialState: SettingState = {
   websiteSettings: [],
   walletSettings: [],
   userSettings: [],
+  companyInfo:[],
   loading: false,
   error: null,
 };
@@ -76,6 +79,23 @@ export const getWalletSettingsAsync = createAsyncThunk(
   }
 );
 
+export const getCompanyInfoSettingsAsync = createAsyncThunk(
+  "setting/getCompanyInfoSettings",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get<IApiResponse<ICompanyInfo[]>>(
+        ROUTES.SETTINGS.GET_COMPANY_INFO_SETTINGS
+      );
+      return response.data;
+    } catch (error: any) {
+      console.log("Setting slice error", error);
+      return rejectWithValue(
+        error.response?.data?.message || "An unknown error occurred"
+      );
+    }
+  }
+);
+
 const settingSlice = createSlice({
   name: "setting",
   initialState,
@@ -120,6 +140,20 @@ const settingSlice = createSlice({
         state.walletSettings = action.payload.data;
       })
       .addCase(getWalletSettingsAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      // getCompanyInfoSettingsAsync
+      .addCase(getCompanyInfoSettingsAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getCompanyInfoSettingsAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        state.companyInfo = action.payload.data;
+      })
+      .addCase(getCompanyInfoSettingsAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

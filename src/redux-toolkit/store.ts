@@ -6,6 +6,7 @@ import { persistStore, persistReducer } from "redux-persist";
 import settingReducer from "./slices/settingSlice";
 import storage from "redux-persist/lib/storage";
 import userReducer from "./slices/userSlice";
+import fundReducer from "./slices/fundSlice";
 
 export const store = configureStore({
   reducer: {
@@ -13,7 +14,8 @@ export const store = configureStore({
     layout: LayoutReducer,
     bookmarkData: BookmarkDataReducer,
     setting: settingReducer,
-    user:userReducer,
+    user: userReducer,
+    fund: fundReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
