@@ -3,7 +3,10 @@
 
 import InterceptorInitializer from "@/lib/InterceptorInitializer";
 import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
-import { getWebsiteSettingsAsync } from "@/redux-toolkit/slices/settingSlice";
+import {
+  getCompanyInfoSettingsAsync,
+  getWebsiteSettingsAsync,
+} from "@/redux-toolkit/slices/settingSlice";
 import { useEffect, useState } from "react";
 
 interface InitialApiProviderProps {
@@ -14,7 +17,9 @@ const InitialApiProvider: React.FC<InitialApiProviderProps> = ({
   children,
 }) => {
   const dispatch = useAppDispatch();
-  const { websiteSettings } = useAppSelector((state) => state.setting);
+  const { websiteSettings, companyInfo } = useAppSelector(
+    (state) => state.setting
+  );
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -25,6 +30,9 @@ const InitialApiProvider: React.FC<InitialApiProviderProps> = ({
       try {
         if (websiteSettings.length === 0) {
           await dispatch(getWebsiteSettingsAsync()).unwrap();
+        }
+        if (companyInfo.length === 0) {
+          await dispatch(getCompanyInfoSettingsAsync()).unwrap();
         }
       } catch (error) {
         console.error("Error fetching website settings:", error);

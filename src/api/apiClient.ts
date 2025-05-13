@@ -5,6 +5,7 @@ import axios, { AxiosInstance, AxiosError } from "axios";
 import { signOut, useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import { useDisconnect, useAccount } from "wagmi";
+import { Persistor } from "redux-persist";
 
 export const apiClient: AxiosInstance = axios.create({
   baseURL: process.env.NEXT_API_BASE_URL,
@@ -20,9 +21,11 @@ interface GetWalletInfoFn {
 }
 export const setupApiInterceptors = ({
   store,
+  persistor,
   getWalletInfo,
 }: {
   store: Store;
+  persistor: Persistor;
   getWalletInfo: () => GetWalletInfoFn;
 }) => {
   let isLoggingOut = false;
@@ -66,6 +69,8 @@ export const setupApiInterceptors = ({
           }
 
           console.warn("Session expired, logging out user...");
+          persistor.purge();
+          // localStorage.clear();
           await signOut({ redirect: false });
           window.location.href = "/auth/login";
         } catch (err) {

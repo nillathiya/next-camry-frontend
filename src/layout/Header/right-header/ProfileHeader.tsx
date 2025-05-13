@@ -10,7 +10,7 @@ import { useAccount, useDisconnect } from "wagmi";
 import { toast } from "react-toastify";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useRegistrationType } from "@/hooks/useWebsiteSettings";
-
+import { persistor } from "@/redux-toolkit/store";
 const ProfileHeader = () => {
   const { data: session } = useSession();
   const { isConnected, address } = useAccount();
@@ -40,6 +40,8 @@ const ProfileHeader = () => {
       }
 
       console.log("Initiating NextAuth signOut");
+      // localStorage.clear();
+      persistor.purge();
       await signOut({ redirect: false });
       console.log("NextAuth signOut completed");
 

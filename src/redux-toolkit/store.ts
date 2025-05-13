@@ -8,12 +8,22 @@ import storage from "redux-persist/lib/storage";
 import userReducer from "./slices/userSlice";
 import fundReducer from "./slices/fundSlice";
 
+const settingPersistConfig = {
+  key: "setting",
+  storage,
+  whitelist: ["companyInfo"],
+};
+const persistedSettingReducer = persistReducer(
+  settingPersistConfig,
+  settingReducer
+);
+
 export const store = configureStore({
   reducer: {
     themeCustomizer: ThemeCustomizerReducer,
     layout: LayoutReducer,
     bookmarkData: BookmarkDataReducer,
-    setting: settingReducer,
+    setting: persistedSettingReducer,
     user: userReducer,
     fund: fundReducer,
   },

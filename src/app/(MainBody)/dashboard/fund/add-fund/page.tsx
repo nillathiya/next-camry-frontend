@@ -67,10 +67,12 @@ const AddFund = () => {
   const [hasDeposited, setHasDeposited] = useState(false);
   const companyCurrency = useCompanyCurrency();
   const companyBscAddress = useComapnyBscAddress();
-  const addFundWallet = useAddFundWallet();
+  const { value: addFundWallet, loading: addFundWalletLoading } =
+    useAddFundWallet();
   const companyTokenContract = useCompanyTokenContract();
 
   console.log("addFundWallet", addFundWallet);
+  console.log("companyCurrency",companyCurrency);
 
   const { writeContractAsync, isPending: isWriting } = useWriteContract();
 
@@ -351,7 +353,7 @@ const AddFund = () => {
               <div className="d-flex justify-content-end mb-3">
                 <ConnectButton />
               </div>
-              {isWalletLoading ? (
+              {isWalletLoading || addFundWalletLoading ? (
                 <SkeletonLoader />
               ) : (
                 <>
@@ -360,7 +362,7 @@ const AddFund = () => {
                       <Card className="p-3">
                         <h5>
                           {addFundWallet
-                            ? getWalletNameBySlug(addFundWallet.key)
+                            ? getWalletNameBySlug(addFundWallet?.key)
                             : "Add Fund Wallet"}
                         </h5>
                         <p className="mb-0">
