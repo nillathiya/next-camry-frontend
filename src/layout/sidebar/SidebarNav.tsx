@@ -2,7 +2,7 @@ import { Fragment, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { Pinned } from "@/constants/index";
 import { SidebarItemType, SidebarMenuType } from "@/types/layout";
-import { MenuItem } from "@/types";
+import { MenuItem, MenuItemChild } from "@/types";
 import BackButton from "./BackButton";
 import SidebarSubMenu from "./SidebarSubMenu";
 import { useMenuItems } from "@/hooks/useUserSettings";
@@ -25,7 +25,7 @@ export default function SidebarNav({
   const pathname = usePathname();
 
   const convertedMenuList = useMemo(() => {
-    if (!menuItems?.length) return [];
+    if (!menuItems?.items || menuItems.items.length === 0) return [];
 
     const getSafeIcon = (icon?: string) =>
       icon ? icon.replace("Icon", "").toLowerCase() : DEFAULT_ICON;
@@ -33,9 +33,9 @@ export default function SidebarNav({
     return [
       {
         title: "Main Menu",
-        menu: menuItems
-          .filter((item) => item.status)
-          .map((item) => {
+        menu: menuItems.items
+          .filter((item: MenuItem) => item.status)
+          .map((item: MenuItem) => {
             const parentKey = item.key ? `/${item.key}` : "";
             return {
               title: item.label,
@@ -46,8 +46,8 @@ export default function SidebarNav({
               active: undefined,
               subMenu: item.children
                 ? item.children
-                    .filter((child) => child.status)
-                    .map((child) => {
+                    .filter((child: MenuItemChild) => child.status)
+                    .map((child: MenuItemChild) => {
                       const childUrl = parentKey
                         ? `${parentKey}/${child.key.replace(
                             `${item.key}/`,
@@ -68,7 +68,6 @@ export default function SidebarNav({
       },
     ] as SidebarMenuType[];
   }, [menuItems]);
-
   const filteredMenuList = useMemo(() => {
     if (!sidebarSearchTerm) return convertedMenuList;
 
