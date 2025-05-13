@@ -1,7 +1,21 @@
 export interface IFundTransaction {
   _id: string;
-  txUCode: string | null;
-  uCode: string | null;
+  txUCode:
+    | string
+    | null
+    | {
+        _id: string;
+        username: string;
+        name: string;
+      };
+  uCode:
+    | string
+    | null
+    | {
+        _id: string;
+        username: string;
+        name: string;
+      };
   txType?: string;
   debitCredit?: string;
   fromWalletType?: string;
@@ -23,8 +37,8 @@ export interface IFundTransaction {
   remark?: string;
   isRetrieveFund: boolean;
   status: number;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface IFundConvertPayload {
