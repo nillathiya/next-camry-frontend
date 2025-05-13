@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
 import { getUsersiteSettingsAsync } from "@/redux-toolkit/slices/settingSlice";
 import { IUserSetting, MenuItem, MenuItemChild, SettingOption } from "@/types";
@@ -17,49 +17,72 @@ interface RawMenuItemChild {
 const useFetchUserSettings = () => {
   const dispatch = useAppDispatch();
   const { userSettings } = useAppSelector((state) => state.setting);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!userSettings.length) {
-      dispatch(getUsersiteSettingsAsync());
-    }
+    const fetchSettings = async () => {
+      if (userSettings.length === 0) {
+        setLoading(true);
+        try {
+          await dispatch(getUsersiteSettingsAsync()).unwrap(); // Use unwrap to handle the async thunk
+        } catch (error) {
+          console.error("Failed to fetch user settings:", error);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setLoading(false);
+      }
+    };
+
+    fetchSettings();
   }, [dispatch, userSettings.length]);
 
-  return userSettings;
+  return { userSettings, loading };
 };
 
 export const useUserSetting = (
   title: string,
   slug: string
-): SettingOption[] | string | undefined => {
-  const userSettings = useFetchUserSettings();
+): { value: SettingOption[] | string | string[] | undefined; loading: boolean } => {
+  const { userSettings, loading } = useFetchUserSettings();
 
-  return useMemo(() => {
+  const value = useMemo(() => {
+    if (loading) return undefined; // Return undefined while loading
     const setting = userSettings.find(
       (data: IUserSetting) => data.title === title && data.slug === slug
     );
     return setting?.value as string | SettingOption[] | undefined;
-  }, [userSettings, title, slug]);
+  }, [userSettings, title, slug, loading]);
+
+  return { value, loading };
 };
 
 export const useUserSettingValues = (
   criteria: { title: string; slug: string }[]
-): (SettingOption[] | string | undefined)[] => {
-  const userSettings = useFetchUserSettings();
+): {
+  values: (SettingOption[] | string | undefined)[];
+  loading: boolean;
+} => {
+  const { userSettings, loading } = useFetchUserSettings();
 
-  return useMemo(() => {
-    return criteria.map(
-      ({ title, slug }) =>
-        userSettings.find(
-          (data: IUserSetting) => data.title === title && data.slug === slug
-        )?.value as string | undefined
+  const values = useMemo(() => {
+    if (loading) return criteria.map(() => undefined); // Return undefined for each while loading
+    return criteria.map(({ title, slug }) =>
+      userSettings.find(
+        (data: IUserSetting) => data.title === title && data.slug === slug
+      )?.value as string | undefined
     );
-  }, [userSettings, criteria]);
+  }, [userSettings, criteria, loading]);
+
+  return { values, loading };
 };
 
-export const useMenuItems = (): MenuItem[] | undefined => {
-  const userSettings = useFetchUserSettings();
+export const useMenuItems = (): { items: MenuItem[] | undefined; loading: boolean } => {
+  const { userSettings, loading } = useFetchUserSettings();
 
-  return useMemo(() => {
+  const items = useMemo(() => {
+    if (loading) return undefined; // Return undefined while loading
     const setting = userSettings.find(
       (data: IUserSetting) =>
         data.title === "Menu Items" && data.slug === "menu_items"
@@ -95,41 +118,74 @@ export const useMenuItems = (): MenuItem[] | undefined => {
         status: normalizeStatus(child.status),
       })) as MenuItemChild[],
     })) as MenuItem[];
-  }, [userSettings]);
+  }, [userSettings, loading]);
+
+  return { items, loading };
 };
 
-export const useAddFundWallet = (): SettingOption | undefined => {
-  const setting = useUserSetting("Fund", "add_fund_wallet");
+export const useAddFundWallet = (): { value: SettingOption | undefined; loading: boolean } => {
+  const { value: setting, loading } = useUserSetting("Fund", "add_fund_wallet");
 
-  // Ensure the return type is SettingOption[] | undefined
-  return useMemo(() => {
-    if (Array.isArray(setting)) {
-      return setting[0] as SettingOption;
-    }
-    return undefined;
-  }, [setting]);
+  const value = useMemo(() => {
+    if (loading || !Array.isArray(setting)) return undefined;
+    return setting[0] as SettingOption;
+  }, [setting, loading]);
+
+  return { value, loading };
 };
 
-export const useFundConvertWallets = (): SettingOption[] | undefined => {
-  const setting = useUserSetting("Fund", "convert_fund_to_wallets");
+export const useFundConvertWallets = (): {
+  value: SettingOption[] | undefined;
+  loading: boolean;
+} => {
+  const { value: setting, loading } = useUserSetting("Fund", "convert_fund_to_wallets");
 
-  // Ensure the return type is SettingOption[] | undefined
-  return useMemo(() => {
-    if (Array.isArray(setting)) {
-      return setting as SettingOption[];
-    }
-    return undefined;
-  }, [setting]);
+  const value = useMemo(() => {
+    if (loading || !Array.isArray(setting)) return undefined;
+    return setting as SettingOption[];
+  }, [setting, loading]);
+
+  return { value, loading };
 };
 
-export const useFundTransferWallets = (): SettingOption[] | undefined => {
-  const setting = useUserSetting("Fund", "transfer_fund_wallet");
+export const useFundTransferWallets = (): {
+  value: SettingOption[] | undefined;
+  loading: boolean;
+} => {
+  const { value: setting, loading } = useUserSetting("Fund", "transfer_fund_wallet");
 
-  // Ensure the return type is SettingOption[] | undefined
-  return useMemo(() => {
-    if (Array.isArray(setting)) {
-      return setting as SettingOption[];
-    }
-    return undefined;
-  }, [setting]);
+  const value = useMemo(() => {
+    if (loading || !Array.isArray(setting)) return undefined;
+    return setting as SettingOption[];
+  }, [setting, loading]);
+
+  return { value, loading };
+};
+
+export const useFundWithdrawalWallets = (): {
+  value: SettingOption[] | undefined;
+  loading: boolean;
+} => {
+  const { value: setting, loading } = useUserSetting("Withdrawal", "withdrawal_fund_wallets");
+
+  const value = useMemo(() => {
+    if (loading || !Array.isArray(setting)) return undefined;
+    return setting as SettingOption[];
+  }, [setting, loading]);
+
+  return { value, loading };
+};
+
+export const useFundWithdrawalDays = (): {
+  value: string[] | undefined;
+  loading: boolean;
+} => {
+  const { value: setting, loading } = useUserSetting("Withdrawal", "withdrawal_days");
+
+  const value = useMemo(() => {
+    if (loading || !Array.isArray(setting)) return undefined;
+    return setting as string[];
+  }, [setting, loading]);
+
+  return { value, loading };
 };

@@ -40,7 +40,8 @@ const SwapComponent: React.FC = () => {
   const dispatch = useAppDispatch();
   const { darkMode } = useAppSelector((state) => state.themeCustomizer);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const fundConvertWallets = useFundConvertWallets();
+  const { loading: fundConvertWalletLoading, value: fundConvertWallets } =
+    useFundConvertWallets();
   const filteredFundConvertWallets = fundConvertWallets?.filter(
     (wallet) => wallet.status
   );
@@ -86,6 +87,10 @@ const SwapComponent: React.FC = () => {
     settingsLoading,
     userLoading,
   ]);
+
+  if (fundConvertWalletLoading) {
+    return <div className="p-4">Loading...</div>;
+  }
 
   if (settingsLoading || userLoading) {
     return <div className="p-4">Loading wallet data...</div>;

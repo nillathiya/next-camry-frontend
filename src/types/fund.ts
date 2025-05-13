@@ -41,3 +41,15 @@ export interface IFundTransferPayload {
   debitCredit: string;
   txType: string;
 }
+export interface IFundWithdrawalPayload {
+  txType: string;
+  amount: number;
+  walletType: string;
+  debitCredit: string;
+}
+
+export interface IGetAllFundTransactionQuery {
+  txType?: string;
+  status?: string | string[];
+  depositAccountType?: string;
+}

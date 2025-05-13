@@ -6,48 +6,48 @@ import { toast } from "react-toastify";
 import { FaWallet } from "react-icons/fa";
 import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
 import {
-  addAmountToWallet,
   removeAmountFromWallet,
   getUserWalletAsync,
-  checkUsernameAsync,
 } from "@/redux-toolkit/slices/userSlice";
 import { getWalletSettingsAsync } from "@/redux-toolkit/slices/settingSlice";
 import { useWalletSettings } from "@/hooks/useWalletSettings";
-import { useFundTransferWallets } from "@/hooks/useUserSettings";
 import {
-  TransferContainer,
-  TransferForm,
+  useFundTransferWallets,
+  useFundWithdrawalDays,
+  useFundWithdrawalWallets,
+} from "@/hooks/useUserSettings";
+import {
+  WithdrawalContainer,
+  WithdrawalForm,
   WalletSection,
   WalletSelector,
   Label,
   Select,
   AmountInput,
-  UsernameInput,
-  TransferButton,
+  WithdrawalButton,
   ErrorMessage,
-} from "./TransferComponentStyles";
+} from "./WithdrawalComponentStyle";
 import { FUND_TX_TYPE } from "@/lib/fundType";
-import { fundTransferAsync } from "@/redux-toolkit/slices/fundSlice";
-import { debounce } from "lodash"; // Add lodash for debouncing
+import { fundWithdrawalAsync } from "@/redux-toolkit/slices/fundSlice";
 
 // Types
-interface TransferFormData {
+interface WithdrawalFormData {
   walletType: string;
   amount: number;
-  username: string;
 }
 
-// Component
-const TransferComponent: React.FC = () => {
+const WithdrawalComponent: React.FC = () => {
   const dispatch = useAppDispatch();
   const { darkMode } = useAppSelector((state) => state.themeCustomizer);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isValidUsername, setIsValidUsername] = useState<boolean>(false);
-  const [isValidating, setIsValidating] = useState(false);
-  const { value: fundTransferWallets, loading:fundTransferWalletLoading } = useFundTransferWallets();
-  const filteredFundTransferWallets = fundTransferWallets?.filter(
+  const [isWithdrawalAllowed, setIsWithdrawalAllowed] = useState(true);
+  const { value: fundWithdrawalWallets, loading: fundWithdrawalWalletLoading } =
+    useFundWithdrawalWallets();
+  const filteredFundWithdrawalWallets = fundWithdrawalWallets?.filter(
     (wallet) => wallet.status
   );
+  const { value: fundWithdrawalDays, loading: fundWithdrawalDayLoading } =
+    useFundWithdrawalDays();
   const { getWalletNameBySlug, getWalletBalanceBySlug } = useWalletSettings();
   const {
     loading: settingsLoading,
@@ -66,15 +66,13 @@ const TransferComponent: React.FC = () => {
     formState: { errors },
     watch,
     setValue,
-  } = useForm<TransferFormData>({
+  } = useForm<WithdrawalFormData>({
     defaultValues: {
       walletType: "",
       amount: 0,
-      username: "",
     },
   });
 
-  const username = watch("username");
   const amount = watch("amount");
   const walletType = watch("walletType");
 
@@ -93,46 +91,46 @@ const TransferComponent: React.FC = () => {
     userLoading,
   ]);
 
-  // Debounced username validation
-  const validateUsername = async (username: string) => {
-    if (!username) {
-      setIsValidUsername(false);
-      return;
-    }
-
-    setIsValidating(true);
-
-    try {
-      const result = await dispatch(checkUsernameAsync(username)).unwrap();
-
-      if (result.success) {
-        setIsValidUsername(true);
-        toast.success("Username is valid");
-      } else {
-        setIsValidUsername(false);
-        toast.error(result.message || "Username not found");
-      }
-    } catch (error) {
-      setIsValidUsername(false);
-      toast.error("Error validating username");
-    } finally {
-      setIsValidating(false);
-    }
-  };
-
-  // Debounce the validation to avoid excessive API calls
-  const debouncedValidateUsername = debounce(validateUsername, 500);
-
+  // Check if withdrawal is allowed based on the current day
   useEffect(() => {
-    debouncedValidateUsername(username);
-    return () => {
-      debouncedValidateUsername.cancel(); // Cleanup debounce on unmount
-    };
-  }, [username]);
+    if (fundWithdrawalWalletLoading || fundWithdrawalDayLoading) return;
+  
+    if (!fundWithdrawalDays || fundWithdrawalDays.length === 0) return;
+  
+    const days = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+  
+    const today = new Date();
+    const dayName = days[today.getDay()];
+  
+    const isAllowed = fundWithdrawalDays.some(
+      (day) => day.toLowerCase() === dayName.toLowerCase()
+    );
+  
+    console.log("fundWithdrawalDays", fundWithdrawalDays);
+    console.log("isAllowed", isAllowed);
+  
+    if (isAllowed) {
+      setIsWithdrawalAllowed(true);
+    } else {
+      setIsWithdrawalAllowed(false);
+      toast.warn(
+        `Withdrawals are only allowed on: ${fundWithdrawalDays.join(", ")}.`
+      );
+    }
+  }, [fundWithdrawalWalletLoading, fundWithdrawalDayLoading, fundWithdrawalDays]);
+  
 
-  const onSubmit = async (data: TransferFormData) => {
-    if (!isValidUsername) {
-      toast.error("Please enter a valid username");
+  const onSubmit = async (data: WithdrawalFormData) => {
+    if (!isWithdrawalAllowed) {
+      toast.error("Withdrawals are not allowed today.");
       return;
     }
 
@@ -151,10 +149,11 @@ const TransferComponent: React.FC = () => {
 
     try {
       await dispatch(
-        fundTransferAsync({
-          ...data,
+        fundWithdrawalAsync({
+          txType: FUND_TX_TYPE.FUND_WITHDRAWAL,
           debitCredit: "DEBIT",
-          txType: FUND_TX_TYPE.FUND_TRANSFER,
+          amount: data.amount,
+          walletType: data.walletType,
         })
       ).unwrap();
 
@@ -165,20 +164,20 @@ const TransferComponent: React.FC = () => {
         })
       );
 
-      toast.success("Transfer completed successfully!");
+      toast.success("Withdrawal completed successfully!");
       setValue("amount", 0);
-      setValue("username", "");
-      setIsValidUsername(false);
+      setValue("walletType", "");
     } catch (error: any) {
-      toast.error(error || "Transfer failed");
+      toast.error(error || "Withdrawal failed");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  if(fundTransferWalletLoading){
-    return <div className="p-4">Loadin...</div>;
+  if (fundWithdrawalWalletLoading || fundWithdrawalDayLoading) {
+    return <div className="p-4">Loading...</div>;
   }
+
   if (settingsLoading || userLoading) {
     return <div className="p-4">Loading wallet data...</div>;
   }
@@ -196,8 +195,8 @@ const TransferComponent: React.FC = () => {
   }
 
   return (
-    <TransferContainer theme={darkMode ? "dark" : "light"}>
-      <TransferForm onSubmit={handleSubmit(onSubmit)}>
+    <WithdrawalContainer theme={darkMode ? "dark" : "light"}>
+      <WithdrawalForm onSubmit={handleSubmit(onSubmit)}>
         <WalletSection>
           <WalletSelector>
             <Label theme={darkMode ? "dark" : "light"}>Wallet</Label>
@@ -208,7 +207,7 @@ const TransferComponent: React.FC = () => {
               render={({ field }) => (
                 <Select {...field} theme={darkMode ? "dark" : "light"}>
                   <option value="">Select Wallet</option>
-                  {filteredFundTransferWallets?.map((wallet, index) => (
+                  {filteredFundWithdrawalWallets?.map((wallet, index) => (
                     <option key={index} value={wallet.key}>
                       {getWalletNameBySlug(wallet.key)} (
                       {Number(getWalletBalanceBySlug(wallet.key) ?? 0).toFixed(
@@ -233,6 +232,9 @@ const TransferComponent: React.FC = () => {
               rules={{
                 required: "Amount is required",
                 min: { value: 0.01, message: "Amount must be greater than 0" },
+                validate: (value) =>
+                  value <= Number(userWallet?.[walletType] ?? 0) ||
+                  "Amount exceeds available balance",
               }}
               render={({ field }) => (
                 <AmountInput
@@ -247,39 +249,17 @@ const TransferComponent: React.FC = () => {
               <ErrorMessage>{errors.amount.message}</ErrorMessage>
             )}
           </WalletSelector>
-
-          <WalletSelector>
-            <Label theme={darkMode ? "dark" : "light"}>
-              Recipient Username
-            </Label>
-            <Controller
-              name="username"
-              control={control}
-              rules={{ required: "Username is required" }}
-              render={({ field }) => (
-                <UsernameInput
-                  {...field}
-                  placeholder="Enter username"
-                  theme={darkMode ? "dark" : "light"}
-                  disabled={isValidating}
-                />
-              )}
-            />
-            {errors.username && (
-              <ErrorMessage>{errors.username.message}</ErrorMessage>
-            )}
-          </WalletSelector>
         </WalletSection>
 
-        <TransferButton
+        <WithdrawalButton
           type="submit"
-          disabled={isSubmitting || !isValidUsername}
+          disabled={isSubmitting || !isWithdrawalAllowed}
         >
-          <FaWallet /> {isSubmitting ? "Transferring..." : "Transfer"}
-        </TransferButton>
-      </TransferForm>
-    </TransferContainer>
+          <FaWallet /> {isSubmitting ? "Withdrawing..." : "Withdraw"}
+        </WithdrawalButton>
+      </WithdrawalForm>
+    </WithdrawalContainer>
   );
 };
 
-export default TransferComponent;
+export default WithdrawalComponent;

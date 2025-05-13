@@ -1,4 +1,9 @@
-import { ICheckWalletQuery, IUserDirectsQuery } from "@/types";
+import {
+  ICheckWalletQuery,
+  IGetAllFundTransactionQuery,
+  IUserDirectsQuery,
+} from "@/types";
+import { VerifyParamsKeys } from "siwe";
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -62,8 +67,9 @@ interface Routes {
     FUND: {
       VERIFY: string;
       CONVERT: string;
-      TRANSFER:string;
-      GET_ALL: string;
+      TRANSFER: string;
+      WITHDRAWAL: string;
+      GET_ALL: (params: IGetAllFundTransactionQuery) => string;
       DIRECT_TRANSFER: string;
     };
     INCOME: {
@@ -193,8 +199,20 @@ export const ROUTES: Routes = {
     FUND: {
       VERIFY: `${API_URL}/api/fund/transactions/verify`,
       CONVERT: `${API_URL}/api/fund/convert/user`,
-      TRANSFER:`${API_URL}/api/fund/transfer/user`,
-      GET_ALL: `${API_URL}/api/transaction/fund/all`,
+      TRANSFER: `${API_URL}/api/fund/transfer/user`,
+      WITHDRAWAL: `${API_URL}/api/fund/withdrawal/user`,
+      GET_ALL: (params: IGetAllFundTransactionQuery) => {
+        const query = new URLSearchParams();
+        (Object.keys(params) as (keyof IGetAllFundTransactionQuery)[]).forEach(
+          (param) => {
+            const value = params[param];
+            if (value !== undefined && value !== null) {
+              query.append(param, String(value));
+            }
+          }
+        );
+        return `${API_URL}/api/fund/transactions?${query.toString()}`;
+      },
       DIRECT_TRANSFER: `${API_URL}/api/transaction/direct-fund-transfer`,
     },
     INCOME: {
