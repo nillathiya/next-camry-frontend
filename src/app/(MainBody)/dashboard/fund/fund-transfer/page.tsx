@@ -28,6 +28,7 @@ import {
 } from "./TransferComponentStyles";
 import { FUND_TX_TYPE } from "@/lib/fundType";
 import { fundTransferAsync } from "@/redux-toolkit/slices/fundSlice";
+import { Spinner } from "reactstrap";
 import { debounce } from "lodash"; // Add lodash for debouncing
 
 // Types
@@ -44,7 +45,8 @@ const TransferComponent: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isValidUsername, setIsValidUsername] = useState<boolean>(false);
   const [isValidating, setIsValidating] = useState(false);
-  const { value: fundTransferWallets, loading:fundTransferWalletLoading } = useFundTransferWallets();
+  const { value: fundTransferWallets, loading: fundTransferWalletLoading } =
+    useFundTransferWallets();
   const filteredFundTransferWallets = fundTransferWallets?.filter(
     (wallet) => wallet.status
   );
@@ -176,11 +178,19 @@ const TransferComponent: React.FC = () => {
     }
   };
 
-  if(fundTransferWalletLoading){
-    return <div className="p-4">Loadin...</div>;
+  if (fundTransferWalletLoading) {
+    return (
+      <div className="text-center p-4">
+        <Spinner color="primary">Loading...</Spinner>
+      </div>
+    );
   }
   if (settingsLoading || userLoading) {
-    return <div className="p-4">Loading wallet data...</div>;
+    return (
+      <div className="text-center p-4">
+        <Spinner color="primary">Loading wallet data...</Spinner>
+      </div>
+    );
   }
 
   if (settingsError || userError) {

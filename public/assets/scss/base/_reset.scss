@@ -677,8 +677,9 @@ $btn-color in (primary, $primary-color),
 }
 
 .btn-secondary {
-  background-color: var(--theme-secondary) !important;
-  border-color: var(--theme-secondary) !important;
+  background-color: #F99B0D !important;
+  border: none;
+  // border-color: var(--theme-secondary) !important;
 }
 
 // button effect
