@@ -1,7 +1,7 @@
 "use client";
 
 import { Icon } from "@iconify/react/dist/iconify.js";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import io from "socket.io-client";
 import axios from "axios";
@@ -23,6 +23,7 @@ const ChatMessageLayer = () => {
   const [description, setDescription] = useState("");
   const [unreadTickets, setUnreadTickets] = useState(new Set());
   const [statusFilter, setStatusFilter] = useState("open");
+  const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef(null);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -41,125 +42,13 @@ const ChatMessageLayer = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Socket and tickets setup
-  useEffect(() => {
-    if (!userId) return;
-
-    fetchTickets();
-
-    // Register user on socket connection
-    socket.emit("register", userId);
-
-    // Handle socket connection/reconnection
-    socket.on("connect", () => {
-      console.log("Socket connected");
-      socket.emit("register", userId);
-    });
-
-    // Handle new messages
-    socket.on("newMessage", (data) => {
-      console.log("New message received:", data);
-      console.log("selectedTicket", selectedTicket);
-      if (selectedTicket && selectedTicket._id === data.ticketId) {
-        setMessages((prev) => {
-          const messageExists = prev.some(
-            (msg) =>
-              msg._id === data._id ||
-              (msg.text === data.text && msg.createdAt === data.createdAt)
-          );
-          console.log("messageExists", messageExists);
-          if (messageExists) return prev;
-          const updatedMessages = [...prev, data];
-          console.log("Updated Messages", updatedMessages);
-          return updatedMessages;
-        });
-        // Update tickets state to sync messages
-        setTickets((prev) =>
-          prev.map((ticket) =>
-            ticket._id === data.ticketId
-              ? { ...ticket, messages: [...(ticket.messages || []), data] }
-              : ticket
-          )
-        );
-        if (data.sender === "user") {
-          console.log("Seen request sent by user");
-          socket.emit("seenRequest", {
-            ticketId: data.ticketId,
-            sender: data.sender,
-          });
-        }
-      } else {
-        setUnreadTickets((prev) => {
-          const updated = new Set(prev);
-          updated.add(data.ticketId);
-          return updated;
-        });
-      }
-    });
-
-    // Handle messages read
-    socket.on("messagesRead", ({ ticketId }) => {
-      console.log("Messages read by user:", ticketId);
-      if (selectedTicket?._id === ticketId) {
-        setMessages((prevMessages) =>
-          prevMessages.map((msg) => ({ ...msg, isRead: true }))
-        );
-      }
-      setTickets((prevTickets) =>
-        prevTickets.map((t) =>
-          t._id === ticketId ? { ...t, unreadMessages: { admin: 0 } } : t
-        )
-      );
-    });
-
-    // Handle seen request
-    socket.on("seenRequest", ({ ticketId }) => {
-      console.log("Seen request received for ticket:", ticketId);
-      if (selectedTicket?._id === ticketId) {
-        setMessages((prevMessages) =>
-          prevMessages.map((msg) => ({ ...msg, isRead: true }))
-        );
-        socket.emit("seen", { ticketId, sender: "user" });
-      }
-      setTickets((prevTickets) =>
-        prevTickets.map((t) =>
-          t._id === ticketId ? { ...t, unreadMessages: { admin: 0 } } : t
-        )
-      );
-    });
-
-    // Handle seen confirmation
-    socket.on("seen", ({ ticketId }) => {
-      console.log("Seen event triggered for ticket:", ticketId);
-      if (selectedTicket?._id === ticketId) {
-        setMessages((prevMessages) =>
-          prevMessages.map((msg) => ({ ...msg, isRead: true }))
-        );
-      }
-      setUnreadTickets((prev) => {
-        const updated = new Set(prev);
-        updated.delete(ticketId);
-        return updated;
-      });
-    });
-
-    // Cleanup socket listeners
-    return () => {
-      socket.off("connect");
-      socket.off("newMessage");
-      socket.off("messagesRead");
-      socket.off("seenRequest");
-      socket.off("seen");
-    };
-  }, [userId, selectedTicket]);
-
   // Fetch all tickets
-  const fetchTickets = async () => {
+  const fetchTickets = useCallback(async () => {
     try {
       const response = await axios.get(`${API_URL}/api/tickets/user/${userId}`);
       const fetchedTickets = response.data.tickets;
-      console.log("Fetched tickets:", fetchedTickets);
       setTickets(fetchedTickets);
+      
       const unreadSet = new Set();
       fetchedTickets.forEach((ticket) => {
         if (ticket.unreadMessages?.user > 0) {
@@ -169,12 +58,12 @@ const ChatMessageLayer = () => {
       setUnreadTickets(unreadSet);
     } catch (error) {
       console.error("Error fetching tickets:", error);
-      toast.error(error || "Failed to fetch tickets");
+      toast.error(error?.response?.data?.message || "Failed to fetch tickets");
     }
-  };
+  }, [userId]);
 
   // Fetch messages for a specific ticket
-  const fetchMessages = async (ticket) => {
+  const fetchMessages = useCallback(async (ticket) => {
     try {
       setSelectedTicket(ticket);
       setUnreadTickets((prev) => {
@@ -192,57 +81,135 @@ const ChatMessageLayer = () => {
         `${API_URL}/api/tickets/${ticket._id}/messages?role=user`
       );
 
-      console.log("response", response);
       if (response.data.status === "success") {
-        console.log("Fetched messages:", response.data.data.messages);
         setMessages(response.data.data.messages);
       } else {
-        console.error("Failed to fetch messages:", response.data.error);
         toast.error("Failed to fetch messages");
       }
     } catch (error) {
       console.error("Error fetching messages:", error);
       toast.error("Error fetching messages");
     }
-  };
+  }, [userId]);
+
+  // Socket and tickets setup
+  useEffect(() => {
+    if (!userId) return;
+
+    fetchTickets();
+
+    // Register user on socket connection
+    socket.emit("register", userId);
+
+    // Handle socket connection/reconnection
+    const handleConnect = () => {
+      socket.emit("register", userId);
+    };
+
+    // Handle new messages
+    const handleNewMessage = (data) => {
+      if (selectedTicket && selectedTicket._id === data.ticketId) {
+        setMessages((prev) => {
+          // Check for optimistic message by text and sender
+          const optimisticIndex = prev.findIndex(
+            msg => 
+              msg._id && // Add check for _id existence
+              typeof msg._id === 'string' &&
+              msg._id.startsWith("temp-") && 
+              msg.text && msg.text.trim() === data.text.trim() && 
+              msg.sender === data.sender
+          );
+    
+          if (optimisticIndex !== -1) {
+            // Replace optimistic message with server message
+            const updated = [...prev];
+            updated[optimisticIndex] = data;
+            return updated;
+          }
+    
+          // Check for duplicate server message
+          if (prev.some(msg => msg._id === data._id)) {
+            return prev;
+          }
+    
+          return [...prev, data];
+        });
+    
+        // Mark as seen if message is from admin
+        if (data.sender === "admin") {
+          socket.emit("seenRequest", {
+            ticketId: data.ticketId,
+            sender: "user",
+          });
+        }
+      } else {
+        // Add to unread if not the current ticket
+        setUnreadTickets((prev) => new Set(prev).add(data.ticketId));
+      }
+    };
+
+    // Handle messages read
+    const handleMessagesRead = ({ ticketId }) => {
+      if (selectedTicket?._id === ticketId) {
+        setMessages((prev) => prev.map(msg => ({ ...msg, isRead: true })));
+      }
+    };
+
+    // Handle seen confirmation
+    const handleSeen = ({ ticketId }) => {
+      if (selectedTicket?._id === ticketId) {
+        setMessages((prev) => prev.map(msg => ({ ...msg, isRead: true })));
+      }
+      setUnreadTickets((prev) => {
+        const updated = new Set(prev);
+        updated.delete(ticketId);
+        return updated;
+      });
+    };
+
+    socket.on("connect", handleConnect);
+    socket.on("newMessage", handleNewMessage);
+    socket.on("messagesRead", handleMessagesRead);
+    socket.on("seen", handleSeen);
+
+    return () => {
+      socket.off("connect", handleConnect);
+      socket.off("newMessage", handleNewMessage);
+      socket.off("messagesRead", handleMessagesRead);
+      socket.off("seen", handleSeen);
+    };
+  }, [userId, selectedTicket, fetchTickets]);
 
   // Send a message
   const sendMessage = async (e) => {
     e.preventDefault();
-    if (!input.trim() || !selectedTicket) return;
+    if (!input.trim() || !selectedTicket || isSending) return;
     if (selectedTicket.status === "completed") {
       return toast.error("Cannot send messages in a closed/completed ticket");
     }
 
+    setIsSending(true);
+    const tempId = `temp-${Date.now()}`;
     const newMessage = {
       ticketId: selectedTicket._id,
-      text: input,
+      text: input.trim(),
       sender: "user",
       isRead: false,
       createdAt: new Date().toISOString(),
-      _id: `temp-${Date.now()}`, // Temporary ID for optimistic update
+      _id: tempId,
     };
 
     try {
-      console.log("Sending message:", newMessage);
-      // Optimistically update messages and tickets
+      // Optimistically update messages
       setMessages((prev) => [...prev, newMessage]);
-      setTickets((prev) =>
-        prev.map((ticket) =>
-          ticket._id === selectedTicket._id
-            ? { ...ticket, messages: [...(ticket.messages || []), newMessage] }
-            : ticket
-        )
-      );
+      setInput("");
 
-      const response = await axios.post(`${API_URL}/api/tickets/message/send`, {
+      await axios.post(`${API_URL}/api/tickets/message/send`, {
         ticketId: selectedTicket._id,
-        text: input,
+        text: input.trim(),
         sender: "user",
       });
-      console.log("Send message response:", response.data);
 
-      setInput("");
       socket.emit("seenRequest", {
         ticketId: selectedTicket._id,
         sender: "user",
@@ -250,20 +217,10 @@ const ChatMessageLayer = () => {
     } catch (error) {
       console.error("Error sending message:", error);
       // Revert optimistic update
-      setMessages((prev) => prev.filter((msg) => msg._id !== newMessage._id));
-      setTickets((prev) =>
-        prev.map((ticket) =>
-          ticket._id === selectedTicket._id
-            ? {
-                ...ticket,
-                messages: ticket.messages.filter(
-                  (msg) => msg._id !== newMessage._id
-                ),
-              }
-            : ticket
-        )
-      );
+      setMessages((prev) => prev.filter((msg) => msg._id !== tempId));
       toast.error("Failed to send message");
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -281,22 +238,15 @@ const ChatMessageLayer = () => {
         title,
         description,
       });
-      console.log("Created ticket:", response.data.ticket);
       setTickets((prev) => [...prev, response.data.ticket]);
       setTitle("");
       setDescription("");
       toast.success("Ticket created successfully");
+      fetchMessages(response.data.ticket); // Auto-select the new ticket
     } catch (error) {
       console.error("Error creating ticket:", error);
       toast.error("Failed to create ticket");
     }
-  };
-
-  // Handle status filter change
-  const handleFilterChanges = (e) => {
-    const value = e.target.value;
-    setStatusFilter(value);
-    fetchTickets();
   };
 
   // Update ticket status
@@ -321,7 +271,7 @@ const ChatMessageLayer = () => {
     if (filteredTickets.length > 0 && !selectedTicket) {
       fetchMessages(filteredTickets[0]);
     }
-  }, [filteredTickets]);
+  }, [filteredTickets, fetchMessages, selectedTicket]);
 
   return (
     <>
@@ -346,17 +296,15 @@ const ChatMessageLayer = () => {
               </div>
               <div className="action">
                 <div className="filter_ticket_section mb-4">
-                  <form className="flex items-center gap-3 form-input">
-                    <select
-                      name="statusFilter"
-                      value={statusFilter}
-                      onChange={handleFilterChanges}
-                      className="ticket_filter_select border border-gray-300 dark:border-gray-600 p-2 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
-                    >
-                      <option value="open">Open</option>
-                      <option value="completed">Completed</option>
-                    </select>
-                  </form>
+                  <select
+                    name="statusFilter"
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="ticket_filter_select border border-gray-300 dark:border-gray-600 p-2 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                  >
+                    <option value="open">Open</option>
+                    <option value="completed">Completed</option>
+                  </select>
                 </div>
               </div>
             </div>
@@ -369,8 +317,6 @@ const ChatMessageLayer = () => {
               </span>
               <input
                 type="text"
-                name="#0"
-                autoComplete="off"
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -445,10 +391,9 @@ const ChatMessageLayer = () => {
                   </div>
 
                   <div className="chat-message-list">
-                    {console.log("Messages to render:", messages)}
                     {messages.map((msg) => (
                       <p
-                        key={msg._id || msg.createdAt}
+                        key={msg._id}
                         className={`p-2 rounded mb-2 d-flex justify-content-${
                           msg.sender === "user" ? "end" : "start"
                         }`}
@@ -467,7 +412,6 @@ const ChatMessageLayer = () => {
                         </span>
                       </p>
                     ))}
-
                     <div ref={messagesEndRef} />
                   </div>
                   <form className="chat-message-box">
@@ -476,17 +420,17 @@ const ChatMessageLayer = () => {
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && sendMessage(e)}
-                      name="chatMessage"
                       placeholder="Type message here..."
+                      disabled={isSending}
                     />
                     <div className="chat-message-box-action">
                       <button
                         type="submit"
                         onClick={sendMessage}
-                        disabled={!input.trim()}
+                        disabled={!input.trim() || isSending}
                         className="btn btn-sm btn-primary-600 radius-8 d-inline-flex align-items-center gap-1"
                       >
-                        Send
+                        {isSending ? "Sending..." : "Send"}
                         <Icon icon="f7:paperplane" />
                       </button>
                     </div>
@@ -513,11 +457,13 @@ const ChatMessageLayer = () => {
               placeholder="Title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              required
             />
             <textarea
               placeholder="Description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              required
             ></textarea>
             <div>
               <button type="submit" className="createButton">
