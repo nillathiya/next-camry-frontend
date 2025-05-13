@@ -27,6 +27,7 @@ import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
 import { FUND_TX_TYPE } from "@/lib/fundType";
 import { fundConvertAsync } from "@/redux-toolkit/slices/fundSlice";
 import { getWalletSettingsAsync } from "@/redux-toolkit/slices/settingSlice";
+import { Spinner } from "reactstrap";
 
 // Types
 interface SwapFormData {
@@ -89,11 +90,19 @@ const SwapComponent: React.FC = () => {
   ]);
 
   if (fundConvertWalletLoading) {
-    return <div className="p-4">Loading...</div>;
+    return (
+      <div className="text-center p-4">
+        <Spinner color="primary">Loading...</Spinner>
+      </div>
+    );
   }
 
   if (settingsLoading || userLoading) {
-    return <div className="p-4">Loading wallet data...</div>;
+    return (
+      <div className="text-center p-4">
+        <Spinner color="primary">Loading wallet data...</Spinner>
+      </div>
+    );
   }
 
   if (settingsError || userError) {

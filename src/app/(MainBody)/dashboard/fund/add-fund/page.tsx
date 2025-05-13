@@ -15,6 +15,7 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
+  Spinner,
 } from "reactstrap";
 import {
   useAccount,
@@ -72,7 +73,7 @@ const AddFund = () => {
   const companyTokenContract = useCompanyTokenContract();
 
   console.log("addFundWallet", addFundWallet);
-  console.log("companyCurrency",companyCurrency);
+  console.log("companyCurrency", companyCurrency);
 
   const { writeContractAsync, isPending: isWriting } = useWriteContract();
 
@@ -354,11 +355,13 @@ const AddFund = () => {
                 <ConnectButton />
               </div>
               {isWalletLoading || addFundWalletLoading ? (
-                <SkeletonLoader />
+                <div className="text-center">
+                  <Spinner color="primary">Loading...</Spinner>
+                </div>
               ) : (
                 <>
-                  <div className="row mb-4">
-                    <div className="col-md-6">
+                  <div className="row mb-1">
+                    <div className="col-md-12">
                       <Card className="p-3">
                         <h5>
                           {addFundWallet

@@ -29,6 +29,7 @@ import {
 } from "./WithdrawalComponentStyle";
 import { FUND_TX_TYPE } from "@/lib/fundType";
 import { fundWithdrawalAsync } from "@/redux-toolkit/slices/fundSlice";
+import { Spinner } from "reactstrap";
 
 // Types
 interface WithdrawalFormData {
@@ -94,9 +95,9 @@ const WithdrawalComponent: React.FC = () => {
   // Check if withdrawal is allowed based on the current day
   useEffect(() => {
     if (fundWithdrawalWalletLoading || fundWithdrawalDayLoading) return;
-  
+
     if (!fundWithdrawalDays || fundWithdrawalDays.length === 0) return;
-  
+
     const days = [
       "Sunday",
       "Monday",
@@ -106,17 +107,17 @@ const WithdrawalComponent: React.FC = () => {
       "Friday",
       "Saturday",
     ];
-  
+
     const today = new Date();
     const dayName = days[today.getDay()];
-  
+
     const isAllowed = fundWithdrawalDays.some(
       (day) => day.toLowerCase() === dayName.toLowerCase()
     );
-  
+
     console.log("fundWithdrawalDays", fundWithdrawalDays);
     console.log("isAllowed", isAllowed);
-  
+
     if (isAllowed) {
       setIsWithdrawalAllowed(true);
     } else {
@@ -125,8 +126,11 @@ const WithdrawalComponent: React.FC = () => {
         `Withdrawals are only allowed on: ${fundWithdrawalDays.join(", ")}.`
       );
     }
-  }, [fundWithdrawalWalletLoading, fundWithdrawalDayLoading, fundWithdrawalDays]);
-  
+  }, [
+    fundWithdrawalWalletLoading,
+    fundWithdrawalDayLoading,
+    fundWithdrawalDays,
+  ]);
 
   const onSubmit = async (data: WithdrawalFormData) => {
     if (!isWithdrawalAllowed) {
@@ -175,11 +179,19 @@ const WithdrawalComponent: React.FC = () => {
   };
 
   if (fundWithdrawalWalletLoading || fundWithdrawalDayLoading) {
-    return <div className="p-4">Loading...</div>;
+    return (
+      <div className="text-center p-4">
+        <Spinner color="primary">Loading...</Spinner>
+      </div>
+    );
   }
 
   if (settingsLoading || userLoading) {
-    return <div className="p-4">Loading wallet data...</div>;
+    return (
+      <div className="text-center p-4">
+        <Spinner color="primary">Loading wallet data...</Spinner>
+      </div>
+    );
   }
 
   if (settingsError || userError) {
