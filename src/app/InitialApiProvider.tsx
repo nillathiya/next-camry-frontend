@@ -1,6 +1,8 @@
 // app/InitialApiProvider.tsx
 "use client";
 
+import { API_URL } from "@/api/route";
+import { useCompanyFavicon, useCompanyName } from "@/hooks/useCompanyInfo";
 import InterceptorInitializer from "@/lib/InterceptorInitializer";
 import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
 import {
@@ -22,6 +24,25 @@ const InitialApiProvider: React.FC<InitialApiProviderProps> = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
+  const appName = useCompanyName() || "Default App";
+  const favicon = useCompanyFavicon() || "/favicon.ico";
+  // Set document title and favicon
+  useEffect(() => {
+    if (appName && favicon) {
+      document.title = appName;
+
+      let link = document.querySelector(
+        "link[rel~='icon']"
+      ) as HTMLLinkElement | null;
+      if (!link) {
+        link = document.createElement("link") as HTMLLinkElement;
+        link.rel = "icon";
+        document.head.appendChild(link);
+      }
+      link.href = `${API_URL}${favicon}`;
+    }
+  }, [appName, favicon]);
+
   useEffect(() => {
     let isMounted = true;
     let timeoutId: NodeJS.Timeout;
@@ -31,9 +52,9 @@ const InitialApiProvider: React.FC<InitialApiProviderProps> = ({
         if (websiteSettings.length === 0) {
           await dispatch(getWebsiteSettingsAsync()).unwrap();
         }
-        if (companyInfo.length === 0) {
-          await dispatch(getCompanyInfoSettingsAsync()).unwrap();
-        }
+        // if (companyInfo.length === 0) {
+        await dispatch(getCompanyInfoSettingsAsync()).unwrap();
+        // }
       } catch (error) {
         console.error("Error fetching website settings:", error);
       }

@@ -28,7 +28,7 @@ const WelcomeCard = () => {
               <Button
                 color="primary"
                 className="btn-hover-effect btn-sm f-w-500"
-                href="../applications/ecommerce/pricing"
+                href="pricing"
               >
                 {UpgradePlan}
                 <svg className="svg-sprite">
