@@ -65,6 +65,7 @@ const DepositHistory = () => {
     };
     fetchConvertHistory();
   }, []);
+console.log("fundConvertHistory",fundConvertHistory);
 
   const filteredTx = useMemo(() => {
     if (!debouncedFilterText) return fundConvertHistory;
@@ -189,7 +190,7 @@ const DepositHistory = () => {
         },
         cell: (row) => {
           const status = row.status;
-
+        
           const label =
             status === 1
               ? "Confirmed"
@@ -198,7 +199,7 @@ const DepositHistory = () => {
               : status === 2
               ? "Rejected"
               : "N/A";
-
+        
           const colorClass =
             status === 1
               ? "btn btn-sm btn-success rounded-pill"
@@ -207,8 +208,21 @@ const DepositHistory = () => {
               : status === 2
               ? "btn btn-sm btn-danger rounded-pill"
               : "btn btn-sm btn-secondary rounded-pill";
-
-          return <span className={colorClass}>{label}</span>;
+        
+          return (
+            <span
+              className={colorClass}
+              style={{
+                whiteSpace: "nowrap",
+                fontSize: "13px",
+                padding: "4px 8px",
+                minWidth: "90px",
+                display: "inline-block",
+              }}
+            >
+              {label}
+            </span>
+          );
         },
         sortable: true,
       },
@@ -237,7 +251,7 @@ const DepositHistory = () => {
         </Label>
         <Input
           id="user-directs-search"
-          onChange={(e: React.ChangeEvent<HTMLFormElement>) =>
+          onChange={(e: React.ChangeEvent<HTMLFormElement | HTMLInputElement>) =>
             setFilterText(e.target.value)
           }
           type="search"

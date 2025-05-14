@@ -213,7 +213,20 @@ const DepositHistory = () => {
               ? "btn btn-sm btn-danger rounded-pill"
               : "btn btn-sm btn-secondary rounded-pill";
 
-          return <span className={colorClass}>{label}</span>;
+          return (
+            <span
+              className={colorClass}
+              style={{
+                whiteSpace: "nowrap",
+                fontSize: "13px",
+                padding: "4px 8px",
+                minWidth: "90px",
+                display: "inline-block",
+              }}
+            >
+              {label}
+            </span>
+          );
         },
         sortable: true,
       },
@@ -242,9 +255,9 @@ const DepositHistory = () => {
         </Label>
         <Input
           id="user-directs-search"
-          onChange={(e: React.ChangeEvent<HTMLFormElement>) =>
-            setFilterText(e.target.value)
-          }
+          onChange={(
+            e: React.ChangeEvent<HTMLFormElement | HTMLInputElement>
+          ) => setFilterText(e.target.value)}
           type="search"
           value={filterText}
           aria-label="Search user directs by username, name, email, contact, or wallet address"
