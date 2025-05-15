@@ -7,20 +7,43 @@ import {
   IFundTransferPayload,
   IFundWithdrawalPayload,
   IGetAllFundTransactionQuery,
+  IGetAllIncomeTransactionQuery,
+  IIncomeTransaction,
+  IncomeInfoDynamic,
 } from "@/types";
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 import { FUND_TX_TYPE } from "@/lib/fundType";
 
 interface FundState {
   fundTransactions: IFundTransaction[];
-  loading: boolean;
+  incomeTransaction: IIncomeTransaction[];
+  userIncomeInfo: IncomeInfoDynamic;
+  loading: {
+    verifyTransaction: boolean;
+    fundConvert: boolean;
+    fundTransfer: boolean;
+    fundWithdrawal: boolean;
+    getAllFundTransaction: boolean;
+    getAllIncomeTransaction: boolean;
+    getUserIncomeInfo: boolean;
+  };
   error: any;
 }
 
 const initialState: FundState = {
   fundTransactions: [],
-  loading: false,
+  incomeTransaction: [],
+  userIncomeInfo: {},
+  loading: {
+    verifyTransaction: false,
+    fundConvert: false,
+    fundTransfer: false,
+    fundWithdrawal: false,
+    getAllFundTransaction: false,
+    getAllIncomeTransaction: false,
+    getUserIncomeInfo: false,
+  },
   error: null,
 };
 
@@ -34,8 +57,9 @@ export const verifyTransactionAsync = createAsyncThunk(
       );
       return response.data;
     } catch (error: any) {
+      console.log("Verify transaction error", error);
       return rejectWithValue(
-        error.response?.data?.message || "An unknown error occurred"
+        error.response?.data?.message || "Failed to verify transaction"
       );
     }
   }
@@ -51,8 +75,9 @@ export const fundConvertAsync = createAsyncThunk(
       );
       return response.data;
     } catch (error: any) {
+      console.log("Fund convert error", error);
       return rejectWithValue(
-        error.response?.data?.message || "An unknown error occurred"
+        error.response?.data?.message || "Failed to convert fund"
       );
     }
   }
@@ -68,8 +93,9 @@ export const fundTransferAsync = createAsyncThunk(
       );
       return response.data;
     } catch (error: any) {
+      console.log("Fund transfer error", error);
       return rejectWithValue(
-        error.response?.data?.message || "An unknown error occurred"
+        error.response?.data?.message || "Failed to transfer fund"
       );
     }
   }
@@ -85,8 +111,9 @@ export const fundWithdrawalAsync = createAsyncThunk(
       );
       return response.data;
     } catch (error: any) {
+      console.log("Fund withdrawal error", error);
       return rejectWithValue(
-        error.response?.data?.message || "An unknown error occurred"
+        error.response?.data?.message || "Failed to withdraw fund"
       );
     }
   }
@@ -101,12 +128,47 @@ export const getAllFundTransactionAsync = createAsyncThunk(
       );
       return response.data;
     } catch (error: any) {
+      console.log("Get all fund transactions error", error);
       return rejectWithValue(
-        error.response?.data?.message || "An unknown error occurred"
+        error.response?.data?.message || "Failed to fetch fund transactions"
       );
     }
   }
 );
+
+export const getAllIncomeTransactionAsync = createAsyncThunk(
+  "fund/getAllIncomeTransaction",
+  async (params: IGetAllIncomeTransactionQuery, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get<IApiResponse<IIncomeTransaction[]>>(
+        ROUTES.TRANSACTION.INCOME.GET_ALL(params)
+      );
+      return response.data;
+    } catch (error: any) {
+      console.log("Get all fund transactions error", error);
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch fund transactions"
+      );
+    }
+  }
+);
+
+export const getUserIncomeInfoAsync = createAsyncThunk(
+  "fund/getUserIncomeInfo",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get<IApiResponse<IncomeInfoDynamic>>(
+        ROUTES.TRANSACTION.INCOME.GET_INFO
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch fund transactions"
+      );
+    }
+  }
+);
+
 const fundSlice = createSlice({
   name: "fund",
   initialState,
@@ -115,11 +177,11 @@ const fundSlice = createSlice({
     builder
       // verifyTransactionAsync
       .addCase(verifyTransactionAsync.pending, (state) => {
-        state.loading = true;
+        state.loading.verifyTransaction = true;
         state.error = null;
       })
       .addCase(verifyTransactionAsync.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loading.verifyTransaction = false;
         const updatedTx = action.payload.data;
         const exists = state.fundTransactions.some(
           (tx) => tx._id === updatedTx._id
@@ -132,17 +194,17 @@ const fundSlice = createSlice({
           : [...state.fundTransactions, updatedTx];
       })
       .addCase(verifyTransactionAsync.rejected, (state, action) => {
-        state.loading = false;
+        state.loading.verifyTransaction = false;
         state.error = action.payload as string;
       })
 
       // fundConvertAsync
       .addCase(fundConvertAsync.pending, (state) => {
-        state.loading = true;
+        state.loading.fundConvert = true;
         state.error = null;
       })
       .addCase(fundConvertAsync.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loading.fundConvert = false;
         const updatedTx = action.payload.data;
         const exists = state.fundTransactions.some(
           (tx) => tx._id === updatedTx._id
@@ -155,16 +217,17 @@ const fundSlice = createSlice({
           : [...state.fundTransactions, updatedTx];
       })
       .addCase(fundConvertAsync.rejected, (state, action) => {
-        state.loading = false;
+        state.loading.fundConvert = false;
         state.error = action.payload as string;
       })
+
       // fundTransferAsync
       .addCase(fundTransferAsync.pending, (state) => {
-        state.loading = true;
+        state.loading.fundTransfer = true;
         state.error = null;
       })
       .addCase(fundTransferAsync.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loading.fundTransfer = false;
         const updatedTx = action.payload.data;
         const exists = state.fundTransactions.some(
           (tx) => tx._id === updatedTx._id
@@ -177,17 +240,17 @@ const fundSlice = createSlice({
           : [...state.fundTransactions, updatedTx];
       })
       .addCase(fundTransferAsync.rejected, (state, action) => {
-        state.loading = false;
+        state.loading.fundTransfer = false;
         state.error = action.payload as string;
       })
 
       // fundWithdrawalAsync
       .addCase(fundWithdrawalAsync.pending, (state) => {
-        state.loading = true;
+        state.loading.fundWithdrawal = true;
         state.error = null;
       })
       .addCase(fundWithdrawalAsync.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loading.fundWithdrawal = false;
         const updatedTx = action.payload.data;
         const exists = state.fundTransactions.some(
           (tx) => tx._id === updatedTx._id
@@ -200,16 +263,17 @@ const fundSlice = createSlice({
           : [...state.fundTransactions, updatedTx];
       })
       .addCase(fundWithdrawalAsync.rejected, (state, action) => {
-        state.loading = false;
+        state.loading.fundWithdrawal = false;
         state.error = action.payload as string;
       })
+
       // getAllFundTransactionAsync
       .addCase(getAllFundTransactionAsync.pending, (state) => {
-        state.loading = true;
+        state.loading.getAllFundTransaction = true;
         state.error = null;
       })
       .addCase(getAllFundTransactionAsync.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loading.getAllFundTransaction = false;
         const fetchedTransactions = action.payload.data;
 
         const txMap = new Map(state.fundTransactions.map((tx) => [tx._id, tx]));
@@ -221,7 +285,35 @@ const fundSlice = createSlice({
         state.fundTransactions = Array.from(txMap.values());
       })
       .addCase(getAllFundTransactionAsync.rejected, (state, action) => {
-        state.loading = false;
+        state.loading.getAllFundTransaction = false;
+        state.error = action.payload as string;
+      })
+
+      // IGetAllIncomeTransactionQuery
+      .addCase(getAllIncomeTransactionAsync.pending, (state) => {
+        state.loading.getAllIncomeTransaction = true;
+        state.error = null;
+      })
+      .addCase(getAllIncomeTransactionAsync.fulfilled, (state, action) => {
+        state.loading.getAllIncomeTransaction = false;
+        state.incomeTransaction = action.payload.data;
+      })
+      .addCase(getAllIncomeTransactionAsync.rejected, (state, action) => {
+        state.loading.getAllIncomeTransaction = false;
+        state.error = action.payload as string;
+      })
+
+      // getUserIncomeInfoAsync
+      .addCase(getUserIncomeInfoAsync.pending, (state) => {
+        state.loading.getUserIncomeInfo = true;
+        state.error = null;
+      })
+      .addCase(getUserIncomeInfoAsync.fulfilled, (state, action) => {
+        state.loading.getUserIncomeInfo = false;
+        state.userIncomeInfo = action.payload.data;
+      })
+      .addCase(getUserIncomeInfoAsync.rejected, (state, action) => {
+        state.loading.getUserIncomeInfo = false;
         state.error = action.payload as string;
       });
   },
@@ -242,7 +334,7 @@ export const selectUserFundConvertHistory = (state: RootState) =>
     (tx) => tx.txType === FUND_TX_TYPE.FUND_CONVERT
   );
 
-export const selectUserFundWithdrwalHistory = (state: RootState) =>
+export const selectUserFundWithdrawalHistory = (state: RootState) =>
   (state.fund.fundTransactions || []).filter(
     (tx) => tx.txType === FUND_TX_TYPE.FUND_WITHDRAWAL
   );

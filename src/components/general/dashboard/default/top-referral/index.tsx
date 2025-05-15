@@ -15,10 +15,10 @@ const TopReferral = () => {
                 Up to $100 per referral
               </span>
             </h2>
-            <CommonDropdown
+            {/* <CommonDropdown
               dropdownItems={["Monthly", "Weekly", "Yearly"]}
               dropdownToggle="Generate Report"
-            />
+            /> */}
           </div>
         </CardHeader>
         <TopReferralBody />

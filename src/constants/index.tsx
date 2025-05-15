@@ -200,7 +200,6 @@ export const FontAwesomeListConst = "Font Awesome List";
 export const OrderListConst = "Order List";
 export const UnOrderListConst = "Unordered List";
 export const Href = "#javascript";
-export const ImagePath = "/assets/images";
 export const Dashboard = "Dashboard";
 export const Widgets = "Widgets";
 export const Summary = "Summary";
@@ -3125,4 +3124,7 @@ export const PeopleKnow: string = "Pepole You May Know";
 export const StarColorTwo = "#D77748";
 export const OutlineDarkAndLightAlerts = "Outline Dark And Light Alert";
 
+// Images
+export const ImagePath = "/assets/images";
 export const DefaultDirectUserImg: string = "/user/User.png";
+export const DefaultLogo="/logo/logo.png"

@@ -4,10 +4,12 @@ import {
   IApiResponse,
   ICheckWalletQuery,
   IGetUserGenerationPayload,
+  IOrder,
   IRegisterUserResponse,
   IUser,
   IUserDirectsQuery,
   IUserHierarchy,
+  IUserTopUpPayload,
   IUserWalletInfo,
   IWebsiteSettings,
   ProfileUpdatePayload,
@@ -21,8 +23,20 @@ export interface UserState {
   user: IUser | null;
   userWallet: IUserWalletInfo | null;
   userDirects: IUser[];
+  userOrders: IOrder[];
   hierarchy: IUserHierarchy[];
-  loading: boolean;
+  loading: {
+    getUserDirects: boolean;
+    getProfile: boolean;
+    getUserWallet: boolean;
+    registerUser: boolean;
+    web3Register: boolean;
+    updateProfile: boolean;
+    getUserHierarchy: boolean;
+    getUserNewsAndEvents: boolean;
+    topUpUser: boolean;
+    getUserOrders: boolean;
+  };
   error: any;
   newsEvents: INewsEvent[];
   newsThumbnails: string[];
@@ -33,8 +47,20 @@ const initialState: UserState = {
   user: null,
   userWallet: null,
   userDirects: [],
+  userOrders: [],
   hierarchy: [],
-  loading: false,
+  loading: {
+    getUserDirects: false,
+    getProfile: false,
+    getUserWallet: false,
+    registerUser: false,
+    web3Register: false,
+    updateProfile: false,
+    getUserHierarchy: false,
+    getUserNewsAndEvents: false,
+    topUpUser: false,
+    getUserOrders: false,
+  },
   error: null,
   newsEvents: [],
   newsThumbnails: [],
@@ -214,6 +240,39 @@ export const checkUsernameAsync = createAsyncThunk(
   }
 );
 
+export const userTopUpAsync = createAsyncThunk(
+  "user/userTopUp",
+  async (formData: IUserTopUpPayload, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.post<IApiResponse<IOrder>>(
+        ROUTES.USER.TOP_UP,
+        formData
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "An unknown error occurred"
+      );
+    }
+  }
+);
+
+export const getAllUserOrdersAsync = createAsyncThunk(
+  "user/getAllUserOrders",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get<IApiResponse<IOrder[]>>(
+        ROUTES.USER.GET_ORDERS
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "An unknown error occurred"
+      );
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState,
@@ -256,64 +315,64 @@ const userSlice = createSlice({
     builder
       // registerUserAsync
       .addCase(registerUserAsync.pending, (state) => {
-        state.loading = true;
+        state.loading.registerUser = true;
         state.error = null;
       })
       .addCase(registerUserAsync.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loading.registerUser = false;
         state.user = action.payload.data.user;
       })
       .addCase(registerUserAsync.rejected, (state, action) => {
-        state.loading = false;
+        state.loading.registerUser = false;
         state.error = action.payload as string;
       })
       // web3RegisterAsync
       .addCase(web3RegisterAsync.pending, (state) => {
-        state.loading = true;
+        state.loading.web3Register = true;
         state.error = null;
       })
       .addCase(web3RegisterAsync.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loading.web3Register = false;
         state.user = action.payload.data.user;
       })
       .addCase(web3RegisterAsync.rejected, (state, action) => {
-        state.loading = false;
+        state.loading.web3Register = false;
         state.error = action.payload as string;
       })
 
       // getUserWalletAsync
       .addCase(getUserWalletAsync.pending, (state) => {
-        state.loading = true;
+        state.loading.getUserWallet = true;
         state.error = null;
       })
       .addCase(getUserWalletAsync.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loading.getUserWallet = false;
         state.userWallet = action.payload.data;
       })
       .addCase(getUserWalletAsync.rejected, (state, action) => {
-        state.loading = false;
+        state.loading.getUserWallet = false;
         state.error = action.payload as string;
       })
       // getProfileAsync
       .addCase(getProfileAsync.pending, (state) => {
-        state.loading = true;
+        state.loading.getProfile = true;
         state.error = null;
       })
       .addCase(getProfileAsync.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loading.getProfile = false;
         state.user = action.payload.data;
       })
       .addCase(getProfileAsync.rejected, (state, action) => {
-        state.loading = false;
+        state.loading.getProfile = false;
         state.error = action.payload as string;
       })
       // updateProfileAsync
       .addCase(updateProfileAsync.pending, (state) => {
-        state.loading = true;
+        state.loading.updateProfile = true;
         state.error = null;
       })
       .addCase(updateProfileAsync.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loading.updateProfile = false;
         if (state.user) {
           state.user = {
             ...state.user,
@@ -326,46 +385,46 @@ const userSlice = createSlice({
         }
       })
       .addCase(updateProfileAsync.rejected, (state, action) => {
-        state.loading = false;
+        state.loading.updateProfile = false;
         state.error = action.payload as string;
       })
 
       // getUserDirectsAsync
       .addCase(getUserDirectsAsync.pending, (state) => {
-        state.loading = true;
+        state.loading.getUserDirects = true;
         state.error = null;
       })
       .addCase(getUserDirectsAsync.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loading.getUserDirects = false;
         state.userDirects = action.payload.data;
       })
       .addCase(getUserDirectsAsync.rejected, (state, action) => {
-        state.loading = false;
+        state.loading.getUserDirects = false;
         state.error = action.payload as string;
       })
 
       // getUserHierarchyAsync
       .addCase(getUserHierarchyAsync.pending, (state) => {
-        state.loading = true;
+        state.loading.getUserHierarchy = true;
         state.error = null;
       })
       .addCase(getUserHierarchyAsync.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loading.getUserHierarchy = false;
         state.hierarchy = action.payload.data;
       })
       .addCase(getUserHierarchyAsync.rejected, (state, action) => {
-        state.loading = false;
+        state.loading.getUserHierarchy = false;
         state.error = action.payload as string;
       })
 
       // getUserNewsAndEventsAsync
       .addCase(getUserNewsAndEventsAsync.pending, (state) => {
-        state.loading = true;
+        state.loading.getUserNewsAndEvents = true;
         state.error = null;
       })
       .addCase(getUserNewsAndEventsAsync.fulfilled, (state, action) => {
         console.log("Raw API response:", action.payload.data);
-        state.loading = false;
+        state.loading.getUserNewsAndEvents = false;
         state.newsEvents = action.payload.data;
         state.newsThumbnails = action.payload.data.map(
           (item) => item.thumbnail
@@ -375,7 +434,44 @@ const userSlice = createSlice({
         );
       })
       .addCase(getUserNewsAndEventsAsync.rejected, (state, action) => {
-        state.loading = false;
+        state.loading.getUserNewsAndEvents = false;
+        state.error = action.payload as string;
+      })
+
+      // userTopUpAsync
+      .addCase(userTopUpAsync.pending, (state) => {
+        state.loading.topUpUser = true;
+        state.error = null;
+      })
+      .addCase(userTopUpAsync.fulfilled, (state, action) => {
+        state.loading.topUpUser = false;
+        const newOrder = action.payload.data;
+        const exists = state.userOrders.some(
+          (order) => order._id === newOrder._id
+        );
+
+        state.userOrders = exists
+          ? state.userOrders.map((order) =>
+              order._id === newOrder._id ? newOrder : order
+            )
+          : [...state.userOrders, newOrder];
+      })
+      .addCase(userTopUpAsync.rejected, (state, action) => {
+        state.loading.topUpUser = false;
+        state.error = action.payload as string;
+      })
+
+      // getAllUserOrdersAsync
+      .addCase(getAllUserOrdersAsync.pending, (state) => {
+        state.loading.getUserOrders = true;
+        state.error = null;
+      })
+      .addCase(getAllUserOrdersAsync.fulfilled, (state, action) => {
+        state.loading.getUserOrders = false;
+        state.userOrders = action.payload.data;
+      })
+      .addCase(getAllUserOrdersAsync.rejected, (state, action) => {
+        state.loading.getUserOrders = false;
         state.error = action.payload as string;
       });
   },

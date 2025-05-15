@@ -1,5 +1,6 @@
 import { ChangeEventHandler } from "react";
 import { InputType } from "reactstrap/types/lib/Input";
+import { IPinSettings } from "./setting";
 
 export interface IUser {
   _id: string;
@@ -94,7 +95,7 @@ export interface IUser {
   position: number;
   reason?: string;
   status: number;
-  rank:number;
+  rank: number;
 }
 
 export interface ICheckWalletQuery {
@@ -147,18 +148,17 @@ export interface IUserProfile {
 export type ProfileUpdatePayload = Partial<IUserProfile> | FormData;
 export type ProfileUpdateType = "data" | "avatar";
 
-
 export interface IUserDirectsQuery {
   userId: string;
   limit?: number | string;
   sortOrder?: "asc" | "desc";
   sortBy?: string;
-  page?: number | string; 
+  page?: number | string;
 }
 
 export interface IGetUserGenerationPayload {
   userId: string;
-  maxDepth?:number;
+  maxDepth?: number;
 }
 
 export interface INewsEvent {
@@ -192,13 +192,45 @@ interface Hotlink {
   url: string;
   _id?: string;
 }
-export interface IUserHierarchy{
-  _id:string;
-  username:string;
-  name:string;
-  sponsorUCode:string;
+export interface IUserHierarchy {
+  _id: string;
+  username: string;
+  name: string;
+  sponsorUCode: string;
   planType: "unilevel" | "binary" | "matrix";
-  createdAt:string;
-  depth:number
+  createdAt: string;
+  depth: number;
 }
 export type IHierarchyNode = IUserHierarchy & { children: IHierarchyNode[] };
+
+export interface IUserTopUpPayload {
+  pinId: string;
+  amount?: number;
+  username?: string;
+}
+
+export interface IOrder {
+  _id:string;
+  uCode:
+    | string
+    | {
+        _id: string;
+        username: string;
+        name: string;
+      };
+  pinId: string | IPinSettings;
+  activeId: number;
+  txType: string;
+  bv: string;
+  pv?: string;
+  payOutStatus: number;
+  amount: number;
+  validity?: number;
+  status: number;
+  billingAddress?: string;
+  shippingAddress?: string;
+  orderDate?: Date;
+  paymentMethod?: string;
+  createdAt: string;
+  updatedAt: string;
+}

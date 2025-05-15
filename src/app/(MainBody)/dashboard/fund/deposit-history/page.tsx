@@ -45,7 +45,9 @@ const useDebounce = (value: string, delay: number) => {
 
 const DepositHistory = () => {
   const dispatch = useAppDispatch();
-  const { loading } = useAppSelector((state) => state.fund);
+  const {
+    loading: { getAllFundTransaction },
+  } = useAppSelector((state) => state.fund);
   const addFundHistory = useAppSelector(selectAddFundHistory);
   const { data: session } = useSession();
   const [filterText, setFilterText] = useState("");
@@ -242,7 +244,7 @@ const DepositHistory = () => {
           type="search"
           value={filterText}
           aria-label="Search user directs by username, name, email, contact, or wallet address"
-          disabled={loading}
+          disabled={getAllFundTransaction}
         />
         {filterText && debouncedFilterText !== filterText && (
           <span className="ms-2">Filtering...</span>
@@ -272,7 +274,7 @@ const DepositHistory = () => {
         </Button>
       </div>
     );
-  }, [filterText, debouncedFilterText, loading]);
+  }, [filterText, debouncedFilterText, getAllFundTransaction]);
 
   return (
     <Container fluid className="advance-init-table">
@@ -287,7 +289,7 @@ const DepositHistory = () => {
                 <DataTable
                   data={filteredTx}
                   columns={columns}
-                  progressPending={loading}
+                  progressPending={getAllFundTransaction}
                   progressComponent={
                     <Spinner color="primary">Loading...</Spinner>
                   }

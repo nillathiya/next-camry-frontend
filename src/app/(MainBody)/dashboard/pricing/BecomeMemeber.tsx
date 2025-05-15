@@ -1,63 +1,109 @@
-import { Button, Card, CardBody, Col, Row } from "reactstrap";
-import CommonCardHeader from "@/common-components/CommonCardHeader";
+"use client";
 
-interface BecomeMemberData {
-  type: string;
-  price: string;
-  benefit: string[];
-}
+import {
+  Button,
+  Card,
+  CardBody,
+  Col,
+  Row,
+  Table,
+  Spinner,
+  Alert,
+} from "reactstrap";
+import CommonCardHeader from "@/common-components/CommonCardHeader";
+import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
+import { useEffect, useState } from "react";
+import { getPinSettingsAsync } from "@/redux-toolkit/slices/settingSlice";
+import { userTopUpAsync } from "@/redux-toolkit/slices/userSlice";
+import { toast } from "react-toastify";
+
 const BecomeMember = () => {
-  const BecomeMemberData: BecomeMemberData[] = [
-    {
-      type: "standard",
-      price: "10",
-      benefit: ["xyx", "abc", "mym"],
-    },
-    {
-      type: "standard",
-      price: "10",
-      benefit: ["xyx", "abc", "mym"],
-    },
-    {
-      type: "standard",
-      price: "10",
-      benefit: ["xyx", "abc", "mym"],
-    },
-    {
-      type: "standard",
-      price: "10",
-      benefit: ["xyx", "abc", "mym"],
-    },
-  ];
+  const [error, setError] = useState("");
+  const {
+    pinSettings,
+    loading: { getPinSettings },
+  } = useAppSelector((state) => state.setting);
+  const {
+    loading: { topUpUser },
+  } = useAppSelector((state) => state.user);
+  const dispatch = useAppDispatch();
+  const [selectedPin, setSelectedPin] = useState("");
+
+  useEffect(() => {
+    const fetchPinSettings = async () => {
+      try {
+        await dispatch(getPinSettingsAsync()).unwrap();
+      } catch (error) {
+        setError(error || "Package Not Found");
+      }
+    };
+    fetchPinSettings();
+  }, []);
+
+  const handleTopUp = async (pinId: string) => {
+    try {
+      const formData = {
+        pinId,
+      };
+      await dispatch(userTopUpAsync(formData)).unwrap();
+      toast.success("Top-up successful!");
+
+      await dispatch(getPinSettingsAsync()).unwrap();
+    } catch (error) {
+      toast.error(error || "Server Error,Please Try Later");
+    }
+  };
   return (
     <Card>
       <CommonCardHeader title={"Become Member"} />
       <CardBody className="pricing-block">
         <Row>
-          {BecomeMemberData.map((item, index) => (
-            <Col lg="3" sm="6" className="box-col-3" key={index}>
-              <div className="pricingtable">
-                <div className="pricingtable-header">
-                  <h4 className="title">{item.type}</h4>
+          {getPinSettings ? (
+            <div className="text-center py-4">
+              <Spinner color="primary" />
+            </div>
+          ) : error ? (
+            <Alert color="danger" className="m-3">
+              {error}
+            </Alert>
+          ) : pinSettings.length === 0 ? (
+            <Alert color="info" className="m-3">
+              No directs found
+            </Alert>
+          ) : (
+            pinSettings.map((setting, index) => (
+              <Col lg="3" sm="6" className="box-col-3" key={index}>
+                <div className="pricingtable">
+                  <div className="pricingtable-header">
+                    <h4 className="title">{setting.name}</h4>
+                  </div>
+                  <div className="price-value">
+                    <span className="currency">$</span>
+                    <span className="amount">{setting.rateMin}</span>
+                    <span className="duration">/mo</span>
+                  </div>
+                  {setting.description && (
+                    <ul className="pricing-content">
+                      <li key={index}>{setting.description}</li>
+                    </ul>
+                  )}
+
+                  <div className="pricingtable-signup">
+                    <Button
+                      tag="a"
+                      size="lg"
+                      color="primary"
+                      href={"#"}
+                      disabled={topUpUser}
+                      onClick={() => handleTopUp(setting._id)}
+                    >
+                      {topUpUser ? <Spinner color="primary" /> : "Buy"}
+                    </Button>
+                  </div>
                 </div>
-                <div className="price-value">
-                  <span className="currency">$</span>
-                  <span className="amount">{item.price}</span>
-                  <span className="duration">/mo</span>
-                </div>
-                <ul className="pricing-content">
-                  {item.benefit.map((data, index) => (
-                    <li key={index}>{data}</li>
-                  ))}
-                </ul>
-                <div className="pricingtable-signup">
-                  <Button tag="a" size="lg" color="primary" href={"#"}>
-                    {"SignUp"}
-                  </Button>
-                </div>
-              </div>
-            </Col>
-          ))}
+              </Col>
+            ))
+          )}
         </Row>
       </CardBody>
     </Card>

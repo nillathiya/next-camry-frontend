@@ -1,4 +1,4 @@
-import { ImagePath } from "@/constants";
+import { DefaultLogo, ImagePath } from "@/constants";
 import Image from "next/image";
 import Link from "next/link";
 import { Grid } from "react-feather";
@@ -30,7 +30,11 @@ export default function LogoWrapper() {
           height={102}
           width={102}
           className="img-fluid"
-          src={`${API_URL}${companyLogo}`}
+          src={
+            companyLogo
+              ? `${API_URL}${companyLogo}`
+              : `${ImagePath}${DefaultLogo}`
+          }
           alt=""
         />
       </Link>

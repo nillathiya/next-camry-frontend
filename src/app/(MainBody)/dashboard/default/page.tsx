@@ -18,26 +18,26 @@ const MyAwesomeMap = dynamic(
 export default function DashboardDefault() {
   const dispatch = useAppDispatch();
   const {
-    loading: settingsLoading,
+    loading: { getWalletSettings },
     walletSettings,
     error: settingsError,
   } = useAppSelector((state) => state.setting);
   const {
-    loading: userLoading,
+    loading: { getUserWallet },
     userWallet,
     error: userError,
   } = useAppSelector((state) => state.user);
 
   useEffect(() => {
-    if (walletSettings.length === 0 && !settingsLoading) {
+    if (walletSettings.length === 0 && !getWalletSettings) {
       dispatch(getWalletSettingsAsync());
     }
-    if (userWallet === null && !userLoading) {
+    if (userWallet === null && !getUserWallet) {
       dispatch(getUserWalletAsync());
     }
   }, []);
 
-  if (settingsLoading || userLoading) {
+  if (getWalletSettings || getUserWallet) {
     return <div className="p-4">Loading wallet data...</div>;
   }
 

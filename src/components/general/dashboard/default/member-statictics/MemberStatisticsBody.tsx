@@ -1,13 +1,5 @@
 import { API_URL } from "@/api/route";
-import {
-  Action,
-  Authors,
-  Company,
-  DefaultDirectUserImg,
-  ImagePath,
-  Progress,
-} from "@/constants";
-import { DeleteEditIcon, MembersData } from "@/data/general/dashboard/default";
+import { DefaultDirectUserImg, ImagePath } from "@/constants";
 import { formatDate } from "@/lib/dateFormate";
 import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
 import { getUserDirectsAsync } from "@/redux-toolkit/slices/userSlice";
@@ -20,8 +12,9 @@ import { Input, Table, Spinner, Alert } from "reactstrap";
 const MemberStatisticsBody = () => {
   const dispatch = useAppDispatch();
   const { data: session } = useSession();
-  const { userDirects, loading } = useAppSelector((state) => state.user);
+  const { userDirects, loading: { getUserDirects } } = useAppSelector((state) => state.user);
   const [error, setError] = useState<string | null>(null);
+  const [hasFetched, setHasFetched] = useState(false);
 
   const fetchData = useCallback(async () => {
     if (!session?.user?.id) {
@@ -35,6 +28,7 @@ const MemberStatisticsBody = () => {
       };
       await dispatch(getUserDirectsAsync(params)).unwrap();
       setError(null);
+      setHasFetched(true);
     } catch (error: any) {
       console.error("Failed to fetch user directs:", error);
       const message =
@@ -43,15 +37,22 @@ const MemberStatisticsBody = () => {
           : error.message || "Failed to fetch data. Please try again.";
       setError(message);
     }
-  }, [dispatch, session?.user?.id]);
+  }, [session, dispatch]);
 
+  // Reset hasFetched on session change
   useEffect(() => {
-    if (userDirects.length === 0 && !loading) {
+    setHasFetched(false);
+    setError(null);
+  }, [session?.user?.id]);
+
+  // Fetch data when needed
+  useEffect(() => {
+    if (!hasFetched && !getUserDirects && userDirects.length === 0) {
       fetchData();
     }
-  }, [fetchData, userDirects.length, loading]);
+  }, [hasFetched, getUserDirects, userDirects, fetchData]);
 
-  // Get only 4 latest directs based on createdAt date
+  // Get only 4 latest directs
   const latestDirects = [...userDirects]
     .sort(
       (a, b) =>
@@ -59,7 +60,6 @@ const MemberStatisticsBody = () => {
     )
     .slice(0, 4);
 
-  // Determine progress bar color based on rank
   const getProgressColor = (rank: number): string => {
     if (rank >= 8) return "success";
     if (rank >= 5) return "primary";
@@ -70,7 +70,7 @@ const MemberStatisticsBody = () => {
   return (
     <div className="ard-body member-datatable p-0">
       <div className="datatable-wrapper datatable-loading no-footer sortable searchable fixed-columns">
-        {loading ? (
+        {getUserDirects ? (
           <div className="text-center py-4">
             <Spinner color="primary" />
           </div>
@@ -135,8 +135,8 @@ const MemberStatisticsBody = () => {
                         <div
                           className="progress-bar-animated progress-bar-striped"
                           role="progressbar"
-                          style={{ width: progress }}
-                          aria-valuenow={10}
+                          style={{ width: `${progress}%` }}
+                          aria-valuenow={progress}
                           aria-valuemin={0}
                           aria-valuemax={100}
                         />

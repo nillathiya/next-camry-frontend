@@ -1,6 +1,8 @@
 import {
   ICheckWalletQuery,
   IGetAllFundTransactionQuery,
+  IGetAllIncomeTransactionQuery,
+  IIncomeTransaction,
   IUserDirectsQuery,
 } from "@/types";
 import { VerifyParamsKeys } from "siwe";
@@ -58,6 +60,8 @@ interface Routes {
     GET_DETAILS_WITH_INVEST_INFO: string;
     ADD_MEMBER: string;
     SEND_AUTHENTICATED_OTP: string;
+    TOP_UP: string;
+    GET_ORDERS: string;
   };
   ORDER: {
     GET_ALL: string;
@@ -74,7 +78,8 @@ interface Routes {
       DIRECT_TRANSFER: string;
     };
     INCOME: {
-      GET_ALL: string;
+      GET_ALL: (params: IGetAllIncomeTransactionQuery) => string;
+      GET_INFO:string;
     };
   };
   SETTINGS: {
@@ -84,6 +89,7 @@ interface Routes {
     GET_WEBSITE_SETTINGS: string;
     GET_WALLET_SETTINGS: string;
     GET_COMPANY_INFO_SETTINGS: string;
+    GET_PIN_SETTINGS: string;
     UPDATE_USER_SETTING: (id: string) => string;
     UPDATE_ADMIN_SETTING: (id: string) => string;
     CREATE: string;
@@ -191,6 +197,8 @@ export const ROUTES: Routes = {
     GET_DETAILS_WITH_INVEST_INFO: `${API_URL}/api/user/details-with-investment`,
     ADD_MEMBER: `${API_URL}/api/user/create`,
     SEND_AUTHENTICATED_OTP: `${API_URL}/api/user/send-otp`,
+    TOP_UP: `${API_URL}/api/top-up`,
+    GET_ORDERS: `${API_URL}/api/user/orders`,
   },
   ORDER: {
     GET_ALL: `${API_URL}/api/orders/get-all`,
@@ -218,7 +226,19 @@ export const ROUTES: Routes = {
       DIRECT_TRANSFER: `${API_URL}/api/transaction/direct-fund-transfer`,
     },
     INCOME: {
-      GET_ALL: `${API_URL}/api/transaction/income/all`,
+      GET_ALL: (params: IGetAllIncomeTransactionQuery) => {
+        const query = new URLSearchParams();
+        (Object.keys(params) as (keyof IGetAllIncomeTransactionQuery)[]).forEach(
+          (param) => {
+            const value = params[param];
+            if (value !== undefined && value !== null) {
+              query.append(param, String(value));
+            }
+          }
+        );
+        return `${API_URL}/api/fund/income/?${query.toString()}`;
+      },
+      GET_INFO:`${API_URL}/api/fund/income/info`
     },
   },
   SETTINGS: {
@@ -228,6 +248,8 @@ export const ROUTES: Routes = {
     GET_WEBSITE_SETTINGS: `${API_URL}/api/website-setting/global`,
     GET_WALLET_SETTINGS: `${API_URL}/api/wallet-setting`,
     GET_COMPANY_INFO_SETTINGS: `${API_URL}/api/company-info`,
+    GET_RANK_SETTINGS:`${API_URL}/api/rank-setting`,
+    GET_PIN_SETTINGS: `${API_URL}/api/pin-setting`,
     UPDATE_USER_SETTING: (id: string) =>
       `${API_URL}/api/user-settings/update/${id}`,
     UPDATE_ADMIN_SETTING: (id: string) =>

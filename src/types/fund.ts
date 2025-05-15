@@ -41,6 +41,38 @@ export interface IFundTransaction {
   updatedAt: Date;
 }
 
+export interface IIncomeTransaction {
+  _id: string;
+  txUCode:
+    | string
+    | null
+    | {
+        _id: string;
+        username: string;
+        name: string;
+      };
+  uCode:
+    | string
+    | null
+    | {
+        _id: string;
+        username: string;
+        name: string;
+      };
+  txType?: string;
+  walletType?: string;
+  source?: string;
+  amount: number;
+  txCharge?: number;
+  postWalletBalance?: number;
+  currentWalletBalance?: number;
+  remark?: string;
+  response?: string;
+  status: number; // 0, 1, 2
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface IFundConvertPayload {
   amount: number;
   fromWalletType: string;
@@ -66,4 +98,13 @@ export interface IGetAllFundTransactionQuery {
   txType?: string;
   status?: string | string[];
   depositAccountType?: string;
+}
+
+export interface IGetAllIncomeTransactionQuery {
+  txType?: string;
+  status?: string | string[];
+}
+
+export interface IncomeInfoDynamic {
+  [slug: string]: number;
 }

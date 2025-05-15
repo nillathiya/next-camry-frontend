@@ -74,6 +74,7 @@ const AddFund = () => {
 
   console.log("addFundWallet", addFundWallet);
   console.log("companyCurrency", companyCurrency);
+  console.log("companyTokenContract",companyTokenContract);
 
   const { writeContractAsync, isPending: isWriting } = useWriteContract();
 
@@ -343,7 +344,13 @@ const AddFund = () => {
       </div>
     </div>
   );
-
+  console.log("isWriting", isWriting);
+  console.log("amountInput", amountInput);
+  console.log("isApprovalConfirming", isApprovalConfirming);
+  console.log("isDepositConfirming", isDepositConfirming);
+  console.log("transactionVerificationLoading", transactionVerificationLoading);
+  console.log("isMetaMaskOpen", isMetaMaskOpen);
+  console.log("isConnected", isConnected);
   return (
     <Container>
       <Row>
@@ -352,7 +359,14 @@ const AddFund = () => {
           <Card>
             <CardBody>
               <div className="d-flex justify-content-end mb-3">
-                <ConnectButton />
+                <ConnectButton
+                  chainStatus="icon"
+                  showBalance={false}
+                  accountStatus={{
+                    smallScreen: "avatar",
+                    largeScreen: "full",
+                  }}
+                />
               </div>
               {isWalletLoading || addFundWalletLoading ? (
                 <div className="text-center">

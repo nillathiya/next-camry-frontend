@@ -1,45 +1,74 @@
-import { ImagePath } from "@/constants";
-import { TopReferralProgressData, TopReferralWebsiteData } from "@/data/general/dashboard/default";
-import Image from "next/image";
-import { TrendingUp } from "react-feather";
-import { Badge, CardBody } from "reactstrap";
+import { useState } from "react";
+import { CardBody, Input, Button } from "reactstrap";
+import QRCode from "react-qr-code";
+import { toast } from "react-toastify";
+import { useSession } from "next-auth/react";
+import { useAppSelector } from "@/redux-toolkit/Hooks";
 
 const TopReferralBody = () => {
+  const { data: session } = useSession();
+  const referralLink = `${window.location.origin}?ref=${session?.user.username}`;
+  const { darkMode } = useAppSelector((state) => state.themeCustomizer);
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard
+      .writeText(referralLink)
+      .then(() => {
+        setIsCopied(true);
+        toast.success("Referral link copied!");
+        setTimeout(() => setIsCopied(false), 2000); // Reset after 2 seconds
+      })
+      .catch(() => {
+        toast.error("Failed to copy link");
+      });
+  };
+
   return (
     <CardBody className="pt-0">
-      <div className="referral-content">
-        <div className="referral-left-details">
-          <div className="d-flex gap-1">
-            <h2>129,900</h2>
-            <Badge color="light-warning">
-              <TrendingUp className="me-1"/>
-              4.5%
-            </Badge>
+      <div
+        className="referral-content"
+        style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+      >
+        <div className="referral-link-section">
+          <h6 className="f-w-500 mb-2">Your Referral Link</h6>
+          <div className="input-group">
+            <Input
+              type="text"
+              value={referralLink}
+              readOnly
+              className="form-control"
+              style={{ backgroundColor: darkMode ? "#1d1f27" : "#f8f9fa" }}
+            />
+            <Button
+              color={isCopied ? "success" : "primary"}
+              onClick={handleCopy}
+              style={{ minWidth: "100px" }}
+            >
+              {isCopied ? "Copied!" : "Copy"}
+            </Button>
           </div>
-          <span className="f-light f-12 f-w-500">vs. previous month</span>
         </div>
-        <div className="referral-image">
-          <img src={`${ImagePath}/dashboard/1.png`} alt="vector" />
+        <div className="referral-qr-section">
+          <h6 className="f-w-500 mb-2">QR Code</h6>
+          <div
+            style={{
+              background: "white",
+              padding: "16px",
+              display: "inline-block",
+              borderRadius: "8px",
+            }}
+          >
+            <QRCode
+              value={referralLink}
+              size={128}
+              bgColor="#ffffff"
+              fgColor="#000000"
+              level="Q"
+            />
+          </div>
         </div>
       </div>
-      <div className="progress-stacked referral-progress">
-        {TopReferralProgressData.map((item, i) => (
-          <div key={i} className="progress" role="progressbar" style={{ width: item.width }}>
-            <div className={`progress-bar bg-${item.color}`} />
-          </div>
-        ))}
-      </div>
-      <ul className="referral-list">
-        {TopReferralWebsiteData.map((item, i) => (
-          <li key={i}>
-            <div className={`activity-dot-${item.color}`} />
-            <a className="f-light f-w-500" href="../applications/search">
-              {item.website}
-            </a>
-            <span className="f-12 f-w-500">{item.percentage}</span>
-          </li>
-        ))}
-      </ul>
     </CardBody>
   );
 };

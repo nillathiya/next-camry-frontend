@@ -28,13 +28,13 @@ const tokenConfigs = {
   USDT: {
     name: "USDT",
     icon: "https://cdn.worldvectorlogo.com/logos/tether.svg",
-    decimals: 6, // Corrected to 6 decimals for USDT
+    decimals: 18, // Corrected to 6 decimals for USDT
     getAddress: (chainId: ChainId) => usdtAddresses[chainId] || "Not Supported",
   },
   USDC: {
     name: "USDC",
     icon: "https://images.vexels.com/media/users/3/135829/isolated/svg/1a857d341d8b6dd31426d6a62a8d9054.svg",
-    decimals: 6, // USDC typically has 6 decimals
+    decimals: 18, // USDC typically has 6 decimals
     getAddress: (chainId: ChainId) => usdcAddresses[chainId] || "Not Supported",
   },
 };

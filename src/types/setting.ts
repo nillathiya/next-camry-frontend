@@ -84,3 +84,26 @@ export interface ICompanyInfo {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface IPinSettings {
+  _id: string;
+  slug: string;
+  name: string;
+  rateMin?: number;
+  rateMax?: number;
+  description?: string;
+  type?: "fix" | "range";
+  roi?: number;
+  bv?: number;
+  pv?: number;
+  gst?: number;
+  status?: number;
+}
+
+export interface IRankSettings {
+  title?: string;
+  slug: string;
+  type?: string;
+  value: string[];
+  status: number;
+}
