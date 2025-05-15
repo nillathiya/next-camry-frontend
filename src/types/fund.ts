@@ -103,6 +103,7 @@ export interface IGetAllFundTransactionQuery {
 export interface IGetAllIncomeTransactionQuery {
   txType?: string;
   status?: string | string[];
+  source?:string
 }
 
 export interface IncomeInfoDynamic {

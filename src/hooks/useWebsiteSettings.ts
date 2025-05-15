@@ -68,3 +68,19 @@ export const useRegistrationWithOtp = (): string | undefined => {
   );
   return Array.isArray(registrationType) ? registrationType[0] : undefined;
 };
+
+export const useWeb3RegistrationWithUsdt = (): string | undefined => {
+  const registrationType = useCompanyInfo(
+    "Registration",
+    "web3_registration_with_usdt"
+  );
+  return Array.isArray(registrationType) ? registrationType[0] : undefined;
+};
+
+export const useWeb3RegistrationWithUsdtFees = (): number | undefined => {
+  const registrationType = useCompanyInfo(
+    "Registration",
+    "web3_registration_with_usdt_fees"
+  );
+  return registrationType ?? undefined;
+};

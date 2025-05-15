@@ -234,3 +234,8 @@ export interface IOrder {
   createdAt: string;
   updatedAt: string;
 }
+
+
+export interface IUserRankAndTeamMetric {
+  [slug: string]: number;
+}

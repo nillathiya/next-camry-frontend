@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Form,
   FormGroup,
@@ -21,12 +21,28 @@ import { toast } from "react-toastify";
 import {
   useWeb3RegistrationFields,
   useWeb3RegistrationWithOtp,
+  useWeb3RegistrationWithUsdt,
+  useWeb3RegistrationWithUsdtFees,
 } from "@/hooks/useWebsiteSettings";
+import {
+  useCompanyTokenContract,
+  useComapnyBscAddress,
+} from "@/hooks/useCompanyInfo";
 import countries from "i18n-iso-countries";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useSignMessage, useAccount } from "wagmi";
+import {
+  useSignMessage,
+  useAccount,
+  useReadContract,
+  useWriteContract,
+  useWaitForTransactionReceipt,
+  useChainId,
+} from "wagmi";
 import { SiweMessage } from "siwe";
 import { useOtp } from "@/hooks/useOtp";
+import { contractAbi } from "@/ABI/contract";
+import { abi as usdtAbi } from "@/ABI/usdtAbi";
+import { parseUnits, maxUint256 } from "viem";
 
 // Load English locale for country names
 countries.registerLocale(require("i18n-iso-countries/langs/en.json"));
@@ -106,13 +122,25 @@ const Web3RegistrationForm = ({
   const { signMessageAsync } = useSignMessage();
   const { address: connectedAddress, chain } = useAccount();
   const web3RegistrationWithOtp = useWeb3RegistrationWithOtp() || "no";
+  const web3RegistrationWithUsdt = useWeb3RegistrationWithUsdt();
+  const web3RegistrationWithUsdtFees = useWeb3RegistrationWithUsdtFees();
+  const tokenContract = useCompanyTokenContract();
+  const comapnyBscAddress = useComapnyBscAddress();
   const value = useWeb3RegistrationFields() || [];
   const [isOtpSent, setIsOtpSent] = useState<boolean>(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState<string | null>(
+    null
+  );
+  const searchParams = useSearchParams();
+  const ref = searchParams.get("ref");
+
   const initialFormData = value.reduce((acc, item) => {
     const [key] = item.split(":");
     if (key === "contactNumber") {
       acc[key] = "";
       acc["address"] = { country: "", countryCode: "" };
+    } else if (key === "sponsor") {
+      acc[key] = ref ? ref : "";
     } else {
       acc[key] = "";
     }
@@ -128,6 +156,22 @@ const Web3RegistrationForm = ({
   const walletAddress = connectedAddress || propAddress;
   // Use chainId from useAccount, fallback to propChainId or default to 56 (Binance Smart Chain)
   const chainId = chain?.id || propChainId || 56;
+
+  // USDT payment amount
+  const usdtfess = web3RegistrationWithUsdtFees ?? 1;
+  const AMOUNT = parseUnits(usdtfess.toString(), 18);
+
+  // Check USDT balance
+  const { data: usdtBalance } = useReadContract({
+    address: tokenContract,
+    abi: usdtAbi,
+    functionName: "balanceOf",
+    args: [walletAddress!],
+    query: { enabled: !!walletAddress && web3RegistrationWithUsdt === "yes" },
+  });
+
+  const { writeContractAsync } = useWriteContract();
+  const { waitForTransactionReceipt } = useWaitForTransactionReceipt();
 
   // Handle input changes
   const handleInputChange = (
@@ -177,9 +221,57 @@ const Web3RegistrationForm = ({
       toast.error("Failed to request OTP. Please try again.");
     }
   };
+  // Handle USDT payment
+  const handleUsdtPayment = async (): Promise<string> => {
+    if (!walletAddress || !tokenContract || comapnyBscAddress === undefined) {
+      throw new Error("Wallet or contract addresses missing");
+    }
+
+    if (usdtBalance && usdtBalance < AMOUNT) {
+      throw new Error("Insufficient USDT balance");
+    }
+
+    try {
+      // Approve USDT
+      setIsProcessingPayment("approving");
+      const approveHash = await writeContractAsync({
+        address: tokenContract,
+        abi: usdtAbi,
+        functionName: "approve",
+        args: [comapnyBscAddress, maxUint256],
+      });
+      await waitForTransactionReceipt({ hash: approveHash });
+      toast.success("USDT allowance approved!");
+
+      // Deposit USDT
+      setIsProcessingPayment("depositing");
+      const depositHash = await writeContractAsync({
+        address: comapnyBscAddress,
+        abi: contractAbi,
+        functionName: "package",
+        args: [AMOUNT],
+      });
+      await waitForTransactionReceipt({ hash: depositHash });
+      toast.success("Payment successful!");
+
+      return depositHash;
+    } catch (error: any) {
+      let message = "Transaction failed";
+      if (error?.message?.includes("User rejected")) {
+        message = "Transaction rejected by user";
+      } else if (error?.shortMessage) {
+        message = error.shortMessage;
+      }
+      console.log("message", message);
+      throw new Error(message);
+    } finally {
+      setIsProcessingPayment(null);
+    }
+  };
 
   // Handle form submission
   const regFormSubmitHandle = async (event: React.FormEvent) => {
+    console.log("Handle Register");
     event.preventDefault();
 
     if (!walletAddress || !chainId) {
@@ -188,11 +280,19 @@ const Web3RegistrationForm = ({
     }
 
     try {
+      let depositHash: string | undefined;
+
+      // Process USDT payment if required
+      if (web3RegistrationWithUsdt === "yes") {
+        depositHash = await handleUsdtPayment();
+      }
+
       // Register the user
       const registrationData = {
         ...regFormData,
         wallet_address: walletAddress,
         ...(web3RegistrationWithOtp === "yes" ? { otp: inputOtp } : {}),
+        ...(depositHash ? { hash: depositHash } : {}),
       };
 
       console.log("Registering user with data:", registrationData);
@@ -270,6 +370,7 @@ const Web3RegistrationForm = ({
   };
 
   console.log("regFormData:", regFormData);
+  console.log("isProcessingPayment", isProcessingPayment);
 
   return (
     <Container fluid className="p-0">
@@ -287,75 +388,96 @@ const Web3RegistrationForm = ({
             <Form className="theme-form" onSubmit={regFormSubmitHandle}>
               <h4>Create Account</h4>
               <p>Please provide details to register your wallet</p>
-              {formFields.map(({ key, label, type, required }) => (
-                <FormGroup key={key}>
-                  <Label className="col-form-label">{label}</Label>
-                  {type === "phone" ? (
-                    <PhoneInput
-                      international
-                      countryCallingCodeEditable={false}
-                      defaultCountry="IN"
-                      value={regFormData[key]}
-                      onChange={(value) =>
-                        handleInputChange(key, value || "", true)
-                      }
-                      placeholder={`Enter ${label.toLowerCase()}`}
-                      required={required}
-                      className="form-control"
-                    />
-                  ) : (
-                    <Input
-                      type={type}
-                      value={regFormData[key]}
-                      onChange={(event) =>
-                        handleInputChange(key, event.target.value)
-                      }
-                      placeholder={`Enter ${label.toLowerCase()}`}
-                      required={required}
-                    />
-                  )}
-                </FormGroup>
-              ))}
-
-              {web3RegistrationWithOtp === "yes" && (
+              {isProcessingPayment ? (
+                <div className="text-center">
+                  <p>
+                    {isProcessingPayment === "approving"
+                      ? "Approving USDT..."
+                      : "Processing Payment..."}
+                  </p>
+                  {/* Add a loader/spinner here if desired */}
+                </div>
+              ) : (
                 <>
-                  <FormGroup>
-                    <Label className="col-form-label">OTP</Label>
-                    <Input
-                      type="text"
-                      value={inputOtp}
-                      onChange={(event) => setInputOtp(event.target.value)}
-                      placeholder="Enter OTP"
-                      required
-                    />
-                  </FormGroup>
-                  {isOtpSent && timeRemaining !== "00:00" && (
-                    <FormGroup>
-                      <Label className="col-form-label">
-                        Time Remaining: {timeRemaining}
-                      </Label>
+                  {formFields.map(({ key, label, type, required }) => (
+                    <FormGroup key={key}>
+                      <Label className="col-form-label">{label}</Label>
+                      {type === "phone" ? (
+                        <PhoneInput
+                          international
+                          countryCallingCodeEditable={false}
+                          defaultCountry="IN"
+                          value={regFormData[key]}
+                          onChange={(value) =>
+                            handleInputChange(key, value || "", true)
+                          }
+                          placeholder={`Enter ${label.toLowerCase()}`}
+                          required={required}
+                          className="form-control"
+                        />
+                      ) : (
+                        <Input
+                          type={type}
+                          value={regFormData[key]}
+                          onChange={(event) =>
+                            handleInputChange(key, event.target.value)
+                          }
+                          placeholder={`Enter ${label.toLowerCase()}`}
+                          required={required}
+                        />
+                      )}
                     </FormGroup>
+                  ))}
+
+                  {web3RegistrationWithOtp === "yes" && (
+                    <>
+                      <FormGroup>
+                        <Label className="col-form-label">OTP</Label>
+                        <Input
+                          type="text"
+                          value={inputOtp}
+                          onChange={(event) => setInputOtp(event.target.value)}
+                          placeholder="Enter OTP"
+                          required
+                        />
+                      </FormGroup>
+                      {isOtpSent && timeRemaining !== "00:00" && (
+                        <FormGroup>
+                          <Label className="col-form-label">
+                            Time Remaining: {timeRemaining}
+                          </Label>
+                        </FormGroup>
+                      )}
+                      <FormGroup>
+                        <Button
+                          type="button"
+                          color="secondary"
+                          block
+                          onClick={handleRequestOtp}
+                          disabled={isLoading || timeRemaining !== "00:00"}
+                        >
+                          {isLoading ? "Sending OTP..." : "Request OTP"}
+                        </Button>
+                      </FormGroup>
+                    </>
                   )}
-                  <FormGroup>
-                    <Button
-                      type="button"
-                      color="secondary"
-                      block
-                      onClick={handleRequestOtp}
-                      disabled={isLoading || timeRemaining !== "00:00"}
-                    >
-                      {isLoading ? "Sending OTP..." : "Request OTP"}
-                    </Button>
-                  </FormGroup>
+                  <div className="form-group mb-0">
+                    <div className="text-end mt-3">
+                      <Button
+                        type="submit"
+                        color="primary"
+                        block
+                        disabled={isProcessingPayment !== null}
+                      >
+                        Register{" "}
+                        {web3RegistrationWithUsdt === "yes"
+                          ? `(${web3RegistrationWithUsdtFees} USDT)`
+                          : ""}
+                      </Button>
+                    </div>
+                  </div>
                 </>
               )}
-              <div className="form-group mb-0">
-                <div className="text-end mt-3">
-                  <Button type="submit" color="primary" block>
-                    Register
-                  </Button>
-                </div>
-              </div>
             </Form>
           </div>
         </Col>
