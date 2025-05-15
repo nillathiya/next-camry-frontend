@@ -925,6 +925,9 @@
     h2 {
         color: $white;
     }
+    .referral-qr-section{
+        margin-left: -120px;
+    }
 
     .offer-content {
         width: 66%;
@@ -940,24 +943,24 @@
     img {
         position: absolute;
         right: 10px;
-        bottom: 0;
-        width: 33%;
+        width: 40%;
 
         [dir="rtl"] & {
             right: unset;
             left: 10px;
         }
 
-        @media (max-width: 767px) {
-            width: 14%;
+        @media (max-width: 769px) {
+            width: 30% !important;
+            margin-right: 20px;
         }
 
         @media (max-width: 575px) {
-            width: 21%;
+            width: 40%;
         }
 
         @media (max-width: 420px) {
-            width: 28%;
+            width: 40%;
         }
     }
 
