@@ -59,7 +59,7 @@ const RecentOrders = () => {
     });
 
   return (
-    <Col xl="12" sm="6" className="col-xl-30 order-xl-ii customer-order">
+    <Col xl="12" sm="12" className="col-xl-30 order-xl-ii customer-order">
       <CardHeader className="card-no-border">
         <div className="header-top order-lists d-flex justify-content-between align-items-center">
           <h2>Plan History</h2>
@@ -95,7 +95,7 @@ const RecentOrders = () => {
                       className="mb-3 border p-3 rounded d-flex justify-content-between flex-wrap"
                     >
                       {/* Right Side: Name & Description */}
-                      <div className="text-end">
+                      <div className="text-start">
                         <h6 className="mb-1">{item.name}</h6>
                         <Badge color="light-primary">{item.description}</Badge>
                       </div>
