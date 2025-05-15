@@ -1,7 +1,6 @@
 "use client";
 
 import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
-import { getWalletSettingsAsync } from "@/redux-toolkit/slices/settingSlice";
 import { getUserWalletAsync } from "@/redux-toolkit/slices/userSlice";
 import dynamic from "next/dynamic";
 import { Suspense, useEffect } from "react";
@@ -29,9 +28,6 @@ export default function DashboardDefault() {
   } = useAppSelector((state) => state.user);
 
   useEffect(() => {
-    if (walletSettings.length === 0 && !getWalletSettings) {
-      dispatch(getWalletSettingsAsync());
-    }
     if (userWallet === null && !getUserWallet) {
       dispatch(getUserWalletAsync());
     }

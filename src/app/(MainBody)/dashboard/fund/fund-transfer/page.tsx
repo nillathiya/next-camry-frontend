@@ -11,7 +11,6 @@ import {
   getUserWalletAsync,
   checkUsernameAsync,
 } from "@/redux-toolkit/slices/userSlice";
-import { getWalletSettingsAsync } from "@/redux-toolkit/slices/settingSlice";
 import { useWalletSettings } from "@/hooks/useWalletSettings";
 import { useFundTransferWallets } from "@/hooks/useUserSettings";
 import {
@@ -81,9 +80,6 @@ const TransferComponent: React.FC = () => {
   const walletType = watch("walletType");
 
   useEffect(() => {
-    if (walletSettings.length === 0 && !settingsLoading) {
-      dispatch(getWalletSettingsAsync());
-    }
     if (userWallet === null && !userLoading) {
       dispatch(getUserWalletAsync());
     }

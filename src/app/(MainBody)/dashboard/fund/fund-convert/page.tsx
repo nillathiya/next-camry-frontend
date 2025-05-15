@@ -26,7 +26,6 @@ import { useWalletSettings } from "@/hooks/useWalletSettings";
 import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
 import { FUND_TX_TYPE } from "@/lib/fundType";
 import { fundConvertAsync } from "@/redux-toolkit/slices/fundSlice";
-import { getWalletSettingsAsync } from "@/redux-toolkit/slices/settingSlice";
 import { Spinner } from "reactstrap";
 
 // Types
@@ -75,9 +74,6 @@ const SwapComponent: React.FC = () => {
   const amount = watch("amount");
 
   useEffect(() => {
-    if (walletSettings.length === 0 && !settingsLoading) {
-      dispatch(getWalletSettingsAsync());
-    }
     if (userWallet === null && !userLoading) {
       dispatch(getUserWalletAsync());
     }
