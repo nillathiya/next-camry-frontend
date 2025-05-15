@@ -2908,7 +2908,7 @@ export const UpgradeYourPlan = "Upgrade Your Plan";
 export const TodayRevenue = "Today Revenue";
 export const VoteByConsumer = "Vote by Consumer";
 export const ThisWeek = "This Week";
-export const TotalTransactionHeading = "Total Transactions";
+export const TotalTransactionHeading = "Transactions";
 export const Report = "Report";
 export const Performance = "Performance";
 

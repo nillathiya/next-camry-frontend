@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { CardBody, Input, Button } from "reactstrap";
+import { ImagePath } from "@/constants";
 import QRCode from "react-qr-code";
 import { toast } from "react-toastify";
 import { useSession } from "next-auth/react";
@@ -30,8 +31,8 @@ const TopReferralBody = () => {
         className="referral-content"
         style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
       >
-        <div className="referral-link-section">
-          <h6 className="f-w-500 mb-2">Your Referral Link</h6>
+        <div className="referral-link-section mt-3">
+          <h6 className="f-w-500 mb-2 text-white">Your Referral Link</h6>
           <div className="input-group">
             <Input
               type="text"
@@ -55,7 +56,7 @@ const TopReferralBody = () => {
             style={{
               background: "white",
               padding: "16px",
-              display: "inline-block",
+              display: "flex",
               borderRadius: "8px",
             }}
           >
@@ -65,6 +66,11 @@ const TopReferralBody = () => {
               bgColor="#ffffff"
               fgColor="#000000"
               level="Q"
+            />
+            <img
+              className="img-fluid"
+              src={`${ImagePath}/dashboard/banner.png`}
+              alt="vector"
             />
           </div>
         </div>

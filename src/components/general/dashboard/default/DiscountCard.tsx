@@ -1,5 +1,7 @@
 import { ImagePath } from "@/constants";
 import Image from "next/image";
+import { TopReferralPages } from "@/constants";
+import TopReferralBody from "./top-referral/TopReferralBody";
 import { Col } from "reactstrap";
 
 const DiscountCard = () => {
@@ -7,10 +9,14 @@ const DiscountCard = () => {
     <Col xs="12" className="col-xl-100 order-xl-i">
       <div className="offer-banner">
         <div className="offer-content">
-          <h2>20% Off Themes</h2>
-          <p className="f-w-500 f-12">Get all the latest wordpress theme and plugin coupon in this board.</p>
+          <h2>
+            {TopReferralPages}
+            <span className="f-light f-12 d-block f-w-500">
+              Up to $100 per referral
+            </span>
+          </h2>
         </div>
-        <img className="img-fluid" src={`${ImagePath}/dashboard/banner.png`} alt="vector" />
+          <TopReferralBody />
       </div>
     </Col>
   );

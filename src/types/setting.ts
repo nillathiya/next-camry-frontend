@@ -98,6 +98,7 @@ export interface IPinSettings {
   pv?: number;
   gst?: number;
   status?: number;
+  createdAt: string;
 }
 
 export interface IRankSettings {

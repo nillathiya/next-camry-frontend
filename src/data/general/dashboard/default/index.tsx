@@ -1,4 +1,7 @@
 import SvgIcon from "@/common-components/common-icon/CommonSvgIcons";
+import { PiHandDepositBold, PiHandWithdrawBold } from "react-icons/pi";
+import { FcMoneyTransfer } from "react-icons/fc";
+import { SiConvertio } from "react-icons/si";
 import { Href } from "@/constants";
 import { ApexOptions } from "apexcharts";
 
@@ -124,6 +127,33 @@ export const UserWalletInfo = [
     svg: "color-filter",
     wallet: "roi",
     color: "secondary",
+  },
+];
+
+export const transactionItems = [
+  {
+    icon: <PiHandDepositBold size={22} />,
+    label: "Deposit Fund",
+    href: "/dashboard/fund/add-fund",
+    bg: "bg-opacity-10 text-primary shadow-lg",
+  },
+  {
+    icon: <FcMoneyTransfer size={22} />,
+    label: "Fund Transfer",
+    href: "/dashboard/fund/fund-transfer",
+    bg: " bg-opacity-10 text-secondary shadow-lg",
+  },
+  {
+    icon: <SiConvertio size={22} />,
+    label: "Fund Convert",
+    href: "/dashboard/fund/fund-convert",
+    bg: "bg-opacity-10 text-warning shadow-lg",
+  },
+  {
+    icon: <PiHandWithdrawBold size={22} />,
+    label: "Withdrawal",
+    href: "/dashboard/withdrawal/withdrawal",
+    bg: "bg-opacity-10 text-danger shadow-lg",
   },
 ];
 export const RevenueChartOptions: ApexOptions = {
