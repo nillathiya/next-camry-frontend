@@ -45,7 +45,7 @@ export default function DashboardDefault() {
     );
   }
 
-  if (!userWallet || walletSettings.length === 0) {
+  if (!userWallet) {
     return <div className="p-4">No data available.</div>;
   }
 
