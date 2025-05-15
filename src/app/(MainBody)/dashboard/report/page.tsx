@@ -20,27 +20,7 @@ import {
 import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
 import { getAllIncomeTransactionAsync } from "@/redux-toolkit/slices/fundSlice";
 import moment from "moment";
-import "bootstrap/dist/css/bootstrap.min.css";
-
-// Define the shape of an income transaction
-interface IncomeTransaction {
-  source?: string;
-  amount: number;
-  createdAt: string; // Assuming createdAt is a string (ISO date)
-}
-
-// Define the shape of the fund state
-interface FundState {
-  incomeTransaction: IncomeTransaction[];
-  loading: {
-    getAllIncomeTransaction: boolean;
-  };
-}
-
-// Define the shape of the Redux state
-interface RootState {
-  fund: FundState;
-}
+import { useWalletSettings } from "@/hooks/useWalletSettings";
 
 const filterOptions = [
   "Today",
@@ -58,6 +38,7 @@ const Report = () => {
   const [filter, setFilter] = useState<string>("Today");
   const [customStartDate, setCustomStartDate] = useState<string>("");
   const [customEndDate, setCustomEndDate] = useState<string>("");
+  const { getWalletNameBySlug } = useWalletSettings();
 
   const toggleDropdown = () => setDropdownOpen((prev) => !prev);
 
@@ -214,7 +195,7 @@ const Report = () => {
                   <Card className="shadow-sm border-0 h-100">
                     <CardBody className="text-center d-flex flex-column justify-content-center">
                       <h6 className="text-uppercase text-muted mb-2">
-                        {source.replace(/_/g, " ")}
+                        {getWalletNameBySlug(source)?.toUpperCase()}
                       </h6>
                       <h4 className="text-primary mb-0">
                         ${amount.toFixed(2)}
