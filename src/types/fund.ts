@@ -69,8 +69,8 @@ export interface IIncomeTransaction {
   remark?: string;
   response?: string;
   status: number; // 0, 1, 2
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IFundConvertPayload {
