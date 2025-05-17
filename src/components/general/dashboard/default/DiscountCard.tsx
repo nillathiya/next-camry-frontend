@@ -10,13 +10,13 @@ const DiscountCard = () => {
       <div className="offer-banner">
         <div className="offer-content">
           <h2>
-            {TopReferralPages}
+            {"Referral"}
             <span className="f-light f-12 d-block f-w-500">
-              Up to $100 per referral
+              Please refer your friends{" "}
             </span>
           </h2>
         </div>
-          <TopReferralBody />
+        <TopReferralBody />
       </div>
     </Col>
   );

@@ -48,19 +48,19 @@ export default async function RootLayout({
         </head>
         <body suppressHydrationWarning={true}>
           <ErrorBoundary>
-            <NoSsr>
-              <SessionWrapper session={session}>
-                <Web3Provider>
-                  <MainProvider>
-                    <InitialApiProvider>
-                      {/* <SpeedInsights /> */}
-                      <ToastContainer />
-                      {children}
-                    </InitialApiProvider>
-                  </MainProvider>
-                </Web3Provider>
-              </SessionWrapper>
-            </NoSsr>
+            {/* <NoSsr> */}
+            <SessionWrapper session={session}>
+              <Web3Provider>
+                <MainProvider>
+                  <InitialApiProvider>
+                    {/* <SpeedInsights /> */}
+                    <ToastContainer />
+                    {children}
+                  </InitialApiProvider>
+                </MainProvider>
+              </Web3Provider>
+            </SessionWrapper>
+            {/* </NoSsr> */}
           </ErrorBoundary>
         </body>
       </html>

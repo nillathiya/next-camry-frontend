@@ -8,7 +8,8 @@ import { useAppSelector } from "@/redux-toolkit/Hooks";
 
 const TopReferralBody = () => {
   const { data: session } = useSession();
-  const referralLink = `${window.location.origin}?ref=${session?.user.username}`;
+  console.log("session", session);
+  const referralLink = `${window.location.origin}/auth/login?ref=${session?.user.username}`;
   const { darkMode } = useAppSelector((state) => state.themeCustomizer);
   const [isCopied, setIsCopied] = useState(false);
 

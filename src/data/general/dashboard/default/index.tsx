@@ -107,28 +107,6 @@ export const EarningChartOptions: ApexOptions = {
   ],
 };
 
-export const UserWalletInfo = [
-  {
-    svg: "crown",
-    wallet: "fund_wallet",
-    color: "primary",
-  },
-  {
-    svg: "flash",
-    wallet: "main_wallet",
-    color: "success",
-  },
-  {
-    svg: "blend-2",
-    wallet: "fund_wallet",
-    color: "warning",
-  },
-  {
-    svg: "color-filter",
-    wallet: "roi",
-    color: "secondary",
-  },
-];
 
 export const transactionItems = [
   {

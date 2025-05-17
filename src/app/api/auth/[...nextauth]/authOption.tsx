@@ -131,7 +131,7 @@ export const authOptions: NextAuthOptions = {
           }
           return {
             id: data.data.user._id || data.data.user.walletAddress,
-            username: data.data.username || data.data.user.walletAddress,
+            username: data.data.user.username || data.data.user.walletAddress,
             email: data.data.user.email || null,
             name: data.data.user.name || null,
             token: data.data.token, // backendToken
@@ -170,6 +170,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string;
         session.user.email = token.email as string;
         session.user.name = token.name as string | null;
+        session.user.username = token.username as string | null;
         session.user.backendToken = token.backendToken as string;
         session.user.role = token.role as string;
         console.log("Session callback:", { session, token }); // Debug

@@ -21,32 +21,13 @@ export default function DashboardDefault() {
     walletSettings,
     error: settingsError,
   } = useAppSelector((state) => state.setting);
-  const {
-    loading: { getUserWallet },
-    userWallet,
-    error: userError,
-  } = useAppSelector((state) => state.user);
 
-  useEffect(() => {
-    if (userWallet === null && !getUserWallet) {
-      dispatch(getUserWalletAsync());
-    }
-  }, []);
-
-  if (getWalletSettings || getUserWallet) {
+  if (getWalletSettings) {
     return <div className="p-4">Loading wallet data...</div>;
   }
 
-  if (settingsError || userError) {
-    return (
-      <div className="p-4 text-red-600">
-        Error: {settingsError || userError}
-      </div>
-    );
-  }
-
-  if (!userWallet) {
-    return <div className="p-4">No data available.</div>;
+  if (settingsError) {
+    return <div className="p-4 text-red-600">Error: {settingsError}</div>;
   }
 
   return (
