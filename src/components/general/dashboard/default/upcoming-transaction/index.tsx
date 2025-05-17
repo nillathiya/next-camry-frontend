@@ -17,7 +17,7 @@ const UpcomingTransactionCard = () => {
               </span>
             </h2>
             <div className="card-header-right-icon">
-              <CommonDropdown dropdownToggle="Weekly" dropdownItems={["Monthly", "Weekly", "Yearly"]} />
+              {/* <CommonDropdown dropdownToggle="Weekly" dropdownItems={["Monthly", "Weekly", "Yearly"]} /> */}
             </div>
           </div>
         </CardHeader>

@@ -10,6 +10,7 @@ import {
   IUserDirectsQuery,
   IUserHierarchy,
   IUserRankAndTeamMetric,
+  IUserTeamMetric,
   IUserTopUpPayload,
   IUserWalletInfo,
   IWebsiteSettings,
@@ -29,6 +30,7 @@ export interface UserState {
   userOrders: IOrder[];
   hierarchy: IUserHierarchy[];
   userRankAndTeamMetric: IUserRankAndTeamMetric;
+  userTeamMetric: IUserTeamMetric | null;
   loading: {
     getUserDirects: boolean;
     getProfile: boolean;
@@ -41,6 +43,7 @@ export interface UserState {
     topUpUser: boolean;
     getUserOrders: boolean;
     getUserRankAndTeamMetric: boolean;
+    getUserTeamMetric: boolean;
   };
   error: any;
   newsEvents: INewsEvent[];
@@ -55,6 +58,7 @@ const initialState: UserState = {
   userOrders: [],
   hierarchy: [],
   userRankAndTeamMetric: {},
+  userTeamMetric: null,
   loading: {
     getUserDirects: false,
     getProfile: false,
@@ -67,6 +71,7 @@ const initialState: UserState = {
     topUpUser: false,
     getUserOrders: false,
     getUserRankAndTeamMetric: false,
+    getUserTeamMetric:false,
   },
   error: null,
   newsEvents: [],
@@ -296,6 +301,22 @@ export const getUserRankAndTeamMetricsAsync = createAsyncThunk(
   }
 );
 
+export const getUserTeamMetricsAsync = createAsyncThunk(
+  "user/getUserTeamMetrics",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get<IApiResponse<IUserTeamMetric>>(
+        ROUTES.USER.GET_TEAM_MATRICS
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "An unknown error occurred"
+      );
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState,
@@ -509,6 +530,20 @@ const userSlice = createSlice({
       })
       .addCase(getUserRankAndTeamMetricsAsync.rejected, (state, action) => {
         state.loading.getUserRankAndTeamMetric = false;
+        state.error = action.payload as string;
+      })
+
+      // getUserTeamMetricsAsync
+      .addCase(getUserTeamMetricsAsync.pending, (state) => {
+        state.loading.getUserTeamMetric = true;
+        state.error = null;
+      })
+      .addCase(getUserTeamMetricsAsync.fulfilled, (state, action) => {
+        state.loading.getUserTeamMetric = false;
+        state.userTeamMetric = action.payload.data;
+      })
+      .addCase(getUserTeamMetricsAsync.rejected, (state, action) => {
+        state.loading.getUserTeamMetric = false;
         state.error = action.payload as string;
       });
   },

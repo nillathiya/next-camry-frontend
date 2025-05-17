@@ -1,20 +1,42 @@
 import { Href } from "@/constants";
 import { usePlan } from "@/hooks/usePlans";
 import { useEffect, useState } from "react";
-import { Badge, CardBody, CardHeader, Col, Input, Spinner } from "reactstrap";
+import { Badge, CardBody, CardHeader, Input, Spinner } from "reactstrap";
+import styled from "styled-components";
 
 interface LevelStatus {
   level: number;
-  levelIncome: string; // Changed to string to match data type
+  levelIncome: string;
   reqDirects: string;
   status: number;
 }
+
+const ScrollContainer = styled.div`
+  height: 700px;
+  overflow-y: scroll;
+
+  scrollbar-width: thin;
+  scrollbar-color: #888 transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+  }
+`;
 
 const TodoList = () => {
   const { usePlanDailyLevel, usePlanDailyLevelReqDirect, loading } = usePlan();
   const [levelStatus, setLevelStatus] = useState<LevelStatus[]>([]);
 
-  // Calculate user level status based on direct requirements
   const getUserLevelStatus = (levelDirectRequirement: number, userDirects: number) => {
     const isUnlocked = userDirects >= levelDirectRequirement;
     return {
@@ -23,7 +45,6 @@ const TodoList = () => {
     };
   };
 
-  // Fetch and process level status data
   useEffect(() => {
     const userDirects = 5; // Mocked user directs count
     const dailyLevelRequirements = usePlanDailyLevel?.() || [];
@@ -36,7 +57,7 @@ const TodoList = () => {
 
         return {
           level: index,
-          levelIncome: String(levelIncome), // Ensure string type
+          levelIncome: String(levelIncome),
           reqDirects,
           status,
         };
@@ -44,12 +65,12 @@ const TodoList = () => {
 
       setLevelStatus(statusData);
     } else {
-      setLevelStatus([]); // Clear status if no data
+      setLevelStatus([]);
     }
   }, [usePlanDailyLevel, usePlanDailyLevelReqDirect]);
 
   return (
-    <Col xs="12" className="col-xl-30 order-xl-ii todo-wrapper">
+    <ScrollContainer className="col-xl-30 order-xl-ii todo-wrapper">
       <CardHeader className="card-no-border order-lists">
         <div className="header-top">
           <h2>
@@ -82,7 +103,7 @@ const TodoList = () => {
                         className="form-check-input"
                         id={`list-level-${item.level}`}
                         type="checkbox"
-                        disabled // Disable checkbox as no handler is provided
+                        disabled
                       />
                     </div>
                   </div>
@@ -90,10 +111,7 @@ const TodoList = () => {
                     <h6>Level {item.level}</h6>
                     <span className="f-w-500 f-12 f-light">{item.reqDirects} Directs</span>
                   </div>
-                  <Badge
-                    color={`light-${item.status === 1 ? "success" : "danger"}`}
-                    className="ms-auto"
-                  >
+                  <Badge color={`light-${item.status === 1 ? "success" : "danger"}`} className="ms-auto">
                     {item.status === 1 ? "Unlocked" : "Locked"}
                   </Badge>
                 </div>
@@ -102,7 +120,7 @@ const TodoList = () => {
           </ul>
         )}
       </CardBody>
-    </Col>
+    </ScrollContainer>
   );
 };
 
