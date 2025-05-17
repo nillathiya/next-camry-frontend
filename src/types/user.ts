@@ -239,3 +239,9 @@ export interface IOrder {
 export interface IUserRankAndTeamMetric {
   [slug: string]: number;
 }
+export interface IUserTeamMetric {
+  userTotalDirects: string;
+  userActiveDirects: string;
+  userInActiveDirects: string;
+  userTotalGeneration: string;
+}

@@ -38,16 +38,14 @@ const SalesPipelineChart = () => {
   // Fetch data when component mounts
   useEffect(() => {
     const fetchData = async () => {
-      // Reset errors at the start of fetching
       setErrors({});
 
-      // Array of API call promises, each with its own try-catch
       const apiCalls = [
         async () => {
           if (!getUserOrders && totalOrderAmount === 0) {
             try {
               await dispatch(getAllUserOrdersAsync()).unwrap();
-            } catch (error) {
+            } catch {
               setErrors((prev) => ({
                 ...prev,
                 userOrders:
@@ -64,7 +62,7 @@ const SalesPipelineChart = () => {
                   txType: FUND_TX_TYPE.FUND_WITHDRAWAL,
                 })
               ).unwrap();
-            } catch (error) {
+            } catch {
               setErrors((prev) => ({
                 ...prev,
                 fundTransactions:
@@ -77,7 +75,7 @@ const SalesPipelineChart = () => {
           if (!getAllIncomeTransaction && totalIncomeAmount === 0) {
             try {
               await dispatch(getAllIncomeTransactionAsync({})).unwrap();
-            } catch (error) {
+            } catch {
               setErrors((prev) => ({
                 ...prev,
                 incomeTransactions:
@@ -88,7 +86,6 @@ const SalesPipelineChart = () => {
         },
       ];
 
-      // Execute all API calls concurrently
       await Promise.all(apiCalls.map((call) => call()));
     };
 
@@ -98,7 +95,7 @@ const SalesPipelineChart = () => {
   // Calculate percentages
   const series = useMemo(() => {
     const total = totalIncomeAmount + totalWithdrawalAmount + totalOrderAmount;
-    if (total === 0) return [33.33, 33.33, 33.33]; // Default equal distribution when no data
+    if (total === 0) return [33.33, 33.33, 33.33];
 
     const incomePercent = (totalIncomeAmount / total) * 100;
     const withdrawalPercent = (totalWithdrawalAmount / total) * 100;
@@ -116,8 +113,8 @@ const SalesPipelineChart = () => {
       series,
       labels: ["Income", "Withdrawals", "Orders"],
       chart: {
-        width: 290,
-        height: 290,
+        width: 220,
+        height: 220,
         type: "donut",
       },
       plotOptions: {
@@ -149,7 +146,7 @@ const SalesPipelineChart = () => {
         },
       },
       dataLabels: {
-        enabled: true,
+        enabled: false,
         formatter: (val: number) => `${val.toFixed(1)}%`,
       },
       colors: ["#f99b0d", "#009DB5", "#7fbe71"],
@@ -157,10 +154,7 @@ const SalesPipelineChart = () => {
         type: "gradient",
       },
       legend: {
-        formatter: function (val, opts) {
-          return `${val}: ${opts.w.globals.series[opts.seriesIndex]}%`;
-        },
-        position: "bottom",
+        show: false, // Hides the default Apex legend
       },
       responsive: [
         {
@@ -168,9 +162,6 @@ const SalesPipelineChart = () => {
           options: {
             chart: {
               width: 200,
-            },
-            legend: {
-              position: "bottom",
             },
           },
         },
@@ -240,10 +231,6 @@ const SalesPipelineChart = () => {
       <Card className="title-line widget-1 sales-pipeline">
         <CardHeader className="card-no-border">
           <h2>{"Transaction Distribution"}</h2>
-          {/* <span className="f-w-500 f-12 f-light mt-0">
-            {SpecialDiscount}
-            <span className="txt-primary">60% OFF</span>
-          </span> */}
         </CardHeader>
         <CardBody className="pt-0">
           {/* Display error alerts */}
@@ -258,17 +245,81 @@ const SalesPipelineChart = () => {
               {message}
             </Alert>
           ))}
-          <div className="pipeline-chart-container">
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "1rem",
+            }}
+          >
             {isLoading ? (
               <div>Loading...</div>
             ) : (
-              <ReactApexChart
-                series={series}
-                options={chartOptions}
-                type="donut"
-                height={290}
-                width={290}
-              />
+              <>
+                <ReactApexChart
+                  series={series}
+                  options={chartOptions}
+                  type="donut"
+                  height={140}
+                  width={140}
+                />
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "8px",
+                    minWidth: 120,
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    <span
+                      style={{ color: "#f99b0d", fontSize: "20px" }}
+                      aria-label="Income color"
+                    >
+                      ●
+                    </span>
+                    <span style={{ fontSize: "12px", fontWeight:"bold" }}>Income: {series[0]}%</span>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    <span
+                      style={{ color: "#009DB5", fontSize: "20px" }}
+                      aria-label="Withdrawals color"
+                    >
+                      ●
+                    </span>
+                    <span style={{ fontSize: "12px", fontWeight:"bold" }}>Withdrawals: {series[1]}%</span>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    <span
+                      style={{ color: "#7fbe71", fontSize: "20px" }}
+                      aria-label="Orders color"
+                    >
+                      ●
+                    </span>
+                    <span style={{ fontSize: "12px" , fontWeight:"bold" }}>Orders: {series[2]}%</span>
+                  </div>
+                </div>
+              </>
             )}
           </div>
         </CardBody>

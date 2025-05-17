@@ -63,6 +63,7 @@ interface Routes {
     TOP_UP: string;
     GET_ORDERS: string;
     GET_RANK_TEAM_METRICS: string;
+    GET_TEAM_MATRICS:string;
   };
   ORDER: {
     GET_ALL: string;
@@ -202,6 +203,7 @@ export const ROUTES: Routes = {
     TOP_UP: `${API_URL}/api/top-up`,
     GET_ORDERS: `${API_URL}/api/user/orders`,
     GET_RANK_TEAM_METRICS: `${API_URL}/api/rank-setting/user/rank-and-team-metrics`,
+    GET_TEAM_MATRICS: `${API_URL}/api/user/team-metrics`,
   },
   ORDER: {
     GET_ALL: `${API_URL}/api/orders/get-all`,
