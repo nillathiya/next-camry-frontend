@@ -133,7 +133,7 @@ const AddFund = () => {
     }))
   );
 
-  const handleAmountChange = (e: React.ChangeEvent<HTMLFormElement>) => {
+  const handleAmountChange = (e: React.ChangeEvent<HTMLFormElement | HTMLInputElement>) => {
     const value = e.target.value;
     if (/^\d*\.?\d*$/.test(value)) {
       setAmountInput(value);

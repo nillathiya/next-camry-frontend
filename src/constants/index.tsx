@@ -2367,7 +2367,7 @@ export const WaterBill = "Water Bill";
 export const Successfully = "Successfully";
 export const MembersStatistics = "Members Statistics";
 export const Authors = "Authors";
-export const TopReferralPages = "Top Referral Pages";
+export const TopReferralPages = "Income Report";
 
 //Data Tables - Advance Init
 export const StockResultTitle: string = `Stock Result`;
@@ -2905,7 +2905,7 @@ export const Marketing = "Marketing";
 export const HaveYouTried = "Have you tried";
 export const UpgradeYourPlan = "Upgrade Your Plan";
 
-export const TodayRevenue = "Today Revenue";
+export const TodayRevenue = "Weekly Income ";
 export const VoteByConsumer = "Vote by Consumer";
 export const ThisWeek = "This Week";
 export const TotalTransactionHeading = "Transactions";

@@ -12,9 +12,9 @@ const TopReferral = () => {
           <div className="header-top">
             <h2>
               {TopReferralPages}
-              <span className="f-light f-12 d-block f-w-500">Up to $100 per referral</span>
+              {/* <span className="f-light f-12 d-block f-w-500">Up to $100 per referral</span> */}
             </h2>
-            <CommonDropdown dropdownItems={["Monthly", "Weekly", "Yearly"]} dropdownToggle="Generate Report" />
+            {/* <CommonDropdown dropdownItems={["Monthly", "Weekly", "Yearly"]} dropdownToggle="Generate Report" /> */}
           </div>
         </CardHeader>
         <TopReferralSection />
