@@ -49,7 +49,7 @@ const TodoList = () => {
   }, [usePlanDailyLevel, usePlanDailyLevelReqDirect]);
 
   return (
-    <Col xs="12" xl="3" className="order-xl-2 todo-wrapper">
+    <Col xs="12" className="col-xl-30 order-xl-ii todo-wrapper">
       <CardHeader className="card-no-border order-lists">
         <div className="header-top">
           <h2>

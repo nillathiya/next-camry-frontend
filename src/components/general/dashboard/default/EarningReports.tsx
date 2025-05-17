@@ -58,7 +58,7 @@ const EarningReports = () => {
     if (!getAllIncomeTransaction && incomeTransaction.length === 0) {
       fetchIncomeTransaction();
     }
-  }, [dispatch, getAllIncomeTransaction, incomeTransaction.length]);
+  }, []);
 
   useEffect(() => {
     if (incomeTransaction.length === 0) return;
@@ -104,7 +104,13 @@ const EarningReports = () => {
         const weekStart = new Date(weekEnd);
         weekStart.setDate(weekEnd.getDate() - 6);
         periods.push(
-          `${weekStart.toLocaleString("default", { month: "short", day: "numeric" })} - ${weekEnd.toLocaleString("default", { month: "short", day: "numeric" })}`
+          `${weekStart.toLocaleString("default", {
+            month: "short",
+            day: "numeric",
+          })} - ${weekEnd.toLocaleString("default", {
+            month: "short",
+            day: "numeric",
+          })}`
         );
       }
 
@@ -112,7 +118,9 @@ const EarningReports = () => {
       incomeTransaction.forEach((tx) => {
         if (tx.status === 1) {
           const txDate = new Date(tx.createdAt);
-          const daysDiff = Math.floor((latestDate.getTime() - txDate.getTime()) / (1000 * 60 * 60 * 24));
+          const daysDiff = Math.floor(
+            (latestDate.getTime() - txDate.getTime()) / (1000 * 60 * 60 * 24)
+          );
           const weekIndex = Math.floor(daysDiff / 7);
           if (weekIndex >= 0 && weekIndex < 5) {
             periodIncome[4 - weekIndex] += tx.amount;
@@ -189,7 +197,8 @@ const EarningReports = () => {
               <div>
                 <span className="f-12 f-w-500 f-light">Total Income</span>
                 <h4 className="mt-1 f-w-600">
-                  {currency}{totalIncome.toFixed(2)}
+                  {currency}
+                  {totalIncome.toFixed(2)}
                   {/* <Badge color="light-warning" className="ms-1 txt-warning">
                     <TrendingDown className="me-1" />
                     1.05%

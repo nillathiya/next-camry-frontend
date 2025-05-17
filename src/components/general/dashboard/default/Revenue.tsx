@@ -44,7 +44,7 @@ const Revenue = () => {
     if (!getAllIncomeTransaction && incomeTransaction.length === 0) {
       fetchIncomeTransaction();
     }
-  }, [dispatch, getAllIncomeTransaction, incomeTransaction.length]);
+  }, []);
 
   useEffect(() => {
     if (incomeTransaction.length > 0) {
