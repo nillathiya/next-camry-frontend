@@ -339,4 +339,17 @@ export const selectUserFundWithdrawalHistory = (state: RootState) =>
     (tx) => tx.txType === FUND_TX_TYPE.FUND_WITHDRAWAL
   );
 
+export const selectedTotalWithdrawalAmount = (state: RootState) => {
+  return (state.fund.fundTransactions || [])
+    .filter((tx) => tx.txType === FUND_TX_TYPE.FUND_WITHDRAWAL)
+    .reduce((acc, tx) => acc + (tx.amount || 0), 0);
+};
+
+export const selectedTotalIncomeAmount = (state: RootState) => {
+  return (state.fund.incomeTransaction || []).reduce(
+    (acc, tx) => acc + (tx.amount || 0),
+    0
+  );
+};
+
 export default fundSlice.reducer;

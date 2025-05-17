@@ -1,12 +1,38 @@
 import CommonDropdown from "@/common-components/CommonDropdown";
 import SvgIcon from "@/common-components/common-icon/CommonSvgIcons";
-import { EarningReportHeading, Profit, WeeklyEarningOverview } from "@/constants";
+import {
+  EarningReportHeading,
+  Profit,
+  WeeklyEarningOverview,
+} from "@/constants";
 import { EarningChartOptions } from "@/data/general/dashboard/default";
+import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
+import { getAllIncomeTransactionAsync } from "@/redux-toolkit/slices/fundSlice";
+import { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import { TrendingDown, TrendingUp } from "react-feather";
 import { Badge, Card, CardBody, CardHeader, Col } from "reactstrap";
 
 const EarningReports = () => {
+  const dispatch = useAppDispatch();
+  const [error, setError] = useState("");
+  const {
+    incomeTransaction,
+    loading: { getAllIncomeTransaction },
+  } = useAppSelector((state) => state.fund);
+  useEffect(() => {
+    const fetchIncomeTransaction = async () => {
+      try {
+        await dispatch(getAllIncomeTransactionAsync({})).unwrap();
+      } catch (error) {
+        setError(error || "Server Error,Pleare Try Later");
+      }
+    };
+    if (!getAllIncomeTransaction && incomeTransaction.length === 0) {
+      fetchIncomeTransaction();
+    }
+  }, []);
+  console.log("incomeTransaction",incomeTransaction);
   return (
     <Col md="6">
       <Card className="title-line">
@@ -15,17 +41,24 @@ const EarningReports = () => {
             <div>
               <h2>
                 {EarningReportHeading}
-                <span className="d-block f-w-500 f-light f-12">{WeeklyEarningOverview}</span>
+                <span className="d-block f-w-500 f-light f-12">
+                  {WeeklyEarningOverview}
+                </span>
               </h2>
             </div>
             <div className="card-header-right-icon">
-              <CommonDropdown />
+              <CommonDropdown onSelect={() => {}} />
             </div>
           </div>
         </CardHeader>
         <CardBody className="pt-0">
           <div className="report-chart-container">
-            <ReactApexChart series={EarningChartOptions.series} height={255} type="bar" options={EarningChartOptions} />
+            <ReactApexChart
+              series={EarningChartOptions.series}
+              height={255}
+              type="bar"
+              options={EarningChartOptions}
+            />
           </div>
           <ul className="report-list">
             <li>
@@ -37,7 +70,7 @@ const EarningReports = () => {
                 <h4 className="mt-1 f-w-600">
                   $98.50
                   <Badge color="light-primary" className="ms-1 txt-primary">
-                    <TrendingUp className="me-1"/>
+                    <TrendingUp className="me-1" />
                     13.5%
                   </Badge>
                 </h4>
@@ -52,7 +85,7 @@ const EarningReports = () => {
                 <h4 className="mt-1 f-w-600">
                   $109.90
                   <Badge color="light-warning" className="ms-1 txt-warning">
-                    <TrendingDown className="me-1"/>
+                    <TrendingDown className="me-1" />
                     1.05%
                   </Badge>
                 </h4>

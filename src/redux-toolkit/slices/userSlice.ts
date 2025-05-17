@@ -17,6 +17,8 @@ import {
   ProfileUpdateType,
 } from "@/types";
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { RootState } from "../store";
+import { Stats } from "fs";
 // import { persistor } from "../store";
 // import { signOut } from "next-auth/react";
 
@@ -511,8 +513,16 @@ const userSlice = createSlice({
       });
   },
 });
+
 export const { resetUserState, addAmountToWallet, removeAmountFromWallet } =
   userSlice.actions;
+
+export const selectTotalOrderAmount = (state: RootState) => {
+  return (state.user.userOrders || []).reduce(
+    (acc, order) => acc + (Number(order.bv) || 0),
+    0
+  );
+};
 
 // export const handleUnauthorized = () => async (dispatch: any) => {
 //   try {

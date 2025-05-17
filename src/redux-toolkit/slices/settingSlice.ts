@@ -9,7 +9,7 @@ import {
   IPinSettings,
 } from "@/types";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { IRankSettings } from "../../types/setting";
+import { IPlan, IRankSettings } from "../../types/setting";
 
 interface SettingState {
   websiteSettings: IWebsiteSettings[];
@@ -17,14 +17,16 @@ interface SettingState {
   userSettings: IUserSetting[];
   companyInfo: ICompanyInfo[];
   pinSettings: IPinSettings[];
-  rankSettings:IRankSettings[];
+  rankSettings: IRankSettings[];
+  plans: IPlan[];
   loading: {
     getWebsiteSettings: boolean;
     getUserSettings: boolean;
     getWalletSettings: boolean;
     getCompanyInfo: boolean;
     getPinSettings: boolean;
-    getRankSettings:boolean;
+    getRankSettings: boolean;
+    getPlans: boolean;
   };
   error: any;
 }
@@ -35,14 +37,16 @@ const initialState: SettingState = {
   userSettings: [],
   companyInfo: [],
   pinSettings: [],
-  rankSettings:[],
+  rankSettings: [],
+  plans: [],
   loading: {
     getWebsiteSettings: false,
     getUserSettings: false,
     getWalletSettings: false,
     getCompanyInfo: false,
     getPinSettings: false,
-    getRankSettings:false,
+    getRankSettings: false,
+    getPlans: false,
   },
   error: null,
 };
@@ -148,6 +152,22 @@ export const getRankSettingsAsync = createAsyncThunk(
   }
 );
 
+export const getPlansAsync = createAsyncThunk(
+  "setting/getPlans",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get<IApiResponse<IPlan[]>>(
+        ROUTES.SETTINGS.GET_PLANS
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch rank settings"
+      );
+    }
+  }
+);
+
 const settingSlice = createSlice({
   name: "setting",
   initialState,
@@ -236,8 +256,21 @@ const settingSlice = createSlice({
       .addCase(getRankSettingsAsync.rejected, (state, action) => {
         state.loading.getRankSettings = false;
         state.error = action.payload as string;
-      });
+      })
 
+      // getPlansAsync
+      .addCase(getPlansAsync.pending, (state) => {
+        state.loading.getPlans = true;
+        state.error = null;
+      })
+      .addCase(getPlansAsync.fulfilled, (state, action) => {
+        state.loading.getPlans = false;
+        state.plans = action.payload.data;
+      })
+      .addCase(getPlansAsync.rejected, (state, action) => {
+        state.loading.getPlans = false;
+        state.error = action.payload as string;
+      });
   },
 });
 

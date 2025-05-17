@@ -109,3 +109,14 @@ export interface IRankSettings {
   value: string[];
   status: number;
 }
+
+
+export interface IPlan {
+  _id:string;
+  title: string;
+  slug: string;
+  value: string[];
+  order:number;
+  createdAt: string;
+  updatedAt: string;
+}

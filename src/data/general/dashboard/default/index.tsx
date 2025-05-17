@@ -595,50 +595,6 @@ export const RecentOrdersData = [
   },
 ];
 
-export const TodoListData = [
-  {
-    heading: "Products",
-    time: "Today 2:00pm Clock",
-    status: "In Progress",
-    color: "primary",
-  },
-  {
-    heading: "Web developing..",
-    time: "Due in 4 Days",
-    status: "pending",
-    color: "warning",
-  },
-  {
-    heading: "UI/UX Design ",
-    time: "Due in 3 Days",
-    status: "Completed",
-    color: "success",
-  },
-  {
-    heading: "Client Meeting ..",
-    time: "Today 1:00pm Clock",
-    status: "In Progress",
-    color: "primary",
-  },
-  {
-    heading: "Web Layout..",
-    time: "Due in 10 Days",
-    status: "Completed",
-    color: "success",
-  },
-  {
-    heading: "Web developing..",
-    time: "Due in 4 Days",
-    status: "Pending",
-    color: "warning",
-  },
-  {
-    heading: "UI/UX Design",
-    time: "Due in 3 Days",
-    status: "Completed",
-    color: "success",
-  },
-];
 
 export const MembersData = [
   {
