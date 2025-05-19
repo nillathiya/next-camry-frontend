@@ -64,10 +64,12 @@ const EarningReports = () => {
     if (incomeTransaction.length === 0) return;
 
     // Find the most recent transaction date
-    const latestDate = incomeTransaction.reduce((latest, tx) => {
-      const txDate = new Date(tx.createdAt);
-      return txDate > latest ? txDate : latest;
-    }, new Date(incomeTransaction[0].createdAt));
+    const latestDate = incomeTransaction
+      .filter((tx) => tx.status === 1) // Only include transactions with status 1
+      .reduce((latest, tx) => {
+        const txDate = new Date(tx.createdAt);
+        return txDate > latest ? txDate : latest;
+      }, new Date(incomeTransaction[0].createdAt));
 
     let periods = [];
     let periodIncome = [0, 0, 0, 0, 0];

@@ -245,3 +245,8 @@ export interface IUserTeamMetric {
   userInActiveDirects: string;
   userTotalGeneration: string;
 }
+
+export interface IUserCappingStatus {
+  remainingCap: number;
+}
+

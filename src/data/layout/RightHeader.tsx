@@ -98,24 +98,24 @@ export const profileHeaderData = [
     icon: "user",
     text: "Account",
   },
-  {
-    id: 2,
-    link: `/applications/letter-box`,
-    icon: "stroke-email",
-    text: "Inbox",
-  },
-  {
-    id: 3,
-    link: `applications/task`,
-    icon: "notepad",
-    text: "Taskboard",
-  },
-  {
-    id: 4,
-    link: `applications/users/edit-profile`,
-    icon: "settings",
-    text: "Settings",
-  },
+  // {
+  //   id: 2,
+  //   link: `/applications/letter-box`,
+  //   icon: "stroke-email",
+  //   text: "Inbox",
+  // },
+  // {
+  //   id: 3,
+  //   link: `applications/task`,
+  //   icon: "notepad",
+  //   text: "Taskboard",
+  // },
+  // {
+  //   id: 4,
+  //   link: `applications/users/edit-profile`,
+  //   icon: "settings",
+  //   text: "Settings",
+  // },
 ];
 
 export interface languageDataType {
