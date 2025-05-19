@@ -9,8 +9,7 @@ import styled from "styled-components";
 const ScrollContainer = styled.div`
   height: 225px;
   overflow-y: scroll;
-  overflow-X: hidden;
-  background: white;
+  overflow-x: hidden;
 
   scrollbar-width: thin;
   scrollbar-color: #888 transparent;

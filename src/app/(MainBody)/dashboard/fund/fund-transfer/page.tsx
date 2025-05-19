@@ -51,12 +51,12 @@ const TransferComponent: React.FC = () => {
   );
   const { getWalletNameBySlug, getWalletBalanceBySlug } = useWalletSettings();
   const {
-    loading: settingsLoading,
+    loading: {getWalletSettings},
     walletSettings,
     error: settingsError,
   } = useAppSelector((state) => state.setting);
   const {
-    loading: userLoading,
+    loading: {getUserWallet},
     userWallet,
     error: userError,
   } = useAppSelector((state) => state.user);
@@ -80,15 +80,15 @@ const TransferComponent: React.FC = () => {
   const walletType = watch("walletType");
 
   useEffect(() => {
-    if (userWallet === null && !userLoading) {
+    if (userWallet === null && !getUserWallet) {
       dispatch(getUserWalletAsync());
     }
   }, [
     dispatch,
     walletSettings.length,
     userWallet,
-    settingsLoading,
-    userLoading,
+    getWalletSettings,
+    getUserWallet,
   ]);
 
   // Debounced username validation
@@ -174,6 +174,9 @@ const TransferComponent: React.FC = () => {
     }
   };
 
+  console.log("fundTransferWalletLoading", fundTransferWalletLoading);
+  console.log("settingsLoading", getWalletSettings);
+  console.log("getUserWallet", getUserWallet);
   if (fundTransferWalletLoading) {
     return (
       <div className="text-center p-4">
@@ -181,7 +184,7 @@ const TransferComponent: React.FC = () => {
       </div>
     );
   }
-  if (settingsLoading || userLoading) {
+  if (getWalletSettings || getUserWallet) {
     return (
       <div className="text-center p-4">
         <Spinner color="primary">Loading wallet data...</Spinner>

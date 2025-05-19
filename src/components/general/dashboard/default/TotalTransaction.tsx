@@ -8,7 +8,7 @@ const TotalTransaction = () => {
     <Col xl="12" className="box-col-6">
       <Card className="widget-1">
         <CardHeader className="border-0 pb-0">
-          <h2>{TotalTransactionHeading}</h2>
+          <h2>{"Quick Access"}</h2>
         </CardHeader>
         <CardBody>
           <Row className="g-3">
@@ -25,7 +25,7 @@ const TotalTransaction = () => {
                     <div>
                       <Link
                         href={item.href}
-                        className="fw-bold text-dark text-decoration-none"
+                        className="fw-bold  text-decoration-none"
                       >
                         {item.label}
                       </Link>

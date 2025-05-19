@@ -47,12 +47,12 @@ const SwapComponent: React.FC = () => {
   );
   const { getWalletNameBySlug, getWalletBalanceBySlug } = useWalletSettings();
   const {
-    loading: settingsLoading,
+    loading: {getWalletSettings},
     walletSettings,
     error: settingsError,
   } = useAppSelector((state) => state.setting);
   const {
-    loading: userLoading,
+    loading: {getUserWallet},
     userWallet,
     error: userError,
   } = useAppSelector((state) => state.user);
@@ -74,15 +74,15 @@ const SwapComponent: React.FC = () => {
   const amount = watch("amount");
 
   useEffect(() => {
-    if (userWallet === null && !userLoading) {
+    if (userWallet === null && !getUserWallet) {
       dispatch(getUserWalletAsync());
     }
   }, [
     dispatch,
     walletSettings.length,
     userWallet,
-    settingsLoading,
-    userLoading,
+    getWalletSettings,
+    getUserWallet,
   ]);
 
   if (fundConvertWalletLoading) {
@@ -93,7 +93,7 @@ const SwapComponent: React.FC = () => {
     );
   }
 
-  if (settingsLoading || userLoading) {
+  if (getWalletSettings || getUserWallet) {
     return (
       <div className="text-center p-4">
         <Spinner color="primary">Loading wallet data...</Spinner>
