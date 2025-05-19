@@ -24,13 +24,15 @@ const SimplePricingCard = () => {
       }
     };
     fetchUserOrders();
-  }, []);
+  }, [dispatch]);
 
   // Sort userOrders by createdAt in ascending order
   const sortedOrders = [...userOrders].sort((a, b) => 
     new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
   );
 
+  console.log("userOrders",userOrders);
+  console.log("sortedOrders",sortedOrders);
   return (
     <Card className="shadow-sm border-0">
       <CommonCardHeader title={"Purchased Packages"} />

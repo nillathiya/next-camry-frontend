@@ -509,8 +509,14 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(userTopUpAsync.fulfilled, (state, action) => {
-        state.loading.topUpUser = false;
         const newOrder = action.payload.data;
+
+        // Guard against invalid data
+        if (!newOrder || !newOrder._id) {
+          state.loading.topUpUser = false;
+          return state;
+        }
+
         const exists = state.userOrders.some(
           (order) => order._id === newOrder._id
         );
@@ -520,6 +526,8 @@ const userSlice = createSlice({
               order._id === newOrder._id ? newOrder : order
             )
           : [...state.userOrders, newOrder];
+
+        state.loading.topUpUser = false;
       })
       .addCase(userTopUpAsync.rejected, (state, action) => {
         state.loading.topUpUser = false;

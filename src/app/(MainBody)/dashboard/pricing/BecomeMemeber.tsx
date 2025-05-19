@@ -14,7 +14,7 @@ import CommonCardHeader from "@/common-components/CommonCardHeader";
 import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
 import { useEffect, useState } from "react";
 import { getPinSettingsAsync } from "@/redux-toolkit/slices/settingSlice";
-import { userTopUpAsync } from "@/redux-toolkit/slices/userSlice";
+import { getAllUserOrdersAsync, userTopUpAsync } from "@/redux-toolkit/slices/userSlice";
 import { toast } from "react-toastify";
 import { useCompanyCurrency } from "@/hooks/useCompanyInfo";
 
@@ -50,7 +50,10 @@ const BecomeMember = () => {
       await dispatch(userTopUpAsync(formData)).unwrap();
       toast.success("Top-up successful!");
 
-      await dispatch(getPinSettingsAsync()).unwrap();
+      await Promise.all([
+        dispatch(getPinSettingsAsync()).unwrap(),
+        dispatch(getAllUserOrdersAsync()).unwrap(),
+      ]);
     } catch (error) {
       toast.error(error || "Server Error,Please Try Later");
     }
@@ -70,7 +73,7 @@ const BecomeMember = () => {
             </Alert>
           ) : pinSettings.length === 0 ? (
             <Alert color="info" className="m-3">
-              No directs found
+              No Package Found
             </Alert>
           ) : (
             pinSettings.map((setting, index) => (
