@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
 import {
   getAllFundTransactionAsync,
   selectUserFundTransfer,
-  selectUserFundWithdrwalHistory,
+  selectUserFundWithdrawalHistory,
 } from "@/redux-toolkit/slices/fundSlice";
 import { IFundTransaction } from "@/types/fund";
 import { formatTxType } from "@/utils/stringUtils";
@@ -46,8 +46,10 @@ const useDebounce = (value: string, delay: number) => {
 
 const DepositHistory = () => {
   const dispatch = useAppDispatch();
-  const { loading } = useAppSelector((state) => state.fund);
-  const fundWithdrwalHistory = useAppSelector(selectUserFundWithdrwalHistory);
+  const {
+    loading: { getAllFundTransaction },
+  } = useAppSelector((state) => state.fund);
+  const fundWithdrwalHistory = useAppSelector(selectUserFundWithdrawalHistory);
   const { data: session } = useSession();
   const [filterText, setFilterText] = useState("");
   const debouncedFilterText = useDebounce(filterText, 300);
@@ -261,7 +263,7 @@ const DepositHistory = () => {
           type="search"
           value={filterText}
           aria-label="Search user directs by username, name, email, contact, or wallet address"
-          disabled={loading}
+          disabled={getAllFundTransaction}
         />
         {filterText && debouncedFilterText !== filterText && (
           <span className="ms-2">Filtering...</span>
@@ -291,7 +293,7 @@ const DepositHistory = () => {
         </Button>
       </div>
     );
-  }, [filterText, debouncedFilterText, loading]);
+  }, [filterText, debouncedFilterText, getAllFundTransaction]);
 
   return (
     <Container fluid className="advance-init-table">
@@ -306,7 +308,7 @@ const DepositHistory = () => {
                 <DataTable
                   data={filteredTx}
                   columns={columns}
-                  progressPending={loading}
+                  progressPending={getAllFundTransaction}
                   progressComponent={
                     <Spinner color="primary">Loading...</Spinner>
                   }
