@@ -26,7 +26,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <FooterLayout />
         </div>
       </div>
-      {/* <ThemeCustomizer /> */}
+      <ThemeCustomizer />
     </>
   );
 };

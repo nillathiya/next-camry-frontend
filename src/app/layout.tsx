@@ -48,7 +48,7 @@ export default async function RootLayout({
         </head>
         <body suppressHydrationWarning={true}>
           <ErrorBoundary>
-            {/* <NoSsr> */}
+            <NoSsr>
             <SessionWrapper session={session}>
               <Web3Provider>
                 <MainProvider>
@@ -60,7 +60,7 @@ export default async function RootLayout({
                 </MainProvider>
               </Web3Provider>
             </SessionWrapper>
-            {/* </NoSsr> */}
+            </NoSsr>
           </ErrorBoundary>
         </body>
       </html>
