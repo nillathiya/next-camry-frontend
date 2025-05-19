@@ -42,11 +42,11 @@ const RightHeader = () => {
         </span>
       </li>
       <MaximizeScreen />
-      <NotificationBox />
-      <HeaderBookmark />
-      <ChatHeader />
+      {/* <NotificationBox /> */}
+      {/* <HeaderBookmark /> */}
+      {/* <ChatHeader /> */}
       <MoonLight />
-      <CartHeader />
+      {/* <CartHeader /> */}
       <ProfileHeader />
     </ul>
   );

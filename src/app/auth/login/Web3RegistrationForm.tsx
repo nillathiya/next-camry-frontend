@@ -350,7 +350,7 @@ const Web3RegistrationForm = ({
         redirect: false,
         message: JSON.stringify(siweMessage),
         signature,
-        callbackUrl: "/dashboard/project",
+        callbackUrl: "/dashboard/default",
       });
 
       if (loginResult?.error) {
@@ -362,7 +362,7 @@ const Web3RegistrationForm = ({
       console.log("SIWE login successful:", loginResult);
       localStorage.removeItem("showWeb3RegForm");
       setRegFormData(initialFormData);
-      router.push("/dashboard/project");
+      router.push("/dashboard/default");
     } catch (error) {
       console.error("Registration or SIWE error:", error);
       toast.error(error || "Registration failed. Please try again.");

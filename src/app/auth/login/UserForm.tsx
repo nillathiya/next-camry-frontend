@@ -73,13 +73,13 @@ const UserForm = () => {
       username,
       password,
       redirect: false,
-      callbackUrl: "/dashboard/project",
+      callbackUrl: "/dashboard/default",
     });
 
     console.log("result", result);
     if (result?.ok) {
       toast.success("Successfully Logged in. Redirecting...");
-      router.push("/dashboard/project");
+      router.push("/dashboard/default");
     } else {
       toast.error("Invalid Credentials...");
     }
@@ -162,7 +162,7 @@ const UserForm = () => {
               redirect: false,
               message: JSON.stringify(siweMessage),
               signature,
-              callbackUrl: "/dashboard/project",
+              callbackUrl: "/dashboard/default",
             });
 
             if (loginResult?.error) {
@@ -174,7 +174,7 @@ const UserForm = () => {
             console.log("SIWE login successful:", loginResult);
             localStorage.removeItem("showWeb3RegForm");
             toast.success("Successfully Logged in. Redirecting...");
-            router.push("/dashboard/project");
+            router.push("/dashboard/default");
           } catch (error) {
             console.error("SIWE login error:", error);
             toast.error("Wallet login failed. Please try again.");
@@ -210,12 +210,12 @@ const UserForm = () => {
         const result = await signIn("impersonate", {
           token: impersonateToken,
           redirect: false,
-          callbackUrl: "/dashboard/project",
+          callbackUrl: "/dashboard/default",
         });
 
         if (result?.ok) {
           toast.success("Successfully Logged in. Redirecting...");
-          router.push("/dashboard/project");
+          router.push("/dashboard/default");
         } else {
           toast.error("Invalid Credentials...");
         }
