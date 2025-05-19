@@ -180,7 +180,7 @@ const TotalProfitCard: React.FC = () => {
 
   useEffect(() => {
     fetchAndProcessData(filter);
-  }, [filter, incomeTransaction]);
+  }, []);
 
   const handleDropdownSelect = (selected: string) => {
     setFilter(selected);

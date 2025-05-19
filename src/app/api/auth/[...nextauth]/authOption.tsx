@@ -87,7 +87,7 @@ export const authOptions: NextAuthOptions = {
           }
           return {
             id: data.data.user._id,
-            username: data.data.username,
+            username: data.data.user.username,
             email: data.data.user.email || null,
             name: data.data.user.name || null,
             token: credentials.token, // backendToken
