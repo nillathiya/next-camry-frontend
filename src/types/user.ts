@@ -1,4 +1,4 @@
-import { ChangeEventHandler } from "react";
+import { ChangeEventHandler, ElementType } from "react";
 import { InputType } from "reactstrap/types/lib/Input";
 import { IPinSettings } from "./setting";
 
@@ -26,7 +26,6 @@ export interface IUser {
     countryCode?: string;
     postalCode?: string;
   };
-  // Account & Status
   accountStatus?: {
     activeStatus?: number;
     blockStatus?: number;
@@ -45,7 +44,6 @@ export interface IUser {
     payTM?: string;
     upiId?: string;
   };
-
   nominee: {
     name?: string;
     relation?: string;
@@ -75,7 +73,6 @@ export interface IUser {
     amount?: number;
     dateTime?: Date;
   };
-
   profilePicture?: string;
   ip?: string;
   source?: string;
@@ -110,18 +107,20 @@ export interface IRegisterUserResponse {
 export interface IUserWalletInfo {
   [key: string]: string | number | null;
 }
+
 export interface CommonUserFormGroupProps {
   value: string | undefined;
-  disabled: boolean | undefined;
-  readOnly: boolean | undefined;
-  tag?: React.ElementType;
+  disabled?: boolean | undefined;
+  readOnly?: boolean | undefined;
+  tag?: ElementType;
   name: string | undefined;
-  onChange?: (e: React.ChangeEvent<HTMLFormElement>) => void;
+  onChange?: ChangeEventHandler<HTMLInputElement>;
   title: string;
   type: InputType;
   placeholder?: string;
   defaultValue?: string;
   row?: number;
+  invalid?: boolean;
 }
 
 export interface IUserAddress {
@@ -187,11 +186,13 @@ export interface UserState {
   newsThumbnails: string[];
   latestNews: INewsEvent[];
 }
+
 interface Hotlink {
   label: string;
   url: string;
   _id?: string;
 }
+
 export interface IUserHierarchy {
   _id: string;
   username: string;
@@ -201,6 +202,7 @@ export interface IUserHierarchy {
   createdAt: string;
   depth: number;
 }
+
 export type IHierarchyNode = IUserHierarchy & { children: IHierarchyNode[] };
 
 export interface IUserTopUpPayload {
@@ -210,7 +212,7 @@ export interface IUserTopUpPayload {
 }
 
 export interface IOrder {
-  _id:string;
+  _id: string;
   uCode:
     | string
     | {
@@ -235,10 +237,10 @@ export interface IOrder {
   updatedAt: string;
 }
 
-
 export interface IUserRankAndTeamMetric {
   [slug: string]: number;
 }
+
 export interface IUserTeamMetric {
   userTotalDirects: string;
   userActiveDirects: string;
@@ -249,4 +251,3 @@ export interface IUserTeamMetric {
 export interface IUserCappingStatus {
   remainingCap: number;
 }
-

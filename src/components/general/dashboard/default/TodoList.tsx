@@ -39,6 +39,11 @@ const TodoList = () => {
     (state) => state.user
   );
   const { usePlanDailyLevel, usePlanDailyLevelReqDirect, loading } = usePlan();
+  
+  // Call hooks at the top level
+  const dailyLevelRequirements = usePlanDailyLevel?.() || [];
+  const dailyLevelDirectRequirements = usePlanDailyLevelReqDirect?.() || [];
+
   const [levelStatus, setLevelStatus] = useState<LevelStatus[]>([]);
 
   const getUserLevelStatus = (
@@ -53,9 +58,7 @@ const TodoList = () => {
   };
 
   useEffect(() => {
-    const userDirects = Number(userTeamMetric?.userTotalDirects) || 0; // Mocked user directs count
-    const dailyLevelRequirements = usePlanDailyLevel?.() || [];
-    const dailyLevelDirectRequirements = usePlanDailyLevelReqDirect?.() || [];
+    const userDirects = Number(userTeamMetric?.userTotalDirects) || 0;
 
     if (dailyLevelRequirements.length && dailyLevelDirectRequirements.length) {
       let prev = 0;
@@ -66,7 +69,7 @@ const TodoList = () => {
         const levelDirectRequirement =
           parsedNumdailyLevelDirectRequirements + prev || 0;
 
-        prev = levelDirectRequirement; // Update for next iteration
+        prev = levelDirectRequirement;
 
         const { reqDirects, status } = getUserLevelStatus(
           levelDirectRequirement,
@@ -85,7 +88,11 @@ const TodoList = () => {
     } else {
       setLevelStatus([]);
     }
-  }, [usePlanDailyLevel, usePlanDailyLevelReqDirect]);
+  }, [
+    userTeamMetric?.userTotalDirects,
+    dailyLevelRequirements,
+    dailyLevelDirectRequirements,
+  ]);
 
   return (
     <ScrollContainer className="col-xl-30 order-xl-ii todo-wrapper">
@@ -97,11 +104,6 @@ const TodoList = () => {
               User Level Status
             </span>
           </h2>
-          {/* <div className="card-header-right-icon">
-            <a className="link-with-icon" href={Href}>
-              + Create
-            </a>
-          </div> */}
         </div>
       </CardHeader>
       <CardBody className="notification to-do-list">

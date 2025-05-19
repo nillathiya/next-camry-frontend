@@ -14,7 +14,7 @@ type PositiveNumber = number & { __brand: "PositiveNumber" };
 export default function SidebarNav({
   sidebarMargin,
 }: {
-  sidebarMargin: PositiveNumber;
+  sidebarMargin: number;
 }) {
   const [activeMenu, setActiveMenu] = useState<SidebarItemType[]>([]);
   const { pinedMenu, sidebarSearchTerm } = useSelector(
@@ -46,22 +46,22 @@ export default function SidebarNav({
               active: undefined,
               subMenu: item.children
                 ? item.children
-                    .filter((child: MenuItemChild) => child.status)
-                    .map((child: MenuItemChild) => {
-                      const childUrl = parentKey
-                        ? `${parentKey}/${child.key.replace(
-                            `${item.key}/`,
-                            ""
-                          )}`
-                        : `/${child.key}`;
-                      return {
-                        title: child.label,
-                        url: `/dashboard${childUrl}`,
-                        icon: getSafeIcon(child.icon),
-                        type: "sub",
-                        active: undefined,
-                      };
-                    })
+                  .filter((child: MenuItemChild) => child.status)
+                  .map((child: MenuItemChild) => {
+                    const childUrl = parentKey
+                      ? `${parentKey}/${child.key.replace(
+                        `${item.key}/`,
+                        ""
+                      )}`
+                      : `/${child.key}`;
+                    return {
+                      title: child.label,
+                      url: `/dashboard${childUrl}`,
+                      icon: getSafeIcon(child.icon),
+                      type: "sub",
+                      active: undefined,
+                    };
+                  })
                 : undefined,
             };
           }),
@@ -70,12 +70,16 @@ export default function SidebarNav({
   }, [menuItems]);
   const filteredMenuList = useMemo(() => {
     if (!sidebarSearchTerm) return convertedMenuList;
-
+    const searchTerm = sidebarSearchTerm.toLowerCase();
     return convertedMenuList.map((mainMenu) => ({
       ...mainMenu,
-      menu: mainMenu.menu.filter((submenu) =>
-        submenu.title?.toLowerCase().includes(sidebarSearchTerm.toLowerCase())
-      ),
+      menu: mainMenu.menu.filter((submenu) => {
+        const matchesTitle = submenu.title?.toLowerCase().includes(searchTerm);
+        const matchesSubMenu = submenu.subMenu?.some((child) =>
+          child.title?.toLowerCase().includes(searchTerm)
+        );
+        return matchesTitle || matchesSubMenu;
+      }),
     }));
   }, [sidebarSearchTerm, convertedMenuList]);
 
@@ -84,9 +88,9 @@ export default function SidebarNav({
 
   const isActive = (url?: string): boolean => {
     if (!url) return false;
-    const normalizedPathname = pathname.replace(/\/$/, "");
-    const normalizedUrl = url.replace(/\/$/, "");
-    return normalizedPathname === normalizedUrl;
+    const normalizedPathname = pathname.split("?")[0].replace(/\/$/, "");
+    const normalizedUrl = url.split("?")[0].replace(/\/$/, "");
+    return normalizedPathname === normalizedUrl || normalizedPathname.startsWith(normalizedUrl);
   };
 
   return (
@@ -108,9 +112,8 @@ export default function SidebarNav({
                   </li>
                 )}
                 <li
-                  className={`pin-title sidebar-main-title ${
-                    pinedMenu.length > 0 ? "show" : ""
-                  }`}
+                  className={`pin-title sidebar-main-title ${pinedMenu.length > 0 ? "show" : ""
+                    }`}
                 >
                   <div>
                     <h6>{Pinned}</h6>
@@ -119,9 +122,8 @@ export default function SidebarNav({
                 {filteredMenuList.map((mainMenu, i) => (
                   <Fragment key={i}>
                     <li
-                      className={`sidebar-main-title ${
-                        shouldHideMenu(mainMenu) ? "d-none" : ""
-                      }`}
+                      className={`sidebar-main-title ${shouldHideMenu(mainMenu) ? "d-none" : ""
+                        }`}
                     >
                       <div>
                         <h6 className="lan-1">{mainMenu.title}</h6>
