@@ -3128,3 +3128,6 @@ export const OutlineDarkAndLightAlerts = "Outline Dark And Light Alert";
 export const ImagePath = "/assets/images";
 export const DefaultDirectUserImg: string = "/user/User.png";
 export const DefaultLogo="/logo/logo.png"
+
+
+export const CappingMultiplier:number=2;

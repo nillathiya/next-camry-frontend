@@ -191,10 +191,10 @@ const TotalProfitCard: React.FC = () => {
           <div className="header-top">
             <h2>
               {TotalProfit}
-              <span className="f-light f-12 d-block f-w-500">
+              {/* <span className="f-light f-12 d-block f-w-500">
                 {SpecialDiscount}
                 <span className="txt-primary">60% OFF</span>
-              </span>
+              </span> */}
             </h2>
             <div className="card-header-right-icon">
               <CommonDropdown

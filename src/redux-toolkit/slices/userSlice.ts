@@ -6,6 +6,7 @@ import {
   IGetUserGenerationPayload,
   IOrder,
   IRegisterUserResponse,
+  IUserCappingStatus,
   IUser,
   IUserDirectsQuery,
   IUserHierarchy,
@@ -31,6 +32,7 @@ export interface UserState {
   hierarchy: IUserHierarchy[];
   userRankAndTeamMetric: IUserRankAndTeamMetric;
   userTeamMetric: IUserTeamMetric | null;
+  userCappingStatus: IUserCappingStatus | null;
   loading: {
     getUserDirects: boolean;
     getProfile: boolean;
@@ -44,6 +46,7 @@ export interface UserState {
     getUserOrders: boolean;
     getUserRankAndTeamMetric: boolean;
     getUserTeamMetric: boolean;
+    getUserCappingStatus: boolean;
   };
   error: any;
   newsEvents: INewsEvent[];
@@ -59,6 +62,7 @@ const initialState: UserState = {
   hierarchy: [],
   userRankAndTeamMetric: {},
   userTeamMetric: null,
+  userCappingStatus: null,
   loading: {
     getUserDirects: false,
     getProfile: false,
@@ -71,7 +75,8 @@ const initialState: UserState = {
     topUpUser: false,
     getUserOrders: false,
     getUserRankAndTeamMetric: false,
-    getUserTeamMetric:false,
+    getUserTeamMetric: false,
+    getUserCappingStatus: false,
   },
   error: null,
   newsEvents: [],
@@ -317,6 +322,22 @@ export const getUserTeamMetricsAsync = createAsyncThunk(
   }
 );
 
+export const getUserCappingStatusAsync = createAsyncThunk(
+  "user/getUserCappingStatus",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get<IApiResponse<IUserCappingStatus>>(
+        ROUTES.USER.GET_CAPPING_STATUS
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "An unknown error occurred"
+      );
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState,
@@ -544,6 +565,20 @@ const userSlice = createSlice({
       })
       .addCase(getUserTeamMetricsAsync.rejected, (state, action) => {
         state.loading.getUserTeamMetric = false;
+        state.error = action.payload as string;
+      })
+
+      // getUserCappingStatusAsync
+      .addCase(getUserCappingStatusAsync.pending, (state) => {
+        state.loading.getUserCappingStatus = true;
+        state.error = null;
+      })
+      .addCase(getUserCappingStatusAsync.fulfilled, (state, action) => {
+        state.loading.getUserCappingStatus = false;
+        state.userCappingStatus = action.payload.data;
+      })
+      .addCase(getUserCappingStatusAsync.rejected, (state, action) => {
+        state.loading.getUserCappingStatus = false;
         state.error = action.payload as string;
       });
   },
