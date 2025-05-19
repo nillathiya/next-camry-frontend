@@ -247,11 +247,12 @@ const SalesPipelineChart = () => {
           ))}
 
           <div
+          className="sales_content"
             style={{
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              gap: "1rem",
+              gap: "0rem",
             }}
           >
             {isLoading ? (
