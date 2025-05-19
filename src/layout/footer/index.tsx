@@ -1,3 +1,5 @@
+"use client"
+
 import { useCompanyCopyright } from "@/hooks/useCompanyInfo";
 import { Globe } from "react-feather";
 import { Col, Container, Row } from "reactstrap";
