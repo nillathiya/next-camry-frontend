@@ -128,7 +128,9 @@ function IncomeReport() {
   }, [selectedSource]);
 
   const filteredTx = selectedSource
-    ? incomeTransaction.filter((tx) => tx.source === selectedSource)
+    ? incomeTransaction.filter(
+        (tx) => tx.status === 1 && tx.source === selectedSource
+      )
     : incomeTransaction;
 
   useEffect(() => {
@@ -332,9 +334,9 @@ function IncomeReportComponent({ transactions, loading }: IncomeReportProps) {
           </Label>
           <Input
             id="user-directs-search"
-            onChange={(e: React.ChangeEvent<HTMLFormElement | HTMLInputElement>) =>
-              setFilterText(e.target.value)
-            }
+            onChange={(
+              e: React.ChangeEvent<HTMLFormElement | HTMLInputElement>
+            ) => setFilterText(e.target.value)}
             type="search"
             value={filterText}
             className="rounded-6"

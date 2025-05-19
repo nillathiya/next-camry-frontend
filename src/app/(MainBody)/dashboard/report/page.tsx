@@ -60,6 +60,7 @@ const Report = () => {
   const filteredData = useMemo(() => {
     const now = moment();
     return incomeTransaction.filter((item) => {
+      if (item.status !== 1) return false;
       const createdAt = moment(item.createdAt);
       if (!createdAt.isValid()) return false; // Skip invalid dates
       if (filter === "Today") {

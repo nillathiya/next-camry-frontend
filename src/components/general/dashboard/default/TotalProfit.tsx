@@ -151,7 +151,7 @@ const TotalProfitCard: React.FC = () => {
         type: "line",
         data: dates.map((date) => {
           const transactionsOnDate = filteredTransactions.filter(
-            (t) => t.source === source && t.createdAt === date
+            (t) => t.status===1 && t.source === source && t.createdAt === date
           );
           return transactionsOnDate.reduce((sum, t) => sum + t.amount, 0);
         }),
