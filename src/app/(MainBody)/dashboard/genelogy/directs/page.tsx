@@ -302,9 +302,9 @@ const UserDirects = () => {
         </Label>
         <Input
           id="user-directs-search"
-          onChange={(e: React.ChangeEvent<HTMLFormElement>) =>
-            setFilterText(e.target.value)
-          }
+          onChange={(
+            e: React.ChangeEvent<HTMLFormElement | HTMLInputElement>
+          ) => setFilterText(e.target.value)}
           type="search"
           value={filterText}
           aria-label="Search user directs by username, name, email, contact, or wallet address"
@@ -324,7 +324,7 @@ const UserDirects = () => {
         )}
       </div>
     );
-  }, [filterText, debouncedFilterText, loading]);
+  }, [filterText, debouncedFilterText, loading.getUserDirects]);
 
   const fetchData = useCallback(async () => {
     if (!session?.user?.id) {
@@ -434,11 +434,21 @@ const UserDirects = () => {
                 <DataTable
                   data={filteredItems}
                   columns={columns}
-                  progressPending={loading}
+                  progressPending={loading.getUserDirects}
                   progressComponent={
                     <Spinner color="primary">Loading...</Spinner>
                   }
-                  noDataComponent={<div>No users found.</div>}
+                  noDataComponent={
+                    !loading.getUserDirects && userDirects.length === 0 ? (
+                      <div className="text-center py-4">
+                        <p className="text-muted">
+                          No direct users found for this account.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="text-center py-4">No users found.</div>
+                    )
+                  }
                   highlightOnHover
                   striped
                   pagination

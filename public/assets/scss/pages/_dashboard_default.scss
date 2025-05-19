@@ -932,6 +932,11 @@
     }
     .referral-qr-section{
         margin-left: -120px;
+        @media (min-width:769px) and (max-width:1200px) {
+            .QR_responseive{
+                margin-right: 210px;
+            }
+        }
     }
 
     .offer-content {
@@ -1021,7 +1026,7 @@
 
     @media (min-width:769px) and (max-width:1200px) {
         img {
-            width: 20% !important;
+            width: 25% !important;
             right: 225px;
         }
     }

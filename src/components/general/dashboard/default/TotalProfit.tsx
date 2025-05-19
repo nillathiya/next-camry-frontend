@@ -7,6 +7,7 @@ import moment from "moment";
 import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
 import { getAllIncomeTransactionAsync } from "@/redux-toolkit/slices/fundSlice";
 import { IIncomeTransaction } from "@/types";
+import { useCompanyCurrency } from "@/hooks/useCompanyInfo";
 
 // Base chart options
 const baseChartOptions: any = {
@@ -98,6 +99,7 @@ const TotalProfitCard: React.FC = () => {
     incomeTransaction,
     loading: { getAllIncomeTransaction },
   } = useAppSelector((state) => state.fund);
+  const currency = useCompanyCurrency();
   const [chartData, setChartData] = useState<any>({
     series: [],
     options: baseChartOptions,
@@ -217,9 +219,9 @@ const TotalProfitCard: React.FC = () => {
             <>
               <div className="profit-data">
                 <h2>
-                  ${totalProfit.toLocaleString()}
+                  {currency}{totalProfit.toLocaleString()}
                   <span className="f-light f-500 f-12">
-                    (Another <span className="txt-primary me-1">$35,098</span>to
+                    (Another <span className="txt-primary me-1">{currency}35,098</span>to
                     Goal)
                   </span>
                 </h2>

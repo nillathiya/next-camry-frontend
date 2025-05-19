@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CardBody, Input, Button } from "reactstrap";
 import { ImagePath } from "@/constants";
 import QRCode from "react-qr-code";
@@ -12,6 +12,7 @@ const TopReferralBody = () => {
   const referralLink = `${window.location.origin}/auth/login?ref=${session?.user.username}`;
   const { darkMode } = useAppSelector((state) => state.themeCustomizer);
   const [isCopied, setIsCopied] = useState(false);
+  const [qrSize, setQrSize] = useState(250);
 
   const handleCopy = () => {
     navigator.clipboard
@@ -25,6 +26,24 @@ const TopReferralBody = () => {
         toast.error("Failed to copy link");
       });
   };
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width < 480) {
+        setQrSize(130);
+      } else if (width < 768) {
+        setQrSize(250);
+      } else {
+        setQrSize(128);
+      }
+    };
+
+    handleResize(); // Initial run
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <CardBody className="pt-0">
@@ -54,6 +73,7 @@ const TopReferralBody = () => {
         <div className="referral-qr-section">
           <h6 className="f-w-500 mb-2">QR Code</h6>
           <div
+            className="QR_responseive"
             style={{
               background: "white",
               padding: "16px",
@@ -63,7 +83,7 @@ const TopReferralBody = () => {
           >
             <QRCode
               value={referralLink}
-              size={128}
+              size={qrSize}
               bgColor="#ffffff"
               fgColor="#000000"
               level="Q"

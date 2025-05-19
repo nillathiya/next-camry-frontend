@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { getPinSettingsAsync } from "@/redux-toolkit/slices/settingSlice";
 import { userTopUpAsync } from "@/redux-toolkit/slices/userSlice";
 import { toast } from "react-toastify";
+import { useCompanyCurrency } from "@/hooks/useCompanyInfo";
 
 const BecomeMember = () => {
   const [error, setError] = useState("");
@@ -27,6 +28,7 @@ const BecomeMember = () => {
     loading: { topUpUser },
   } = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
+  const currency = useCompanyCurrency();
   const [selectedPin, setSelectedPin] = useState("");
 
   useEffect(() => {
@@ -78,7 +80,7 @@ const BecomeMember = () => {
                     <h4 className="title">{setting.name}</h4>
                   </div>
                   <div className="price-value">
-                    <span className="currency">$</span>
+                    <span className="currency">{currency}</span>
                     <span className="amount">{setting.rateMin}</span>
                     <span className="duration">/mo</span>
                   </div>
