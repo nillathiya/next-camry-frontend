@@ -31,11 +31,11 @@ const DefaultContainer = () => {
                 <RevenueWidget />
               </Row>
             </Col>
+            <TopReferral />
             <TotalProfitCard />
             <EarningReports />
             <UpcomingTransactionCard />
             <MemberStatisticsCard />
-            <TopReferral />
           </Row>
         </Col>
         <Col xl="3" className="col-xl-100">

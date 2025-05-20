@@ -1090,7 +1090,7 @@
       }
       .logo-wrapper {
         img {
-          height: 30px;
+          height: 50px;
         }
       }
     }
@@ -1666,13 +1666,13 @@
           .logo-wrapper {
             a {
               img {
-                height: 30px;
+                height: 60px;
               }
             }
           }
           .logo-wrapper,
           .logo-icon-wrapper {
-            padding: 20px;
+            padding: 8px 25px;
             border-bottom: 1px solid var(--sidebar-border-color);
             height: var(--header-height);
             @media (max-width:575px) {

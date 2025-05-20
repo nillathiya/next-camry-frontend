@@ -28,7 +28,7 @@ export default function LogoWrapper() {
       <Link href={`/dashboard/default`}>
         <Image
           height={102}
-          width={102}
+          width={90}
           className="img-fluid"
           src={
             companyLogo

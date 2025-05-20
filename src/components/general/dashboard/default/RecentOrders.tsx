@@ -8,6 +8,7 @@ import { formatDate } from "@/lib/dateFormate"; // ✅ Use your custom formatter
 import { IPinSettings } from "@/types/setting";
 import { getAllUserOrdersAsync } from "@/redux-toolkit/slices/userSlice";
 import { IOrder } from "@/types";
+import { useCompanyCurrency } from "@/hooks/useCompanyInfo";
 
 const RecentOrders = () => {
   const dispatch = useAppDispatch();
@@ -17,7 +18,7 @@ const RecentOrders = () => {
     userOrders,
     loading: { getUserOrders },
   } = useAppSelector((state) => state.user);
-
+  const currency = useCompanyCurrency();
   useEffect(() => {
     if (!getUserOrders || userOrders.length === 0) {
       dispatch(getAllUserOrdersAsync());
@@ -98,9 +99,9 @@ const RecentOrders = () => {
                       {/* Right Side: Name & Description */}
                       <div className="text-end">
                         <h6 className="mb-1">
-                          {typeof order.pinId === "object" && order.pinId.name
+                          {`${typeof order.pinId === "object" && order.pinId.name
                             ? order.pinId.name
-                            : "N/A"}
+                            : "N/A"} / ${currency}${order.bv}`}
                         </h6>
                         <Badge color="light-primary">{typeof order.pinId ==="object" && order.pinId.description ? order.pinId.description : "N/A" }</Badge>
                       </div>
