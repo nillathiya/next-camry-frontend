@@ -7,7 +7,7 @@ const UsersProfileContainer = () => {
     <Container fluid>
       <div className="user-profile">
         <Row>
-          <UserData />
+          {/* <UserData /> */}
           <EditProfileContainer/>
         </Row>
       </div>

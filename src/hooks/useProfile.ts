@@ -22,10 +22,10 @@ export const useProfile = () => {
   const { user, loading, error } = useAppSelector((state) => state.user);
 
   useEffect(() => {
-    if (!user && !loading) {
+    if (!user && !loading.getProfile) {
       fetchProfile();
     }
-  }, [user, status]);
+  }, [user, loading.getProfile]);
 
   const fetchProfile = async () => {
     return dispatch(getProfileAsync()).unwrap();
