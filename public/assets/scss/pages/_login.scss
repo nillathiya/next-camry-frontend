@@ -15,7 +15,7 @@
     margin-bottom: 20px;
     text-align: center;
     >img {
-      height: calc(28px + (40 - 28) * ((100vw - 320px) / (1920 - 320)));
+      // height: calc(28px + (40 - 28) * ((100vw - 320px) / (1920 - 320)));
     }
   }
   .btn-showcase {
@@ -134,7 +134,7 @@
 // sign-up wizard
 .theme-logo {
   img {
-    height: calc(28px + (40 - 28) * ((100vw - 320px) / (1920 - 320)));
+    // height: calc(28px + (40 - 28) * ((100vw - 320px) / (1920 - 320)));
   }
 }
 /**=====================

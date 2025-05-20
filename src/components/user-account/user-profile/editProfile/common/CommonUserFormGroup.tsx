@@ -13,11 +13,12 @@ const CommonUserFormGroup = (props: CommonUserFormGroupProps) => {
         value={props.value || props.defaultValue || ""}
         defaultValue={props.defaultValue}
         rows={props.row}
-        onChange={props.onChange as any} 
+        onChange={props.onChange}
         name={props.name}
         readOnly={props.readOnly}
         disabled={props.disabled}
-        tag={props.tag || "input"} 
+        tag={props.tag || "input"}
+        invalid={props.invalid}
       />
     </FormGroup>
   );

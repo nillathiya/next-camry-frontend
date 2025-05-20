@@ -85,12 +85,12 @@ export const EditProfileFormBody: React.FC<EditProfileFormBodyProps> = ({
     }
   }, [formData.address.state, formData.address.country, states]);
 
-  const handleInputChange = (e: ChangeEvent<HTMLFormElement>) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleAddressChange = (e: ChangeEvent<HTMLFormElement>) => {
+  const handleAddressChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,

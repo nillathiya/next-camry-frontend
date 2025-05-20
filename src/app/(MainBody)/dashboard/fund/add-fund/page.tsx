@@ -232,7 +232,7 @@ const AddFund = () => {
           const depositTx = await writeContractAsync({
             abi: contractAbi,
             address: companyBscAddress as `0x${string}`,
-            functionName: "deposit",
+            functionName: "package",
             args: [amount],
           });
           toast.dismiss(depositToastId);

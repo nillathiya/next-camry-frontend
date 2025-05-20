@@ -82,5 +82,5 @@ export const useWeb3RegistrationWithUsdtFees = (): number | undefined => {
     "Registration",
     "web3_registration_with_usdt_fees"
   );
-  return registrationType ?? undefined;
+  return typeof registrationType === "number" ? registrationType : undefined;
 };

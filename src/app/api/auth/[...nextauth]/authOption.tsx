@@ -183,5 +183,5 @@ export const authOptions: NextAuthOptions = {
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
-  debug: true, // Enable debug mode for detailed logs
+  debug: false, // Enable debug mode for detailed logs
 };

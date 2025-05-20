@@ -309,7 +309,7 @@ const Generation = () => {
         </Label>
         <Input
           id="tree-search"
-          onChange={(e: React.ChangeEvent<HTMLFormElement>) =>
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setFilterText(e.target.value)
           }
           type="search"
