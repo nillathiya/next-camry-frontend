@@ -92,6 +92,7 @@ export interface IUser {
   position: number;
   reason?: string;
   status: number;
+  package?: number;
 }
 
 export interface ICheckWalletQuery {
@@ -151,6 +152,7 @@ export interface IUserDirectsQuery {
   limit?: number | string;
   sortOrder?: "asc" | "desc";
   sortBy?: string;
+  withPackage?: string;
   page?: number | string;
 }
 

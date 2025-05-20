@@ -90,9 +90,11 @@ const UserForm = () => {
     if (hasRunAddressExistUseEffect.current) return;
 
     const handleWalletLogin = async () => {
+      console.log("isConnected",isConnected);
       if (!isConnected || !address || isCheckingAddress) {
         // Handle disconnection
         if (!isConnected) {
+          console.log("Handle Wallet Disconnection");
           setShowRegForm(false);
           localStorage.removeItem("showWeb3RegForm");
         }

@@ -1,5 +1,6 @@
 import { API_URL } from "@/api/route";
 import { DefaultDirectUserImg, ImagePath } from "@/constants";
+import { useCompanyCurrency } from "@/hooks/useCompanyInfo";
 import { formatDate } from "@/lib/dateFormate";
 import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
 import { getUserDirectsAsync } from "@/redux-toolkit/slices/userSlice";
@@ -18,6 +19,7 @@ const MemberStatisticsBody = () => {
   } = useAppSelector((state) => state.user);
   const [error, setError] = useState<string | null>(null);
   const [hasFetched, setHasFetched] = useState(false);
+  const companyCurrency = useCompanyCurrency();
 
   const fetchData = useCallback(async () => {
     if (!session?.user?.id) {
@@ -28,6 +30,8 @@ const MemberStatisticsBody = () => {
     try {
       const params: IUserDirectsQuery = {
         userId: session.user.id,
+        limit: 4,
+        withPackage: "true",
       };
       await dispatch(getUserDirectsAsync(params)).unwrap();
       setError(null);
@@ -50,7 +54,7 @@ const MemberStatisticsBody = () => {
 
   // Fetch data when needed
   useEffect(() => {
-    if (!hasFetched && !getUserDirects && userDirects.length === 0) {
+    if (!hasFetched && !getUserDirects) {
       fetchData();
     }
   }, [hasFetched, getUserDirects, userDirects, fetchData]);
@@ -95,6 +99,9 @@ const MemberStatisticsBody = () => {
                 </th>
                 <th>
                   <span className="f-light f-w-600">{"Rank Progress"}</span>
+                </th>
+                <th>
+                  <span className="f-light f-w-600">{"Package"}</span>
                 </th>
                 <th>
                   <span className="f-light f-w-600">{"Join Date"}</span>
@@ -143,6 +150,11 @@ const MemberStatisticsBody = () => {
                           aria-valuemin={0}
                           aria-valuemax={100}
                         />
+                      </div>
+                    </td>
+                    <td>
+                      <div>
+                        <h6 className="f-w-500">{`${companyCurrency}${user.package}`}</h6>
                       </div>
                     </td>
                     <td>
