@@ -9,7 +9,7 @@ import { getAllIncomeTransactionAsync, resetFetched } from "@/redux-toolkit/slic
 import { IIncomeTransaction } from "@/types";
 import { useCompanyCurrency } from "@/hooks/useCompanyInfo";
 
-// Base chart options
+// Base chart options (unchanged)
 const baseChartOptions: any = {
   chart: {
     height: 255,
@@ -39,15 +39,15 @@ const baseChartOptions: any = {
     opacity: 1,
   },
   markers: {
-    size: 0, // Disable markers to avoid errors with discrete settings
+    size: 0,
   },
   tooltip: {
     enabled: true,
-    shared: true, // Enable shared tooltip to handle multiple series
+    shared: true,
     intersect: false,
     marker: { show: true },
     y: {
-      formatter: (val: number) => `${val.toFixed(2)}`, // Format tooltip values
+      formatter: (val: number) => `${val.toFixed(2)}`,
     },
   },
   xaxis: {
@@ -96,8 +96,10 @@ const TotalProfitCard: React.FC = () => {
   const dispatch = useAppDispatch();
   const {
     incomeTransaction,
-    loading: { getAllIncomeTransaction },
+    loading,
+    fetched,
   } = useAppSelector((state) => state.fund);
+  const getAllIncomeTransaction = loading.getAllIncomeTransaction;
   const currency = useCompanyCurrency();
   const [chartData, setChartData] = useState<any>({
     series: [{ name: "No Data", type: "line", data: [0] }],
@@ -111,25 +113,28 @@ const TotalProfitCard: React.FC = () => {
   const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
 
   const fetchAndProcessData = useCallback(
-    async (timeFilter: string) => {
+    async (
+      timeFilter: string,
+      transactions: IIncomeTransaction[],
+      isLoading: boolean,
+      isFetched: boolean
+    ) => {
       try {
         setIsDataLoaded(false);
-        // Fetch transactions if not already loading
 
-        const { fetched } = useAppSelector((state) => state.fund);
-        if (!getAllIncomeTransaction && incomeTransaction.length === 0 && !fetched) {
+        // Fetch transactions if not already loading
+        if (!isLoading && transactions.length === 0 && !isFetched) {
           await dispatch(getAllIncomeTransactionAsync({})).unwrap();
-        } else if (incomeTransaction.length === 0 && fetched) {
-          // If fetched but still empty, reset fetched flag to allow future fetches
+        } else if (transactions.length === 0 && isFetched) {
+          // If fetched but still empty, reset fetched flag
           dispatch(resetFetched("getAllIncomeTransaction"));
         }
 
         // Filter transactions by createdAt and status
         const now = moment();
-        let filteredTransactions: IIncomeTransaction[] =
-          incomeTransaction.filter(
-            (t) => t.status === 1 && moment(t.createdAt).isValid()
-          );
+        let filteredTransactions: IIncomeTransaction[] = transactions.filter(
+          (t) => t.status === 1 && moment(t.createdAt).isValid()
+        );
         if (timeFilter === "Weekly") {
           filteredTransactions = filteredTransactions.filter((t) =>
             moment(t.createdAt).isAfter(now.clone().subtract(1, "week"))
@@ -211,12 +216,17 @@ const TotalProfitCard: React.FC = () => {
         setIsDataLoaded(true);
       }
     },
-    [dispatch, getAllIncomeTransaction, incomeTransaction]
+    [dispatch]
   );
 
   useEffect(() => {
-    fetchAndProcessData(filter);
-  }, [filter, fetchAndProcessData]);
+    fetchAndProcessData(
+      filter,
+      incomeTransaction,
+      loading.getAllIncomeTransaction,
+      fetched.getAllIncomeTransaction
+    );
+  }, [filter, incomeTransaction, loading.getAllIncomeTransaction, fetched, fetchAndProcessData]);
 
   const handleDropdownSelect = useCallback((selected: string) => {
     setFilter(selected);
