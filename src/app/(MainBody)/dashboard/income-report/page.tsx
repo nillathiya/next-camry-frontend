@@ -27,58 +27,58 @@ import { formatTxType } from "@/utils/stringUtils";
 import { exportToCSV } from "@/utils/csvUtils";
 
 // Custom styles
-const styles = `
-  .income-report-card {
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    border: none;
-  }
+// const styles = `
+//   .income-report-card {
+//     border-radius: 8px;
+//     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+//     border: none;
+//   }
 
-  .source-select {
-    max-width: 300px;
-    border-radius: 6px;
-  }
+//   .source-select {
+//     max-width: 300px;
+//     border-radius: 6px;
+//   }
 
-  .data-table-container {
-    transition: opacity 0.3s ease-in-out;
-  }
+//   .data-table-container {
+//     transition: opacity 0.3s ease-in-out;
+//   }
 
-  .data-table-container.loading {
-    opacity: 0.5;
-  }
+//   .data-table-container.loading {
+//     opacity: 0.5;
+//   }
 
-  .table-row {
-    animation: fadeIn 0.3s ease-in-out;
-  }
+//   .table-row {
+//     animation: fadeIn 0.3s ease-in-out;
+//   }
 
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
+//   @keyframes fadeIn {
+//     from {
+//       opacity: 0;
+//       transform: translateY(10px);
+//     }
+//     to {
+//       opacity: 1;
+//       transform: translateY(0);
+//     }
+//   }
 
-  .spinner-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 200px;
-  }
+//   .spinner-container {
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     min-height: 200px;
+//   }
 
-  .card-header {
-    background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%);
-    border-bottom: 1px solid #e9ecef;
-  }
-`;
+//   .card-header {
+//     background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%);
+//     border-bottom: 1px solid #e9ecef;
+//   }
+// `;
 
-// Add styles to document
-const styleSheet = document.createElement("style");
-styleSheet.innerText = styles;
-document.head.appendChild(styleSheet);
+// // Add styles to document
+// const styleSheet = document.createElement("style");
+// styleSheet.innerText = styles;
+// document.head.appendChild(styleSheet);
 
 const useDebounce = (value: string, delay: number) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -103,6 +103,7 @@ interface IncomeReportProps {
 
 function IncomeReport() {
   const dispatch = useAppDispatch();
+
   const {
     incomeTransaction,
     userIncomeInfo,
@@ -110,6 +111,7 @@ function IncomeReport() {
   } = useAppSelector((state) => state.fund);
   const [selectedSource, setSelectedSource] = useState("");
   const [isSourceSwitching, setIsSourceSwitching] = useState(false);
+  const { darkMode } = useAppSelector((state) => state.themeCustomizer);
 
   const skipSlugs = ["main_wallet", "fund_wallet"];
   const filteredSlugs = Object.keys(userIncomeInfo).filter(
@@ -142,7 +144,11 @@ function IncomeReport() {
   if (getUserIncomeInfo) {
     return (
       <Container fluid>
-        <div className="spinner-container">
+        <div
+          className={`text-center py-3 ${
+            darkMode ? "bg-dark text-light" : ""
+          } w-100`}
+        >
           <Spinner color="primary">Loading...</Spinner>
         </div>
       </Container>
@@ -192,6 +198,7 @@ function IncomeReport() {
 function IncomeReportComponent({ transactions, loading }: IncomeReportProps) {
   const [filterText, setFilterText] = useState("");
   const debouncedFilterText = useDebounce(filterText, 300);
+  const { darkMode } = useAppSelector((state) => state.themeCustomizer);
 
   const filteredTx = useMemo(() => {
     if (!debouncedFilterText) return transactions;
@@ -376,42 +383,56 @@ function IncomeReportComponent({ transactions, loading }: IncomeReportProps) {
       }`}
       id="row_create"
     >
-      <DataTable
-        data={filteredTx}
-        columns={columns}
-        progressPending={loading}
-        progressComponent={
-          <div className="spinner-container">
-            <Spinner color="primary">Loading...</Spinner>
-          </div>
-        }
-        noDataComponent={<div>No transactions found.</div>}
-        highlightOnHover
-        striped
-        pagination
-        className="border rounded-8 custom-scrollbar"
-        subHeader
-        subHeaderComponent={subHeaderComponentMemo}
-        customStyles={{
-          rows: {
-            style: {
-              animation: "fadeIn 0.3s ease-in-out",
+      <div className="dataTables_wrapper">
+        <DataTable
+          data={filteredTx}
+          columns={columns}
+          progressPending={loading}
+          progressComponent={
+            <div
+              className={`text-center py-3 ${
+                darkMode ? "bg-dark text-light" : ""
+              } w-100`}
+            >
+              <Spinner color="primary">Loading...</Spinner>
+            </div>
+          }
+          noDataComponent={
+            <div
+              className={`text-center py-3 ${
+                darkMode ? "bg-dark text-light" : ""
+              } w-100`}
+            >
+              No transactions found.
+            </div>
+          }
+          highlightOnHover
+          striped
+          pagination
+          className="border rounded-8 custom-scrollbar"
+          subHeader
+          subHeaderComponent={subHeaderComponentMemo}
+          customStyles={{
+            rows: {
+              style: {
+                animation: "fadeIn 0.3s ease-in-out",
+              },
             },
-          },
-          table: {
-            style: {
-              borderRadius: "8px",
-              overflow: "hidden",
+            table: {
+              style: {
+                borderRadius: "8px",
+                overflow: "hidden",
+              },
             },
-          },
-          head: {
-            style: {
-              background: "#f8f9fa",
-              fontWeight: "600",
+            head: {
+              style: {
+                background: "#f8f9fa",
+                fontWeight: "600",
+              },
             },
-          },
-        }}
-      />
+          }}
+        />
+      </div>
     </div>
   );
 }

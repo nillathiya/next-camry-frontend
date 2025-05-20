@@ -72,7 +72,7 @@ const RoyalityAndRewards = () => {
         })
       )
         .unwrap()
-        .then(() => toast.success("User rank updated successfully"))
+        .then(() => console.log("User rank updated successfully"))
         .catch(() => toast.error("Failed to update rank"));
     }
   }, [userRank, userLevel, dispatch]);
@@ -120,8 +120,8 @@ const RoyalityAndRewards = () => {
               No rank settings available
             </div>
           ) : (
-            <div className="table-responsive">
-              <Table hover bordered className="table-striped">
+            <div className="table-responsive rounded">
+              <Table hover bordered className="table-striped rounded">
                 <thead className="table-dark">
                   <tr>
                     <th scope="col" className="px-4 py-3">

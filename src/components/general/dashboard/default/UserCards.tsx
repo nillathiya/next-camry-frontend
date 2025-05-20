@@ -1,4 +1,5 @@
 import SvgIcon from "@/common-components/common-icon/CommonSvgIcons";
+import { useCompanyCurrency } from "@/hooks/useCompanyInfo";
 import { useWalletSettings } from "@/hooks/useWalletSettings";
 import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
 import { getUserWalletAsync } from "@/redux-toolkit/slices/userSlice";
@@ -32,6 +33,7 @@ const ScrollContainer = styled.div`
 const UserCards = () => {
   const dispatch = useAppDispatch();
   const { getWalletBalanceBySlug, getWalletNameBySlug } = useWalletSettings();
+  const companyCurrency = useCompanyCurrency();
 
   const {
     loading: { getUserWallet },
@@ -121,7 +123,7 @@ const UserCards = () => {
                   <div>
                     <h3 className="f-w-600">{getWalletNameBySlug(key)}</h3>
                     <span className="f-w-500 f-light f-12">
-                      {getWalletBalanceBySlug(key)}
+                      {`${companyCurrency}${getWalletBalanceBySlug(key)}`}
                     </span>
                   </div>
                 </CardBody>

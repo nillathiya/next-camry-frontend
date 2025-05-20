@@ -291,40 +291,40 @@ const UserDirects = () => {
     []
   );
 
-const subHeaderComponentMemo = useMemo(() => {
-  return (
-    <div
-      id="row_create_filter"
-      className="dataTables_filter d-flex align-items-center"
-    >
-      <Label className="me-1" htmlFor="user-directs-search">
-        Search:
-      </Label>
-      <Input
-        id="user-directs-search"
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          setFilterText(e.target.value)
-        }
-        type="search"
-        value={filterText}
-        aria-label="Search user directs by username, name, email, contact, or wallet address"
-        disabled={loading.getUserDirects}
-      />
-      {filterText && debouncedFilterText !== filterText && (
-        <span className="ms-2">Filtering...</span>
-      )}
-      {filterText && (
-        <button
-          className="btn btn-sm btn-outline-secondary ms-2"
-          onClick={() => setFilterText("")}
-          aria-label="Clear search filter"
-        >
-          Clear
-        </button>
-      )}
-    </div>
-  );
-}, [filterText, debouncedFilterText, loading.getUserDirects]);
+  const subHeaderComponentMemo = useMemo(() => {
+    return (
+      <div
+        id="row_create_filter"
+        className="dataTables_filter d-flex align-items-center"
+      >
+        <Label className="me-1" htmlFor="user-directs-search">
+          Search:
+        </Label>
+        <Input
+          id="user-directs-search"
+          onChange={(e: React.ChangeEvent<HTMLFormElement>) =>
+            setFilterText(e.target.value)
+          }
+          type="search"
+          value={filterText}
+          aria-label="Search user directs by username, name, email, contact, or wallet address"
+          disabled={loading.getUserDirects}
+        />
+        {filterText && debouncedFilterText !== filterText && (
+          <span className="ms-2">Filtering...</span>
+        )}
+        {filterText && (
+          <button
+            className="btn btn-sm btn-outline-secondary ms-2"
+            onClick={() => setFilterText("")}
+            aria-label="Clear search filter"
+          >
+            Clear
+          </button>
+        )}
+      </div>
+    );
+  }, [filterText, debouncedFilterText, loading.getUserDirects]);
 
   const fetchData = useCallback(async () => {
     if (!session?.user?.id) {
@@ -422,7 +422,7 @@ const subHeaderComponentMemo = useMemo(() => {
   };
 
   return (
-    <Container fluid className="advance-init">
+    <Container fluid className="advance-init-table">
       <Row>
         <Col sm="12">
           <Card>

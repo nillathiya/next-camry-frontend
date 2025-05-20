@@ -47,12 +47,12 @@ const SwapComponent: React.FC = () => {
   );
   const { getWalletNameBySlug, getWalletBalanceBySlug } = useWalletSettings();
   const {
-    loading: {getWalletSettings},
+    loading: { getWalletSettings },
     walletSettings,
     error: settingsError,
   } = useAppSelector((state) => state.setting);
   const {
-    loading: {getUserWallet},
+    loading: { getUserWallet },
     userWallet,
     error: userError,
   } = useAppSelector((state) => state.user);
@@ -160,7 +160,7 @@ const SwapComponent: React.FC = () => {
 
   return (
     <SwapContainer theme={darkMode ? "dark" : "light"}>
-      <SwapForm onSubmit={handleSubmit(onSubmit)}>
+      <SwapForm onSubmit={handleSubmit(onSubmit)} className="">
         <WalletSection>
           <WalletSelector>
             <Label theme={darkMode ? "dark" : "light"}>From Wallet</Label>

@@ -92,7 +92,6 @@ export interface IUser {
   position: number;
   reason?: string;
   status: number;
-  rank: number;
 }
 
 export interface ICheckWalletQuery {

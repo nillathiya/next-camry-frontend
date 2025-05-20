@@ -36,11 +36,11 @@ const RightHeader = () => {
 
   return (
     <ul className="nav-menus simple-list flex-row">
-      <li>
+      {/* <li>
         <span className="header-search">
           <SvgIcon onClick={handleSearch} iconId="search" />
         </span>
-      </li>
+      </li> */}
       <MaximizeScreen />
       {/* <NotificationBox /> */}
       {/* <HeaderBookmark /> */}

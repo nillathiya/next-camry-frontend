@@ -48,7 +48,7 @@ const ChatMessageLayer = () => {
       const response = await axios.get(`${API_URL}/api/tickets/user/${userId}`);
       const fetchedTickets = response.data.tickets;
       setTickets(fetchedTickets);
-      
+
       const unreadSet = new Set();
       fetchedTickets.forEach((ticket) => {
         if (ticket.unreadMessages?.user > 0) {
@@ -63,34 +63,37 @@ const ChatMessageLayer = () => {
   }, [userId]);
 
   // Fetch messages for a specific ticket
-  const fetchMessages = useCallback(async (ticket) => {
-    try {
-      setSelectedTicket(ticket);
-      setUnreadTickets((prev) => {
-        const updated = new Set(prev);
-        updated.delete(ticket._id);
-        return updated;
-      });
+  const fetchMessages = useCallback(
+    async (ticket) => {
+      try {
+        setSelectedTicket(ticket);
+        setUnreadTickets((prev) => {
+          const updated = new Set(prev);
+          updated.delete(ticket._id);
+          return updated;
+        });
 
-      await axios.patch(`${API_URL}/api/tickets/mark-read`, {
-        ticketId: ticket._id,
-        userId,
-      });
+        await axios.patch(`${API_URL}/api/tickets/mark-read`, {
+          ticketId: ticket._id,
+          userId,
+        });
 
-      const response = await axios.get(
-        `${API_URL}/api/tickets/${ticket._id}/messages?role=user`
-      );
+        const response = await axios.get(
+          `${API_URL}/api/tickets/${ticket._id}/messages?role=user`
+        );
 
-      if (response.data.status === "success") {
-        setMessages(response.data.data.messages);
-      } else {
-        toast.error("Failed to fetch messages");
+        if (response.data.status === "success") {
+          setMessages(response.data.data.messages);
+        } else {
+          toast.error("Failed to fetch messages");
+        }
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+        toast.error("Error fetching messages");
       }
-    } catch (error) {
-      console.error("Error fetching messages:", error);
-      toast.error("Error fetching messages");
-    }
-  }, [userId]);
+    },
+    [userId]
+  );
 
   // Socket and tickets setup
   useEffect(() => {
@@ -112,29 +115,30 @@ const ChatMessageLayer = () => {
         setMessages((prev) => {
           // Check for optimistic message by text and sender
           const optimisticIndex = prev.findIndex(
-            msg => 
+            (msg) =>
               msg._id && // Add check for _id existence
-              typeof msg._id === 'string' &&
-              msg._id.startsWith("temp-") && 
-              msg.text && msg.text.trim() === data.text.trim() && 
+              typeof msg._id === "string" &&
+              msg._id.startsWith("temp-") &&
+              msg.text &&
+              msg.text.trim() === data.text.trim() &&
               msg.sender === data.sender
           );
-    
+
           if (optimisticIndex !== -1) {
             // Replace optimistic message with server message
             const updated = [...prev];
             updated[optimisticIndex] = data;
             return updated;
           }
-    
+
           // Check for duplicate server message
-          if (prev.some(msg => msg._id === data._id)) {
+          if (prev.some((msg) => msg._id === data._id)) {
             return prev;
           }
-    
+
           return [...prev, data];
         });
-    
+
         // Mark as seen if message is from admin
         if (data.sender === "admin") {
           socket.emit("seenRequest", {
@@ -151,14 +155,14 @@ const ChatMessageLayer = () => {
     // Handle messages read
     const handleMessagesRead = ({ ticketId }) => {
       if (selectedTicket?._id === ticketId) {
-        setMessages((prev) => prev.map(msg => ({ ...msg, isRead: true })));
+        setMessages((prev) => prev.map((msg) => ({ ...msg, isRead: true })));
       }
     };
 
     // Handle seen confirmation
     const handleSeen = ({ ticketId }) => {
       if (selectedTicket?._id === ticketId) {
-        setMessages((prev) => prev.map(msg => ({ ...msg, isRead: true })));
+        setMessages((prev) => prev.map((msg) => ({ ...msg, isRead: true })));
       }
       setUnreadTickets((prev) => {
         const updated = new Set(prev);
@@ -243,6 +247,29 @@ const ChatMessageLayer = () => {
       setDescription("");
       toast.success("Ticket created successfully");
       fetchMessages(response.data.ticket); // Auto-select the new ticket
+      if (description.trim()) {
+        const tempId = `temp-${Date.now()}`;
+        const newMessage = {
+          ticketId: response.data.ticket._id,
+          text: description.trim(),
+          sender: "user",
+          isRead: false,
+          createdAt: new Date().toISOString(),
+          _id: tempId,
+        };
+        setMessages((prev) => [...prev, newMessage]);
+
+        await axios.post(`${API_URL}/api/tickets/message/send`, {
+          ticketId: response.data.ticket._id,
+          text: description.trim(),
+          sender: "user",
+        });
+
+        socket.emit("seenRequest", {
+          ticketId: response.data.ticket._id,
+          sender: "user",
+        });
+      }
     } catch (error) {
       console.error("Error creating ticket:", error);
       toast.error("Failed to create ticket");

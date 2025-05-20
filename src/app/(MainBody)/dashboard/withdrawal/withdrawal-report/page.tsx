@@ -53,6 +53,7 @@ const DepositHistory = () => {
   const { data: session } = useSession();
   const [filterText, setFilterText] = useState("");
   const debouncedFilterText = useDebounce(filterText, 300);
+  const { darkMode } = useAppSelector((state) => state.themeCustomizer);
 
   useEffect(() => {
     const fetchWithdrwalHistory = async () => {
@@ -310,9 +311,23 @@ const DepositHistory = () => {
                   columns={columns}
                   progressPending={getAllFundTransaction}
                   progressComponent={
-                    <Spinner color="primary">Loading...</Spinner>
+                    <div
+                      className={`text-center py-3 ${
+                        darkMode ? "bg-dark text-light" : ""
+                      } w-100`}
+                    >
+                      <Spinner color="primary">Loading...</Spinner>
+                    </div>
                   }
-                  noDataComponent={<div>Withdrawal Transaction Not Found.</div>}
+                  noDataComponent={
+                    <div
+                      className={`text-center py-3 ${
+                        darkMode ? "bg-dark text-light" : ""
+                      } w-100`}
+                    >
+                      Withdrawal Transaction Not Found.
+                    </div>
+                  }
                   highlightOnHover
                   striped
                   pagination

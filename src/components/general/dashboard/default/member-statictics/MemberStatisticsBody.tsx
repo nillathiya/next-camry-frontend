@@ -12,7 +12,10 @@ import { Input, Table, Spinner, Alert } from "reactstrap";
 const MemberStatisticsBody = () => {
   const dispatch = useAppDispatch();
   const { data: session } = useSession();
-  const { userDirects, loading: { getUserDirects } } = useAppSelector((state) => state.user);
+  const {
+    userDirects,
+    loading: { getUserDirects },
+  } = useAppSelector((state) => state.user);
   const [error, setError] = useState<string | null>(null);
   const [hasFetched, setHasFetched] = useState(false);
 
@@ -91,7 +94,7 @@ const MemberStatisticsBody = () => {
                   <span className="f-light f-w-600">{"Direct"}</span>
                 </th>
                 <th>
-                  <span className="f-light f-w-600">{"Progress"}</span>
+                  <span className="f-light f-w-600">{"Rank Progress"}</span>
                 </th>
                 <th>
                   <span className="f-light f-w-600">{"Join Date"}</span>
@@ -100,8 +103,8 @@ const MemberStatisticsBody = () => {
             </thead>
             <tbody>
               {latestDirects.map((user, i) => {
-                const progress = user.rank * 10;
-                const color = getProgressColor(user.rank);
+                const progress = (Number(user.myRank) || 0) * 10;
+                const color = getProgressColor(Number(user.myRank) || 0);
                 return (
                   <tr key={i}>
                     <td>

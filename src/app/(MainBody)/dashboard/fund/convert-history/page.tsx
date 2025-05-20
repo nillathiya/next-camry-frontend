@@ -46,11 +46,14 @@ const useDebounce = (value: string, delay: number) => {
 
 const DepositHistory = () => {
   const dispatch = useAppDispatch();
-  const { loading:{getAllFundTransaction} } = useAppSelector((state) => state.fund);
+  const {
+    loading: { getAllFundTransaction },
+  } = useAppSelector((state) => state.fund);
   const fundConvertHistory = useAppSelector(selectUserFundConvertHistory);
   const { data: session } = useSession();
   const [filterText, setFilterText] = useState("");
   const debouncedFilterText = useDebounce(filterText, 300);
+  const { darkMode } = useAppSelector((state) => state.themeCustomizer);
 
   useEffect(() => {
     const fetchConvertHistory = async () => {
@@ -65,7 +68,7 @@ const DepositHistory = () => {
     };
     fetchConvertHistory();
   }, []);
-console.log("fundConvertHistory",fundConvertHistory);
+  console.log("fundConvertHistory", fundConvertHistory);
 
   const filteredTx = useMemo(() => {
     if (!debouncedFilterText) return fundConvertHistory;
@@ -190,7 +193,7 @@ console.log("fundConvertHistory",fundConvertHistory);
         },
         cell: (row) => {
           const status = row.status;
-        
+
           const label =
             status === 1
               ? "Confirmed"
@@ -199,7 +202,7 @@ console.log("fundConvertHistory",fundConvertHistory);
               : status === 2
               ? "Rejected"
               : "N/A";
-        
+
           const colorClass =
             status === 1
               ? "btn btn-sm btn-success rounded-pill"
@@ -208,7 +211,7 @@ console.log("fundConvertHistory",fundConvertHistory);
               : status === 2
               ? "btn btn-sm btn-danger rounded-pill"
               : "btn btn-sm btn-secondary rounded-pill";
-        
+
           return (
             <span
               className={colorClass}
@@ -251,9 +254,9 @@ console.log("fundConvertHistory",fundConvertHistory);
         </Label>
         <Input
           id="user-directs-search"
-          onChange={(e: React.ChangeEvent<HTMLFormElement | HTMLInputElement>) =>
-            setFilterText(e.target.value)
-          }
+          onChange={(
+            e: React.ChangeEvent<HTMLFormElement | HTMLInputElement>
+          ) => setFilterText(e.target.value)}
           type="search"
           value={filterText}
           aria-label="Search user directs by username, name, email, contact, or wallet address"
@@ -304,10 +307,22 @@ console.log("fundConvertHistory",fundConvertHistory);
                   columns={columns}
                   progressPending={getAllFundTransaction}
                   progressComponent={
-                    <Spinner color="primary">Loading...</Spinner>
+                    <div
+                      className={`text-center py-3 ${
+                        darkMode ? "bg-dark text-light" : ""
+                      } w-100`}
+                    >
+                      <Spinner color="primary">Loading...</Spinner>
+                    </div>
                   }
                   noDataComponent={
-                    <div>Fund Convert Transaction Not Found.</div>
+                    <div
+                      className={`text-center py-3 ${
+                        darkMode ? "bg-dark text-light" : ""
+                      } w-100`}
+                    >
+                      Fund Convert Transaction Not Found.
+                    </div>
                   }
                   highlightOnHover
                   striped

@@ -52,6 +52,7 @@ const DepositHistory = () => {
   const { data: session } = useSession();
   const [filterText, setFilterText] = useState("");
   const debouncedFilterText = useDebounce(filterText, 300);
+  const { darkMode } = useAppSelector((state) => state.themeCustomizer);
 
   useEffect(() => {
     const fetchDepositHistory = async () => {
@@ -227,54 +228,60 @@ const DepositHistory = () => {
     []
   );
 
-const subHeaderComponentMemo = useMemo(() => {
-  return (
-    <div
-      id="row_create_filter"
-      className="dataTables_filter d-flex align-items-center"
-    >
-      <Label className="me-1" htmlFor="user-directs-search">
-        Search:
-      </Label>
-      <Input
-        id="user-directs-search"
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          setFilterText(e.target.value)
-        }
-        type="search"
-        value={filterText}
-        aria-label="Search user directs by username, name, email, contact, or wallet address"
-        disabled={getAllFundTransaction}
-      />
-      {filterText && debouncedFilterText !== filterText && (
-        <span className="ms-2">Filtering...</span>
-      )}
-      {filterText && (
+  const subHeaderComponentMemo = useMemo(() => {
+    return (
+      <div
+        id="row_create_filter"
+        className="dataTables_filter d-flex align-items-center"
+      >
+        <Label className="me-1" htmlFor="user-directs-search">
+          Search:
+        </Label>
+        <Input
+          id="user-directs-search"
+          onChange={(e: React.ChangeEvent<HTMLFormElement>) =>
+            setFilterText(e.target.value)
+          }
+          type="search"
+          value={filterText}
+          aria-label="Search user directs by username, name, email, contact, or wallet address"
+          disabled={getAllFundTransaction}
+        />
+        {filterText && debouncedFilterText !== filterText && (
+          <span className="ms-2">Filtering...</span>
+        )}
+        {filterText && (
+          <Button
+            color="secondary"
+            outline
+            size="sm"
+            className="ms-2"
+            onClick={() => setFilterText("")}
+            aria-label="Clear search filter"
+          >
+            Clear
+          </Button>
+        )}
         <Button
-          color="secondary"
-          outline
+          color="primary"
           size="sm"
           className="ms-2"
-          onClick={() => setFilterText("")}
-          aria-label="Clear search filter"
+          onClick={() =>
+            exportToCSV(filteredTx, columns, "deposit_history.csv")
+          }
+          aria-label="Export table data to CSV"
         >
-          Clear
+          Export
         </Button>
-      )}
-      <Button
-        color="primary"
-        size="sm"
-        className="ms-2"
-        onClick={() =>
-          exportToCSV(filteredTx, columns, "deposit_history.csv")
-        }
-        aria-label="Export table data to CSV"
-      >
-        Export
-      </Button>
-    </div>
-  );
-}, [filterText, debouncedFilterText, getAllFundTransaction, filteredTx, columns]);
+      </div>
+    );
+  }, [
+    filterText,
+    debouncedFilterText,
+    getAllFundTransaction,
+    filteredTx,
+    columns,
+  ]);
 
   return (
     <Container fluid className="advance-init-table">
@@ -291,9 +298,23 @@ const subHeaderComponentMemo = useMemo(() => {
                   columns={columns}
                   progressPending={getAllFundTransaction}
                   progressComponent={
-                    <Spinner color="primary">Loading...</Spinner>
+                    <div
+                      className={`text-center py-3 ${
+                        darkMode ? "bg-dark text-light" : ""
+                      } w-100`}
+                    >
+                      <Spinner color="primary">Loading...</Spinner>
+                    </div>
                   }
-                  noDataComponent={<div>Deposit Transaction Not Found.</div>}
+                  noDataComponent={
+                    <div
+                      className={`text-center py-3 ${
+                        darkMode ? "bg-dark text-light" : ""
+                      } w-100`}
+                    >
+                      Deposit Transaction Not Found.
+                    </div>
+                  }
                   highlightOnHover
                   striped
                   pagination

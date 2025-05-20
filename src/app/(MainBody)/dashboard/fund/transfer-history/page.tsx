@@ -50,6 +50,7 @@ const DepositHistory = () => {
   const { data: session } = useSession();
   const [filterText, setFilterText] = useState("");
   const debouncedFilterText = useDebounce(filterText, 300);
+  const { darkMode } = useAppSelector((state) => state.themeCustomizer);
 
   useEffect(() => {
     const fetchTransferHistory = async () => {
@@ -65,8 +66,7 @@ const DepositHistory = () => {
     fetchTransferHistory();
   }, []);
 
-    console.log("getAllFundTransaction",loading.getAllFundTransaction);
-
+  console.log("getAllFundTransaction", loading.getAllFundTransaction);
 
   const filteredTx = useMemo(() => {
     if (!debouncedFilterText) return fundTransferHistory;
@@ -276,7 +276,6 @@ const DepositHistory = () => {
     []
   );
 
-
   const subHeaderComponentMemo = useMemo(() => {
     return (
       <div
@@ -341,10 +340,22 @@ const DepositHistory = () => {
                   columns={columns}
                   progressPending={loading.getAllFundTransaction}
                   progressComponent={
-                    <Spinner color="primary">Loading...</Spinner>
+                    <div
+                      className={`text-center py-3 ${
+                        darkMode ? "bg-dark text-light" : ""
+                      } w-100`}
+                    >
+                      <Spinner color="primary">Loading...</Spinner>
+                    </div>
                   }
                   noDataComponent={
-                    <div>Fund Transfer Transaction Not Found.</div>
+                    <div
+                      className={`text-center py-3 ${
+                        darkMode ? "bg-dark text-light" : ""
+                      } w-100`}
+                    >
+                      Fund Transfer Transaction Not Found.
+                    </div>
                   }
                   highlightOnHover
                   striped
