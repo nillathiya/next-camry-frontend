@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Card, CardBody, CardHeader, Col, Spinner } from "reactstrap";
 import ReactApexChart from "react-apexcharts";
 import CommonDropdown from "@/common-components/CommonDropdown";
@@ -39,25 +39,19 @@ const baseChartOptions: any = {
     opacity: 1,
   },
   markers: {
-    discrete: [
-      {
-        seriesIndex: 1,
-        dataPointIndex: 3,
-        fillColor: "#54BA4A",
-        strokeColor: "var(--white)",
-        size: 6,
-      },
-    ],
+    size: 0, // Disable markers to avoid errors with discrete settings
   },
   tooltip: {
     enabled: true,
-    shared: false,
+    shared: true, // Enable shared tooltip to handle multiple series
     intersect: false,
-    marker: { width: 5, height: 5 },
+    marker: { show: true },
+    y: {
+      formatter: (val: number) => `${val.toFixed(2)}`, // Format tooltip values
+    },
   },
   xaxis: {
     type: "category",
-    min: 0.9,
     crosshairs: { show: false },
     labels: {
       style: {
@@ -83,7 +77,12 @@ const baseChartOptions: any = {
       stops: [0, 90, 100],
     },
   },
-  yaxis: { tickAmount: 5 },
+  yaxis: {
+    tickAmount: 5,
+    labels: {
+      formatter: (val: number) => `${val.toFixed(0)}`,
+    },
+  },
   legend: { show: false },
   responsive: [
     {
@@ -101,103 +100,130 @@ const TotalProfitCard: React.FC = () => {
   } = useAppSelector((state) => state.fund);
   const currency = useCompanyCurrency();
   const [chartData, setChartData] = useState<any>({
-    series: [],
-    options: baseChartOptions,
+    series: [{ name: "No Data", type: "line", data: [0] }],
+    options: {
+      ...baseChartOptions,
+      xaxis: { ...baseChartOptions.xaxis, categories: ["No Data"] },
+    },
   });
   const [filter, setFilter] = useState<string>("Weekly");
   const [totalProfit, setTotalProfit] = useState<number>(0);
+  const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
 
-  const fetchAndProcessData = async (timeFilter: string) => {
-    try {
-      if (!getAllIncomeTransaction && incomeTransaction.length === 0) {
-        await dispatch(getAllIncomeTransactionAsync({})).unwrap();
-      }
+  const fetchAndProcessData = useCallback(
+    async (timeFilter: string) => {
+      try {
+        setIsDataLoaded(false);
+        // Fetch transactions if not already loading
 
-      // Filter transactions by createdAt based on timeFilter
-      const now = moment();
-      let filteredTransactions: IIncomeTransaction[] = incomeTransaction;
-      if (timeFilter === "Weekly") {
-        filteredTransactions = incomeTransaction.filter((t) =>
-          moment(t.createdAt).isAfter(now.clone().subtract(1, "week"))
-        );
-      } else if (timeFilter === "Monthly") {
-        filteredTransactions = incomeTransaction.filter((t) =>
-          moment(t.createdAt).isAfter(now.clone().subtract(1, "month"))
-        );
-      } else if (timeFilter === "Yearly") {
-        filteredTransactions = incomeTransaction.filter((t) =>
-          moment(t.createdAt).isAfter(now.clone().subtract(1, "year"))
-        );
-      }
+        if (!getAllIncomeTransaction && incomeTransaction.length === 0) {
+          await dispatch(getAllIncomeTransactionAsync({})).unwrap();
+        }
 
-      // Group transactions by source, filtering out undefined sources
-      const sources = Array.from(
-        new Set(
-          filteredTransactions
-            .map((t) => t.source)
-            .filter((s): s is string => s != null)
-        )
-      );
-      // Sort dates and ensure they are strings
-      const dates = Array.from(
-        new Set(
-          filteredTransactions
-            .map((t) => t.createdAt)
-            .filter((d): d is string => d != null)
-        )
-      ).sort((a, b) => moment(a).valueOf() - moment(b).valueOf());
-
-      // Create series for each source
-      const series = sources.map((source) => ({
-        name: source,
-        type: "line",
-        data: dates.map((date) => {
-          const transactionsOnDate = filteredTransactions.filter(
-            (t) => t.status===1 && t.source === source && t.createdAt === date
+        // Filter transactions by createdAt and status
+        const now = moment();
+        let filteredTransactions: IIncomeTransaction[] =
+          incomeTransaction.filter(
+            (t) => t.status === 1 && moment(t.createdAt).isValid()
           );
-          return transactionsOnDate.reduce((sum, t) => sum + t.amount, 0);
-        }),
-      }));
+        if (timeFilter === "Weekly") {
+          filteredTransactions = filteredTransactions.filter((t) =>
+            moment(t.createdAt).isAfter(now.clone().subtract(1, "week"))
+          );
+        } else if (timeFilter === "Monthly") {
+          filteredTransactions = filteredTransactions.filter((t) =>
+            moment(t.createdAt).isAfter(now.clone().subtract(1, "month"))
+          );
+        } else if (timeFilter === "Yearly") {
+          filteredTransactions = filteredTransactions.filter((t) =>
+            moment(t.createdAt).isAfter(now.clone().subtract(1, "year"))
+          );
+        }
 
-      // Calculate total profit
-      const total = filteredTransactions.reduce((sum, t) => sum + t.amount, 0);
-      setTotalProfit(total);
+        // Group transactions by source, filtering out undefined sources
+        const sources = Array.from(
+          new Set(
+            filteredTransactions
+              .map((t) => t.source)
+              .filter((s): s is string => s != null)
+          )
+        );
 
-      // Update chart options with dynamic categories (dates)
-      const updatedOptions = {
-        ...baseChartOptions,
-        xaxis: {
-          ...baseChartOptions.xaxis,
-          categories: dates.map((date) => moment(date).format("MMM DD")),
-        },
-      };
+        // Group transactions by date (day only)
+        const dates = Array.from(
+          new Set(
+            filteredTransactions
+              .map((t) => moment(t.createdAt).format("YYYY-MM-DD"))
+              .filter((d): d is string => d != null)
+          )
+        ).sort((a, b) => moment(a).valueOf() - moment(b).valueOf());
 
-      setChartData({ series, options: updatedOptions });
-    } catch (error) {
-      console.error("Error fetching transactions:", error);
-    }
-  };
+        // Create series for each source
+        const series = sources.length
+          ? sources.map((source) => ({
+              name: source,
+              type: "line",
+              data: dates.map((date) => {
+                const transactionsOnDate = filteredTransactions.filter(
+                  (t) =>
+                    t.source === source &&
+                    moment(t.createdAt).format("YYYY-MM-DD") === date
+                );
+                return transactionsOnDate.reduce((sum, t) => sum + t.amount, 0);
+              }),
+            }))
+          : [{ name: "No Data", type: "line", data: [0] }];
+
+        // Calculate total profit for status === 1
+        const total = filteredTransactions.reduce(
+          (sum, t) => sum + t.amount,
+          0
+        );
+        setTotalProfit(total);
+
+        // Update chart options with dynamic categories (dates)
+        const updatedOptions = {
+          ...baseChartOptions,
+          xaxis: {
+            ...baseChartOptions.xaxis,
+            categories: dates.length
+              ? dates.map((date) => moment(date).format("MMM DD"))
+              : ["No Data"],
+          },
+        };
+
+        setChartData({ series, options: updatedOptions });
+        setIsDataLoaded(true);
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+        setChartData({
+          series: [{ name: "No Data", type: "line", data: [0] }],
+          options: {
+            ...baseChartOptions,
+            xaxis: { ...baseChartOptions.xaxis, categories: ["No Data"] },
+          },
+        });
+        setTotalProfit(0);
+        setIsDataLoaded(true);
+      }
+    },
+    [dispatch, getAllIncomeTransaction, incomeTransaction]
+  );
 
   useEffect(() => {
     fetchAndProcessData(filter);
-  }, []);
+  }, [filter, fetchAndProcessData]);
 
-  const handleDropdownSelect = (selected: string) => {
+  const handleDropdownSelect = useCallback((selected: string) => {
     setFilter(selected);
-  };
+  }, []);
 
   return (
     <Col xl="6" md="6">
       <Card className="height-equal title-line">
         <CardHeader className="card-no-border">
           <div className="header-top">
-            <h2>
-              {TotalProfit}
-              {/* <span className="f-light f-12 d-block f-w-500">
-                {SpecialDiscount}
-                <span className="txt-primary">60% OFF</span>
-              </span> */}
-            </h2>
+            <h2>{TotalProfit}</h2>
             <div className="card-header-right-icon">
               <CommonDropdown
                 dropdownToggle={filter}
@@ -208,21 +234,30 @@ const TotalProfitCard: React.FC = () => {
           </div>
         </CardHeader>
         <CardBody className="pt-0">
-          {getAllIncomeTransaction ? (
+          {getAllIncomeTransaction || !isDataLoaded ? (
             <div
               className="d-flex justify-content-center align-items-center"
               style={{ height: 255 }}
             >
               <Spinner color="primary" />
             </div>
+          ) : chartData.series[0]?.name === "No Data" ? (
+            <div
+              className="d-flex justify-content-center align-items-center text-muted"
+              style={{ height: 255 }}
+            >
+              No transactions available
+            </div>
           ) : (
             <>
               <div className="profit-data">
                 <h2>
-                  {currency}{totalProfit.toLocaleString()}
+                  {currency}
+                  {totalProfit.toLocaleString()}
                   <span className="f-light f-500 f-12">
-                    (Another <span className="txt-primary me-1">{currency}35,098</span>to
-                    Goal)
+                    (Another{" "}
+                    <span className="txt-primary me-1">{currency}35,098</span>
+                    to Goal)
                   </span>
                 </h2>
               </div>

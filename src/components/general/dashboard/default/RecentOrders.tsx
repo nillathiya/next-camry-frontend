@@ -98,12 +98,19 @@ const RecentOrders = () => {
                     >
                       {/* Right Side: Name & Description */}
                       <div className="text-end">
-                        <h6 className="mb-1">
-                          {`${typeof order.pinId === "object" && order.pinId.name
-                            ? order.pinId.name
-                            : "N/A"} / ${currency}${order.bv}`}
+                        <h6 className="mb-1 text-start">
+                          {`${
+                            typeof order.pinId === "object" && order.pinId.name
+                              ? order.pinId.name
+                              : "N/A"
+                          } / ${currency}${order.bv}`}
                         </h6>
-                        <Badge color="light-primary">{typeof order.pinId ==="object" && order.pinId.description ? order.pinId.description : "N/A" }</Badge>
+                        <Badge color="light-primary">
+                          {typeof order.pinId === "object" &&
+                          order.pinId.description
+                            ? order.pinId.description
+                            : "N/A"}
+                        </Badge>
                       </div>
 
                       {/* Left Side: Status & Date */}
