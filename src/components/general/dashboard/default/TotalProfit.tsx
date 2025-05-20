@@ -96,10 +96,9 @@ const TotalProfitCard: React.FC = () => {
   const dispatch = useAppDispatch();
   const {
     incomeTransaction,
-    loading,
+    loading: { getAllIncomeTransaction },
     fetched,
   } = useAppSelector((state) => state.fund);
-  const getAllIncomeTransaction = loading.getAllIncomeTransaction;
   const currency = useCompanyCurrency();
   const [chartData, setChartData] = useState<any>({
     series: [{ name: "No Data", type: "line", data: [0] }],
@@ -115,94 +114,117 @@ const TotalProfitCard: React.FC = () => {
   const fetchAndProcessData = useCallback(
     async (
       timeFilter: string,
-      transactions: IIncomeTransaction[],
+      transactions: IIncomeTransaction[] | null | undefined,
       isLoading: boolean,
       isFetched: boolean
     ) => {
       try {
         setIsDataLoaded(false);
 
-        // Fetch transactions if not already loading
-        if (!isLoading && transactions.length === 0 && !isFetched) {
+        // Check if transactions are null, undefined, or empty
+        const isTransactionsEmpty = !transactions || transactions.length === 0;
+
+        // Fetch only if not loading, transactions are empty, and not already fetched
+        if (!isLoading && isTransactionsEmpty && !isFetched) {
+          console.log("Fetching transactions"); // Debugging log
           await dispatch(getAllIncomeTransactionAsync({})).unwrap();
-        } else if (transactions.length === 0 && isFetched) {
-          // If fetched but still empty, reset fetched flag
-          dispatch(resetFetched("getAllIncomeTransaction"));
+          return; // Exit early to let useEffect re-run with updated transactions
         }
 
-        // Filter transactions by createdAt and status
-        const now = moment();
-        let filteredTransactions: IIncomeTransaction[] = transactions.filter(
-          (t) => t.status === 1 && moment(t.createdAt).isValid()
-        );
-        if (timeFilter === "Weekly") {
-          filteredTransactions = filteredTransactions.filter((t) =>
-            moment(t.createdAt).isAfter(now.clone().subtract(1, "week"))
-          );
-        } else if (timeFilter === "Monthly") {
-          filteredTransactions = filteredTransactions.filter((t) =>
-            moment(t.createdAt).isAfter(now.clone().subtract(1, "month"))
-          );
-        } else if (timeFilter === "Yearly") {
-          filteredTransactions = filteredTransactions.filter((t) =>
-            moment(t.createdAt).isAfter(now.clone().subtract(1, "year"))
-          );
+        // If transactions are empty but fetched, show "No Data" without resetting fetched
+        if (isTransactionsEmpty && isFetched) {
+          console.log("No transactions available, but fetched"); // Debugging log
+          setChartData({
+            series: [{ name: "No Data", type: "line", data: [0] }],
+            options: {
+              ...baseChartOptions,
+              xaxis: { ...baseChartOptions.xaxis, categories: ["No Data"] },
+            },
+          });
+          setTotalProfit(0);
+          setIsDataLoaded(true);
+          return;
         }
 
-        // Group transactions by source, filtering out undefined sources
-        const sources = Array.from(
-          new Set(
-            filteredTransactions
-              .map((t) => t.source)
-              .filter((s): s is string => s != null)
-          )
-        );
+        // If transactions exist, process them
+        if (transactions) {
+          // Filter transactions by createdAt and status
+          const now = moment();
+          let filteredTransactions: IIncomeTransaction[] = transactions.filter(
+            (t) => t.status === 1 && moment(t.createdAt).isValid()
+          );
+          if (timeFilter === "Weekly") {
+            filteredTransactions = filteredTransactions.filter((t) =>
+              moment(t.createdAt).isAfter(now.clone().subtract(1, "week"))
+            );
+          } else if (timeFilter === "Monthly") {
+            filteredTransactions = filteredTransactions.filter((t) =>
+              moment(t.createdAt).isAfter(now.clone().subtract(1, "month"))
+            );
+          } else if (timeFilter === "Yearly") {
+            filteredTransactions = filteredTransactions.filter((t) =>
+              moment(t.createdAt).isAfter(now.clone().subtract(1, "year"))
+            );
+          }
 
-        // Group transactions by date (day only)
-        const dates = Array.from(
-          new Set(
-            filteredTransactions
-              .map((t) => moment(t.createdAt).format("YYYY-MM-DD"))
-              .filter((d): d is string => d != null)
-          )
-        ).sort((a, b) => moment(a).valueOf() - moment(b).valueOf());
+          // Group transactions by source, filtering out undefined sources
+          const sources = Array.from(
+            new Set(
+              filteredTransactions
+                .map((t) => t.source)
+                .filter((s): s is string => s != null)
+            )
+          );
 
-        // Create series for each source
-        const series = sources.length
-          ? sources.map((source) => ({
-              name: source,
-              type: "line",
-              data: dates.map((date) => {
-                const transactionsOnDate = filteredTransactions.filter(
-                  (t) =>
-                    t.source === source &&
-                    moment(t.createdAt).format("YYYY-MM-DD") === date
-                );
-                return transactionsOnDate.reduce((sum, t) => sum + t.amount, 0);
-              }),
-            }))
-          : [{ name: "No Data", type: "line", data: [0] }];
+          // Group transactions by date (day only)
+          const dates = Array.from(
+            new Set(
+              filteredTransactions
+                .map((t) => moment(t.createdAt).format("YYYY-MM-DD"))
+                .filter((d): d is string => d != null)
+            )
+          ).sort((a, b) => moment(a).valueOf() - moment(b).valueOf());
 
-        // Calculate total profit for status === 1
-        const total = filteredTransactions.reduce(
-          (sum, t) => sum + t.amount,
-          0
-        );
-        setTotalProfit(total);
+          // Create series for each source
+          const series = sources.length
+            ? sources.map((source) => ({
+                name: source,
+                type: "line",
+                data: dates.map((date) => {
+                  const transactionsOnDate = filteredTransactions.filter(
+                    (t) =>
+                      t.source === source &&
+                      moment(t.createdAt).format("YYYY-MM-DD") === date
+                  );
+                  return transactionsOnDate.reduce(
+                    (sum, t) => sum + t.amount,
+                    0
+                  );
+                }),
+              }))
+            : [{ name: "No Data", type: "line", data: [0] }];
 
-        // Update chart options with dynamic categories (dates)
-        const updatedOptions = {
-          ...baseChartOptions,
-          xaxis: {
-            ...baseChartOptions.xaxis,
-            categories: dates.length
-              ? dates.map((date) => moment(date).format("MMM DD"))
-              : ["No Data"],
-          },
-        };
+          // Calculate total profit for status === 1
+          const total = filteredTransactions.reduce(
+            (sum, t) => sum + t.amount,
+            0
+          );
+          setTotalProfit(total);
 
-        setChartData({ series, options: updatedOptions });
-        setIsDataLoaded(true);
+          // Update chart options with dynamic categories (dates)
+          const updatedOptions = {
+            ...baseChartOptions,
+            xaxis: {
+              ...baseChartOptions.xaxis,
+              categories: dates.length
+                ? dates.map((date) => moment(date).format("MMM DD"))
+                : ["No Data"],
+            },
+          };
+
+          setChartData({ series, options: updatedOptions });
+          setIsDataLoaded(true);
+        }
       } catch (error) {
         console.error("Error fetching transactions:", error);
         setChartData({
@@ -223,10 +245,10 @@ const TotalProfitCard: React.FC = () => {
     fetchAndProcessData(
       filter,
       incomeTransaction,
-      loading.getAllIncomeTransaction,
+      getAllIncomeTransaction,
       fetched.getAllIncomeTransaction
     );
-  }, [filter, incomeTransaction, loading.getAllIncomeTransaction, fetched, fetchAndProcessData]);
+  }, [filter, incomeTransaction, getAllIncomeTransaction, fetched.getAllIncomeTransaction, fetchAndProcessData]);
 
   const handleDropdownSelect = useCallback((selected: string) => {
     setFilter(selected);
