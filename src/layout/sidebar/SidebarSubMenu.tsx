@@ -65,11 +65,11 @@ export default function SidebarSubMenu({
             />
           )}
 
-          {item.subMenu?.length ? (
+          {/* {item.subMenu?.length ? (
             <Badge color="primary" className="ms-2">
               {item.subMenu.length}
             </Badge>
-          ) : null}
+          ) : null} */}
 
           <Link
             className={`${level === 0 ? "sidebar-link sidebar-title" : ""} ${
@@ -87,7 +87,7 @@ export default function SidebarSubMenu({
             }}
           >
             {item.icon && level === 0 && (
-              <SvgIcon className="stroke-icon" iconId={`stroke-${item.icon}`} />
+              <SvgIcon className="stroke-icon" iconId="stroke-project" />
             )}
             {level === 0 ? (
               <span className="lan-3">{item.title}</span>

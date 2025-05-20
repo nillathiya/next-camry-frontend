@@ -21,15 +21,13 @@ export default function SidebarNav({
     (state: RootState) => state.layout
   );
   const menuItems = useMenuItems();
-  const DEFAULT_ICON = "circle";
+  const DEFAULT_ICON = "project";
   const pathname = usePathname();
 
   const convertedMenuList = useMemo(() => {
     if (!menuItems?.items || menuItems.items.length === 0) return [];
-
     const getSafeIcon = (icon?: string) =>
       icon ? icon.replace("Icon", "").toLowerCase() : DEFAULT_ICON;
-
     return [
       {
         title: "Main Menu",
@@ -40,28 +38,28 @@ export default function SidebarNav({
             return {
               title: item.label,
               name: item.label,
-              icon: getSafeIcon(item.icon),
+              icon: getSafeIcon(item.icon), 
               url: item.key ? `/dashboard${parentKey}` : undefined,
               type: "link",
               active: undefined,
               subMenu: item.children
                 ? item.children
-                  .filter((child: MenuItemChild) => child.status)
-                  .map((child: MenuItemChild) => {
-                    const childUrl = parentKey
-                      ? `${parentKey}/${child.key.replace(
-                        `${item.key}/`,
-                        ""
-                      )}`
-                      : `/${child.key}`;
-                    return {
-                      title: child.label,
-                      url: `/dashboard${childUrl}`,
-                      icon: getSafeIcon(child.icon),
-                      type: "sub",
-                      active: undefined,
-                    };
-                  })
+                    .filter((child: MenuItemChild) => child.status)
+                    .map((child: MenuItemChild) => {
+                      const childUrl = parentKey
+                        ? `${parentKey}/${child.key.replace(
+                            `${item.key}/`,
+                            ""
+                          )}`
+                        : `/${child.key}`;
+                      return {
+                        title: child.label,
+                        url: `/dashboard${childUrl}`,
+                        icon: getSafeIcon(child.icon),
+                        type: "sub",
+                        active: undefined,
+                      };
+                    })
                 : undefined,
             };
           }),
@@ -90,7 +88,10 @@ export default function SidebarNav({
     if (!url) return false;
     const normalizedPathname = pathname.split("?")[0].replace(/\/$/, "");
     const normalizedUrl = url.split("?")[0].replace(/\/$/, "");
-    return normalizedPathname === normalizedUrl || normalizedPathname.startsWith(normalizedUrl);
+    return (
+      normalizedPathname === normalizedUrl ||
+      normalizedPathname.startsWith(normalizedUrl)
+    );
   };
 
   return (
@@ -112,8 +113,9 @@ export default function SidebarNav({
                   </li>
                 )}
                 <li
-                  className={`pin-title sidebar-main-title ${pinedMenu.length > 0 ? "show" : ""
-                    }`}
+                  className={`pin-title sidebar-main-title ${
+                    pinedMenu.length > 0 ? "show" : ""
+                  }`}
                 >
                   <div>
                     <h6>{Pinned}</h6>
@@ -122,8 +124,9 @@ export default function SidebarNav({
                 {filteredMenuList.map((mainMenu, i) => (
                   <Fragment key={i}>
                     <li
-                      className={`sidebar-main-title ${shouldHideMenu(mainMenu) ? "d-none" : ""
-                        }`}
+                      className={`sidebar-main-title ${
+                        shouldHideMenu(mainMenu) ? "d-none" : ""
+                      }`}
                     >
                       <div>
                         <h6 className="lan-1">{mainMenu.title}</h6>
