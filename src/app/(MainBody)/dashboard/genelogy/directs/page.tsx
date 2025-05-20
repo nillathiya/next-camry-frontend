@@ -302,7 +302,7 @@ const UserDirects = () => {
         </Label>
         <Input
           id="user-directs-search"
-          onChange={(e: React.ChangeEvent<HTMLFormElement>) =>
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setFilterText(e.target.value)
           }
           type="search"
