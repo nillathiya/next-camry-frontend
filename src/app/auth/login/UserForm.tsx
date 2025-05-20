@@ -294,6 +294,7 @@ const UserForm = () => {
     <div className="web3-login-form">
       <h4>{SignInToAccount}</h4>
       <p>{"Connect your wallet to login or register"}</p>
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
       <ConnectButton
         chainStatus="icon"
         showBalance={false}
@@ -302,6 +303,7 @@ const UserForm = () => {
           largeScreen: "full",
         }}
       />
+      </div>
     </div>
   );
 
