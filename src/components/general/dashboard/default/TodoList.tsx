@@ -74,7 +74,7 @@ const TodoList = () => {
         );
 
         return {
-          level: index,
+          level: index + 1,
           levelIncome: String(levelIncome),
           reqDirects,
           status,
