@@ -18,7 +18,7 @@ import {
   FormGroup,
 } from "reactstrap";
 import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
-import { getAllIncomeTransactionAsync } from "@/redux-toolkit/slices/fundSlice";
+import { getAllIncomeTransactionAsync, resetFetched } from "@/redux-toolkit/slices/fundSlice";
 import moment from "moment";
 import { useWalletSettings } from "@/hooks/useWalletSettings";
 
@@ -44,51 +44,81 @@ const Report = () => {
 
   const {
     incomeTransaction,
+    fetched,
     loading: { getAllIncomeTransaction },
   } = useAppSelector((state) => state.fund);
 
   useEffect(() => {
-    if (incomeTransaction.length === 0) {
+    if (!fetched) {
+      // Only fetch if not already fetched
       dispatch(getAllIncomeTransactionAsync({}))
         .unwrap()
         .catch((err: string) =>
           setError(err || "Server Error, Please Try Later")
         );
     }
-  }, [dispatch, incomeTransaction.length]);
+  }, [dispatch, fetched]);
+
+  // Handle filter changes (optional: fetch new data when filter changes)
+  useEffect(() => {
+    // Only refetch when filter/custom dates change AND fetched is true (i.e., data was already fetched)
+    if (fetched) {
+      dispatch(resetFetched("getAllIncomeTransaction"));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter, customStartDate, customEndDate]);
+
+  useEffect(() => {
+    // Only fetch if not already fetched
+    if (!fetched) {
+      const params: any = {};
+      if (filter === "Custom Range" && customStartDate && customEndDate) {
+        params.startDate = customStartDate;
+        params.endDate = customEndDate;
+      } else {
+        // Map filter to date range for API params
+        const now = moment();
+        if (filter === "Today") {
+          params.startDate = now.startOf("day").toISOString();
+          params.endDate = now.endOf("day").toISOString();
+        } else if (filter === "Last Week") {
+          params.startDate = now.clone().subtract(7, "days").toISOString();
+          params.endDate = now.toISOString();
+        } else if (filter === "Last Month") {
+          params.startDate = now.clone().subtract(30, "days").toISOString();
+          params.endDate = now.toISOString();
+        } else if (filter === "This Year") {
+          params.startDate = now.startOf("year").toISOString();
+          params.endDate = now.endOf("year").toISOString();
+        } else if (filter === "Last Year") {
+          params.startDate = moment()
+            .subtract(1, "year")
+            .startOf("year")
+            .toISOString();
+          params.endDate = moment()
+            .subtract(1, "year")
+            .endOf("year")
+            .toISOString();
+        }
+      }
+      dispatch(getAllIncomeTransactionAsync(params))
+        .unwrap()
+        .catch((err: string) =>
+          setError(err || "Server Error, Please Try Later")
+        );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, fetched, filter, customStartDate, customEndDate]);
 
   const filteredData = useMemo(() => {
-    const now = moment();
     return incomeTransaction.filter((item) => {
       if (item.status !== 1) return false;
       const createdAt = moment(item.createdAt);
-      if (!createdAt.isValid()) return false; // Skip invalid dates
-      if (filter === "Today") {
-        return createdAt.isSame(now, "day");
-      } else if (filter === "Last Week") {
-        return createdAt.isAfter(moment().subtract(7, "days"));
-      } else if (filter === "Last Month") {
-        return createdAt.isAfter(moment().subtract(30, "days"));
-      } else if (filter === "This Year") {
-        return createdAt.isSame(now, "year");
-      } else if (filter === "Last Year") {
-        const lastYear = moment().subtract(1, "year").year();
-        return createdAt.year() === lastYear;
-      } else if (
-        filter === "Custom Range" &&
-        customStartDate &&
-        customEndDate
-      ) {
-        const start = moment(customStartDate);
-        const end = moment(customEndDate);
-        if (start.isValid() && end.isValid()) {
-          return createdAt.isBetween(start, end, undefined, "[]");
-        }
-        return false;
-      }
-      return true;
+      if (!createdAt.isValid()) return false;
+      // Client-side filtering (optional, since API now handles date filtering)
+      return true; // Rely on API params for filtering
     });
-  }, [incomeTransaction, filter, customStartDate, customEndDate]);
+  }, [incomeTransaction]);
 
   const incomeSummary = useMemo(() => {
     const summary: Record<string, number> = {};

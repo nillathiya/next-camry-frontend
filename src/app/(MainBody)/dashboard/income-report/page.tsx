@@ -26,60 +26,6 @@ import { formatDate } from "@/lib/dateFormate";
 import { formatTxType } from "@/utils/stringUtils";
 import { exportToCSV } from "@/utils/csvUtils";
 
-// Custom styles
-// const styles = `
-//   .income-report-card {
-//     border-radius: 8px;
-//     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-//     border: none;
-//   }
-
-//   .source-select {
-//     max-width: 300px;
-//     border-radius: 6px;
-//   }
-
-//   .data-table-container {
-//     transition: opacity 0.3s ease-in-out;
-//   }
-
-//   .data-table-container.loading {
-//     opacity: 0.5;
-//   }
-
-//   .table-row {
-//     animation: fadeIn 0.3s ease-in-out;
-//   }
-
-//   @keyframes fadeIn {
-//     from {
-//       opacity: 0;
-//       transform: translateY(10px);
-//     }
-//     to {
-//       opacity: 1;
-//       transform: translateY(0);
-//     }
-//   }
-
-//   .spinner-container {
-//     display: flex;
-//     justify-content: center;
-//     align-items: center;
-//     min-height: 200px;
-//   }
-
-//   .card-header {
-//     background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%);
-//     border-bottom: 1px solid #e9ecef;
-//   }
-// `;
-
-// // Add styles to document
-// const styleSheet = document.createElement("style");
-// styleSheet.innerText = styles;
-// document.head.appendChild(styleSheet);
-
 const useDebounce = (value: string, delay: number) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
 

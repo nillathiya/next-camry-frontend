@@ -23,7 +23,7 @@ const DefaultContainer = () => {
           <Row>
           <TotalTransaction />
             <WelcomeCard />
-            <UserCards />
+             <UserCards />
             <Col xl="6">
               <Row className="small-charts">
                 <Revenue />
@@ -32,17 +32,16 @@ const DefaultContainer = () => {
                 <RevenueWidget />
               </Row>
             </Col>
-            <TopReferral />
+             <TopReferral />
             <TotalProfitCard />
             <EarningReports />
             <UpcomingTransactionCard />
-            <MemberStatisticsCard />
+           <MemberStatisticsCard />
           </Row>
         </Col>
         <Col xl="3" className="col-xl-100">
           <Card>
             <Row>
-              {/* <TotalTransaction /> */}
               <RecentOrders />
               <DiscountCard />
               <TodoList />

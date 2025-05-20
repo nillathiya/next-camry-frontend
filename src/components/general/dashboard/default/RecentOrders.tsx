@@ -1,29 +1,34 @@
 "use client";
 import { useEffect, useState } from "react";
 import CommonDropdown from "@/common-components/CommonDropdown";
-// Removed moment
 import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
 import { Badge, CardBody, CardHeader, Col, Spinner } from "reactstrap";
-import { formatDate } from "@/lib/dateFormate"; // ✅ Use your custom formatter
-import { IPinSettings } from "@/types/setting";
-import { getAllUserOrdersAsync } from "@/redux-toolkit/slices/userSlice";
+import { formatDate } from "@/lib/dateFormate";
 import { IOrder } from "@/types";
 import { useCompanyCurrency } from "@/hooks/useCompanyInfo";
+import { getAllUserOrdersAsync, resetFetched } from "@/redux-toolkit/slices/userSlice";
 
 const RecentOrders = () => {
   const dispatch = useAppDispatch();
   const [selectedStatus, setSelectedStatus] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
   const {
     userOrders,
+    fetched: { getUserOrders: fetchedGetUserOrders },
     loading: { getUserOrders },
+    error: reduxError,
   } = useAppSelector((state) => state.user);
   const currency = useCompanyCurrency();
+
   useEffect(() => {
-    if (!getUserOrders || userOrders.length === 0) {
-      dispatch(getAllUserOrdersAsync());
+    if (!fetchedGetUserOrders) {
+      dispatch(getAllUserOrdersAsync())
+        .unwrap()
+        .catch((err: string) => setError(err || "Failed to fetch orders"));
     }
-  }, []);
+  }, [dispatch, fetchedGetUserOrders]);
+
   const getStatusColor = (status: number | undefined): string => {
     switch (status) {
       case 1:
@@ -83,52 +88,50 @@ const RecentOrders = () => {
             <div className="text-center py-4">
               <Spinner color="primary" />
             </div>
+          ) : error || reduxError ? (
+            <div className="text-danger text-center py-3">
+              {error || reduxError}
+            </div>
+          ) : sortedData.length === 0 ? (
+            <div className="text-muted text-center py-3">
+              No packages found
+            </div>
           ) : (
             <div className="package-list">
-              {sortedData.length === 0 ? (
-                <div className="text-muted text-center py-3">
-                  No packages found
-                </div>
-              ) : (
-                sortedData.map((order) => (
-                  <>
-                    <div
-                      key={order._id}
-                      className="mb-3 border p-3 rounded d-flex justify-content-between flex-wrap"
-                    >
-                      {/* Right Side: Name & Description */}
-                      <div className="text-end">
-                        <h6 className="mb-1 text-start">
-                          {`${
-                            typeof order.pinId === "object" && order.pinId.name
-                              ? order.pinId.name
-                              : "N/A"
-                          } / ${currency}${order.bv}`}
-                        </h6>
-                        <Badge color="light-primary">
-                          {typeof order.pinId === "object" &&
-                          order.pinId.description
-                            ? order.pinId.description
-                            : "N/A"}
-                        </Badge>
-                      </div>
+              {sortedData.map((order) => (
+                <div
+                  key={order._id}
+                  className="mb-3 border p-3 rounded d-flex justify-content-between flex-wrap"
+                >
+                  {/* Right Side: Name & Description */}
+                  <div className="text-end">
+                    <h6 className="mb-1 text-start">
+                      {`${
+                        typeof order.pinId === "object" && order.pinId.name
+                          ? order.pinId.name
+                          : "N/A"
+                      } / ${currency}${order.bv}`}
+                    </h6>
+                    <Badge color="light-primary">
+                      {typeof order.pinId === "object" && order.pinId.description
+                        ? order.pinId.description
+                        : "N/A"}
+                    </Badge>
+                  </div>
 
-                      {/* Left Side: Status & Date */}
-                      <div className="text-start">
-                        <div className="f-light f-w-500 f-12 mb-1">
-                          <Badge color={getStatusColor(order.status)}>
-                            {getStatusText(order.status)}
-                          </Badge>
-                        </div>
-                        <div className="text-muted f-12">
-                          {formatDate(order.createdAt)}{" "}
-                          {/* ✅ Using your custom function */}
-                        </div>
-                      </div>
+                  {/* Left Side: Status & Date */}
+                  <div className="text-start">
+                    <div className="f-light f-w-500 f-12 mb-1">
+                      <Badge color={getStatusColor(order.status)}>
+                        {getStatusText(order.status)}
+                      </Badge>
                     </div>
-                  </>
-                ))
-              )}
+                    <div className="text-muted f-12">
+                      {formatDate(order.createdAt)}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </ul>

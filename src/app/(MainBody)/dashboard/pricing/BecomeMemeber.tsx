@@ -25,7 +25,7 @@ const BecomeMember = () => {
     loading: { getPinSettings },
   } = useAppSelector((state) => state.setting);
   const {
-    loading: { topUpUser },
+    loading: { userTopUp }, // Replace 'topUpUser' with the correct property, e.g., 'userTopUp'
   } = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
   const currency = useCompanyCurrency();
@@ -99,10 +99,10 @@ const BecomeMember = () => {
                       size="lg"
                       color="primary"
                       href={"#"}
-                      disabled={topUpUser}
+                      disabled={userTopUp}
                       onClick={() => handleTopUp(setting._id)}
                     >
-                      {topUpUser ? <Spinner color="primary" /> : "Buy"}
+                      {userTopUp ? <Spinner color="primary" /> : "Buy"}
                     </Button>
                   </div>
                 </div>

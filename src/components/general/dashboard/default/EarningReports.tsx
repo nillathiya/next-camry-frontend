@@ -5,26 +5,20 @@ import { useCompanyCurrency } from "@/hooks/useCompanyInfo";
 import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
 import { getAllIncomeTransactionAsync } from "@/redux-toolkit/slices/fundSlice";
 import { ApexOptions } from "apexcharts";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import ReactApexChart from "react-apexcharts";
 import { TrendingDown } from "react-feather";
-import { Badge, Card, CardBody, CardHeader, Col } from "reactstrap";
+import { Badge, Card, CardHeader, CardBody, Col } from "reactstrap";
 
 const EarningReports = () => {
   const dispatch = useAppDispatch();
+  const { incomeTransaction, fetched, error: reduxError } = useAppSelector(
+    (state) => state.fund
+  );
   const [error, setError] = useState("");
-  const {
-    incomeTransaction,
-    loading: { getAllIncomeTransaction },
-  } = useAppSelector((state) => state.fund);
-
-  // Get currency from hook
   const currency = useCompanyCurrency();
-
-  // State for selected period
   const [selectedPeriod, setSelectedPeriod] = useState("Monthly");
 
-  // State for chart data
   const [chartData, setChartData] = useState<{
     series: { name: string; data: number[] }[];
     options: ApexOptions;
@@ -44,7 +38,6 @@ const EarningReports = () => {
     },
   });
 
-  // State for total income
   const [totalIncome, setTotalIncome] = useState(0);
 
   useEffect(() => {
@@ -55,28 +48,33 @@ const EarningReports = () => {
         setError(error || "Server Error, Please Try Later");
       }
     };
-    if (!getAllIncomeTransaction && incomeTransaction.length === 0) {
+    if (!fetched && incomeTransaction.length === 0) {
+      console.log("Fetching income transactions...");
       fetchIncomeTransaction();
     }
-  }, []);
+  }, [dispatch, fetched, incomeTransaction]);
+
+  const latestDate = useMemo(() => {
+    if (incomeTransaction.length === 0) return null;
+    return incomeTransaction
+      .filter((tx) => tx.status === 1)
+      .reduce(
+        (latest, tx) => {
+          const txDate = new Date(tx.createdAt);
+          return txDate > latest ? txDate : latest;
+        },
+        new Date(incomeTransaction[0].createdAt)
+      );
+  }, [incomeTransaction]);
 
   useEffect(() => {
-    if (incomeTransaction.length === 0) return;
-
-    // Find the most recent transaction date
-    const latestDate = incomeTransaction
-      .filter((tx) => tx.status === 1) // Only include transactions with status 1
-      .reduce((latest, tx) => {
-        const txDate = new Date(tx.createdAt);
-        return txDate > latest ? txDate : latest;
-      }, new Date(incomeTransaction[0].createdAt));
+    if (incomeTransaction.length === 0 || !latestDate) return;
 
     let periods = [];
     let periodIncome = [0, 0, 0, 0, 0];
     let total = 0;
 
     if (selectedPeriod === "Monthly") {
-      // Generate the last 5 months
       for (let i = 4; i >= 0; i--) {
         const date = new Date(latestDate);
         date.setMonth(latestDate.getMonth() - i);
@@ -84,8 +82,6 @@ const EarningReports = () => {
           date.toLocaleString("default", { month: "short", year: "numeric" })
         );
       }
-
-      // Aggregate income by month
       incomeTransaction.forEach((tx) => {
         if (tx.status === 1) {
           const txDate = new Date(tx.createdAt);
@@ -99,7 +95,6 @@ const EarningReports = () => {
         }
       });
     } else if (selectedPeriod === "Weekly") {
-      // Generate the last 5 weeks
       for (let i = 4; i >= 0; i--) {
         const weekEnd = new Date(latestDate);
         weekEnd.setDate(latestDate.getDate() - i * 7);
@@ -115,8 +110,6 @@ const EarningReports = () => {
           })}`
         );
       }
-
-      // Aggregate income by week
       incomeTransaction.forEach((tx) => {
         if (tx.status === 1) {
           const txDate = new Date(tx.createdAt);
@@ -131,13 +124,10 @@ const EarningReports = () => {
         }
       });
     } else if (selectedPeriod === "Yearly") {
-      // Generate the last 5 years
       for (let i = 4; i >= 0; i--) {
         const year = latestDate.getFullYear() - i;
         periods.push(year.toString());
       }
-
-      // Aggregate income by year
       incomeTransaction.forEach((tx) => {
         if (tx.status === 1) {
           const txDate = new Date(tx.createdAt);
@@ -150,16 +140,43 @@ const EarningReports = () => {
       });
     }
 
-    // Update chart data
     setChartData((prev) => ({
       ...prev,
       series: [{ name: "Income", data: periodIncome }],
       options: { ...prev.options, xaxis: { categories: periods } },
     }));
-
-    // Update total income
     setTotalIncome(total);
-  }, [incomeTransaction, selectedPeriod]);
+  }, [incomeTransaction, selectedPeriod, latestDate]);
+
+  if (error || reduxError) {
+    return (
+      <Col md="6">
+        <Card className="title-line">
+          <CardHeader className="card-no-border">
+            <h2>{EarningReportHeading}</h2>
+          </CardHeader>
+          <CardBody>
+            <p>{error || reduxError}</p>
+          </CardBody>
+        </Card>
+      </Col>
+    );
+  }
+
+  if (fetched && incomeTransaction.length === 0) {
+    return (
+      <Col md="6">
+        <Card className="title-line">
+          <CardHeader className="card-no-border">
+            <h2>{EarningReportHeading}</h2>
+          </CardHeader>
+          <CardBody>
+            <p>No transactions found. Start earning today!</p>
+          </CardBody>
+        </Card>
+      </Col>
+    );
+  }
 
   return (
     <Col md="6">
@@ -201,10 +218,6 @@ const EarningReports = () => {
                 <h4 className="mt-1 f-w-600">
                   {currency}
                   {totalIncome.toFixed(2)}
-                  {/* <Badge color="light-warning" className="ms-1 txt-warning">
-                    <TrendingDown className="me-1" />
-                    1.05%
-                  </Badge> */}
                 </h4>
               </div>
             </li>

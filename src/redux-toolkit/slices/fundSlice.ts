@@ -19,6 +19,15 @@ interface FundState {
   fundTransactions: IFundTransaction[];
   incomeTransaction: IIncomeTransaction[];
   userIncomeInfo: IncomeInfoDynamic;
+  fetched: {
+    verifyTransaction: boolean;
+    fundConvert: boolean;
+    fundTransfer: boolean;
+    fundWithdrawal: boolean;
+    getAllFundTransaction: boolean;
+    getAllIncomeTransaction: boolean;
+    getUserIncomeInfo: boolean;
+  };
   loading: {
     verifyTransaction: boolean;
     fundConvert: boolean;
@@ -35,6 +44,15 @@ const initialState: FundState = {
   fundTransactions: [],
   incomeTransaction: [],
   userIncomeInfo: {},
+  fetched: {
+    verifyTransaction: false,
+    fundConvert: false,
+    fundTransfer: false,
+    fundWithdrawal: false,
+    getAllFundTransaction: false,
+    getAllIncomeTransaction: false,
+    getUserIncomeInfo: false,
+  },
   loading: {
     verifyTransaction: false,
     fundConvert: false,
@@ -47,6 +65,7 @@ const initialState: FundState = {
   error: null,
 };
 
+// Async Thunks
 export const verifyTransactionAsync = createAsyncThunk(
   "fund/verifyTransaction",
   async (formData: any, { rejectWithValue }) => {
@@ -145,9 +164,9 @@ export const getAllIncomeTransactionAsync = createAsyncThunk(
       );
       return response.data;
     } catch (error: any) {
-      console.log("Get all fund transactions error", error);
+      console.log("Get all income transactions error", error);
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch fund transactions"
+        error.response?.data?.message || "Failed to fetch income transactions"
       );
     }
   }
@@ -162,8 +181,9 @@ export const getUserIncomeInfoAsync = createAsyncThunk(
       );
       return response.data;
     } catch (error: any) {
+      console.log("Get user income info error", error);
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch fund transactions"
+        error.response?.data?.message || "Failed to fetch user income info"
       );
     }
   }
@@ -172,7 +192,26 @@ export const getUserIncomeInfoAsync = createAsyncThunk(
 const fundSlice = createSlice({
   name: "fund",
   initialState,
-  reducers: {},
+  reducers: {
+    // Reset fetched flags for specific APIs
+    resetFetched: (state, action: { payload: keyof FundState['fetched'] | 'all' }) => {
+      if (action.payload === 'all') {
+        state.fetched = initialState.fetched;
+        state.fundTransactions = [];
+        state.incomeTransaction = [];
+        state.userIncomeInfo = {};
+      } else {
+        state.fetched[action.payload] = false;
+        if (action.payload === 'getAllFundTransaction') {
+          state.fundTransactions = [];
+        } else if (action.payload === 'getAllIncomeTransaction') {
+          state.incomeTransaction = [];
+        } else if (action.payload === 'getUserIncomeInfo') {
+          state.userIncomeInfo = {};
+        }
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
       // verifyTransactionAsync
@@ -182,6 +221,7 @@ const fundSlice = createSlice({
       })
       .addCase(verifyTransactionAsync.fulfilled, (state, action) => {
         state.loading.verifyTransaction = false;
+        state.fetched.verifyTransaction = true;
         const updatedTx = action.payload.data;
         const exists = state.fundTransactions.some(
           (tx) => tx._id === updatedTx._id
@@ -195,6 +235,7 @@ const fundSlice = createSlice({
       })
       .addCase(verifyTransactionAsync.rejected, (state, action) => {
         state.loading.verifyTransaction = false;
+        state.fetched.verifyTransaction = true;
         state.error = action.payload as string;
       })
 
@@ -205,6 +246,7 @@ const fundSlice = createSlice({
       })
       .addCase(fundConvertAsync.fulfilled, (state, action) => {
         state.loading.fundConvert = false;
+        state.fetched.fundConvert = true;
         const updatedTx = action.payload.data;
         const exists = state.fundTransactions.some(
           (tx) => tx._id === updatedTx._id
@@ -218,6 +260,7 @@ const fundSlice = createSlice({
       })
       .addCase(fundConvertAsync.rejected, (state, action) => {
         state.loading.fundConvert = false;
+        state.fetched.fundConvert = true;
         state.error = action.payload as string;
       })
 
@@ -228,6 +271,7 @@ const fundSlice = createSlice({
       })
       .addCase(fundTransferAsync.fulfilled, (state, action) => {
         state.loading.fundTransfer = false;
+        state.fetched.fundTransfer = true;
         const updatedTx = action.payload.data;
         const exists = state.fundTransactions.some(
           (tx) => tx._id === updatedTx._id
@@ -241,6 +285,7 @@ const fundSlice = createSlice({
       })
       .addCase(fundTransferAsync.rejected, (state, action) => {
         state.loading.fundTransfer = false;
+        state.fetched.fundTransfer = true;
         state.error = action.payload as string;
       })
 
@@ -251,6 +296,7 @@ const fundSlice = createSlice({
       })
       .addCase(fundWithdrawalAsync.fulfilled, (state, action) => {
         state.loading.fundWithdrawal = false;
+        state.fetched.fundWithdrawal = true;
         const updatedTx = action.payload.data;
         const exists = state.fundTransactions.some(
           (tx) => tx._id === updatedTx._id
@@ -264,6 +310,7 @@ const fundSlice = createSlice({
       })
       .addCase(fundWithdrawalAsync.rejected, (state, action) => {
         state.loading.fundWithdrawal = false;
+        state.fetched.fundWithdrawal = true;
         state.error = action.payload as string;
       })
 
@@ -274,6 +321,7 @@ const fundSlice = createSlice({
       })
       .addCase(getAllFundTransactionAsync.fulfilled, (state, action) => {
         state.loading.getAllFundTransaction = false;
+        state.fetched.getAllFundTransaction = true;
         const fetchedTransactions = action.payload.data;
 
         const txMap = new Map(state.fundTransactions.map((tx) => [tx._id, tx]));
@@ -286,20 +334,23 @@ const fundSlice = createSlice({
       })
       .addCase(getAllFundTransactionAsync.rejected, (state, action) => {
         state.loading.getAllFundTransaction = false;
+        state.fetched.getAllFundTransaction = true;
         state.error = action.payload as string;
       })
 
-      // IGetAllIncomeTransactionQuery
+      // getAllIncomeTransactionAsync
       .addCase(getAllIncomeTransactionAsync.pending, (state) => {
         state.loading.getAllIncomeTransaction = true;
         state.error = null;
       })
       .addCase(getAllIncomeTransactionAsync.fulfilled, (state, action) => {
         state.loading.getAllIncomeTransaction = false;
+        state.fetched.getAllIncomeTransaction = true;
         state.incomeTransaction = action.payload.data;
       })
       .addCase(getAllIncomeTransactionAsync.rejected, (state, action) => {
         state.loading.getAllIncomeTransaction = false;
+        state.fetched.getAllIncomeTransaction = true;
         state.error = action.payload as string;
       })
 
@@ -310,14 +361,18 @@ const fundSlice = createSlice({
       })
       .addCase(getUserIncomeInfoAsync.fulfilled, (state, action) => {
         state.loading.getUserIncomeInfo = false;
+        state.fetched.getUserIncomeInfo = true;
         state.userIncomeInfo = action.payload.data;
       })
       .addCase(getUserIncomeInfoAsync.rejected, (state, action) => {
         state.loading.getUserIncomeInfo = false;
+        state.fetched.getUserIncomeInfo = true;
         state.error = action.payload as string;
       });
   },
 });
+
+export const { resetFetched } = fundSlice.actions;
 
 export const selectAddFundHistory = (state: RootState) =>
   (state.fund.fundTransactions || []).filter(

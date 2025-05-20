@@ -120,12 +120,14 @@ const UserCards = () => {
                   <div className={`${getColor(i)} widget-icon widget-round`}>
                     <SvgIcon iconId={svgIcon(i)} />
                   </div>
-                  <div>
-                    <h3 className="f-w-600">{getWalletNameBySlug(key)}</h3>
-                    <span className="f-w-500 f-light f-12">
-                      {`${companyCurrency}${getWalletBalanceBySlug(key)}`}
-                    </span>
-                  </div>
+                  {(
+                    <div>
+                      <h3 className="f-w-600">{getWalletNameBySlug(key)}</h3>
+                      <span className="f-w-500 f-light f-12">
+                        {`${companyCurrency}${getWalletBalanceBySlug(key)}`}
+                      </span>
+                    </div>
+                  )}
                 </CardBody>
               </Card>
             </Col>

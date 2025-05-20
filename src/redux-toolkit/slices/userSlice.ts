@@ -24,6 +24,19 @@ import { Stats } from "fs";
 // import { persistor } from "../store";
 // import { signOut } from "next-auth/react";
 
+export interface INewsEvent {
+  thumbnail: any;
+  _id: string;
+  title: string;
+  description: string;
+  images: string[];
+  category: "news" | "event";
+  date: string;
+  eventDate?: string;
+  createdAt?: string;
+  expireDate?: string;
+}
+
 export interface UserState {
   user: IUser | null;
   userWallet: IUserWalletInfo | null;
@@ -33,16 +46,33 @@ export interface UserState {
   userRankAndTeamMetric: IUserRankAndTeamMetric;
   userTeamMetric: IUserTeamMetric | null;
   userCappingStatus: IUserCappingStatus | null;
-  loading: {
-    getUserDirects: boolean;
-    getProfile: boolean;
-    getUserWallet: boolean;
+  fetched: {
     registerUser: boolean;
     web3Register: boolean;
+    getProfile: boolean;
     updateProfile: boolean;
+    getUserWallet: boolean;
+    getUserDirects: boolean;
     getUserHierarchy: boolean;
     getUserNewsAndEvents: boolean;
-    topUpUser: boolean;
+    checkUsername: boolean;
+    userTopUp: boolean;
+    getUserOrders: boolean;
+    getUserRankAndTeamMetric: boolean;
+    getUserTeamMetric: boolean;
+    getUserCappingStatus: boolean;
+  };
+  loading: {
+    registerUser: boolean;
+    web3Register: boolean;
+    getProfile: boolean;
+    updateProfile: boolean;
+    getUserWallet: boolean;
+    getUserDirects: boolean;
+    getUserHierarchy: boolean;
+    getUserNewsAndEvents: boolean;
+    checkUsername: boolean;
+    userTopUp: boolean;
     getUserOrders: boolean;
     getUserRankAndTeamMetric: boolean;
     getUserTeamMetric: boolean;
@@ -63,16 +93,33 @@ const initialState: UserState = {
   userRankAndTeamMetric: {},
   userTeamMetric: null,
   userCappingStatus: null,
-  loading: {
-    getUserDirects: false,
-    getProfile: false,
-    getUserWallet: false,
+  fetched: {
     registerUser: false,
     web3Register: false,
+    getProfile: false,
     updateProfile: false,
+    getUserWallet: false,
+    getUserDirects: false,
     getUserHierarchy: false,
     getUserNewsAndEvents: false,
-    topUpUser: false,
+    checkUsername: false,
+    userTopUp: false,
+    getUserOrders: false,
+    getUserRankAndTeamMetric: false,
+    getUserTeamMetric: false,
+    getUserCappingStatus: false,
+  },
+  loading: {
+    registerUser: false,
+    web3Register: false,
+    getProfile: false,
+    updateProfile: false,
+    getUserWallet: false,
+    getUserDirects: false,
+    getUserHierarchy: false,
+    getUserNewsAndEvents: false,
+    checkUsername: false,
+    userTopUp: false,
     getUserOrders: false,
     getUserRankAndTeamMetric: false,
     getUserTeamMetric: false,
@@ -83,19 +130,8 @@ const initialState: UserState = {
   newsThumbnails: [],
   latestNews: [],
 };
-export interface INewsEvent {
-  thumbnail: any;
-  _id: string;
-  title: string;
-  description: string;
-  images: string[];
-  category: "news" | "event";
-  date: string;
-  eventDate?: string;
-  createdAt?: string;
-  expireDate?: string;
-}
 
+// Async Thunks
 export const registerUserAsync = createAsyncThunk(
   "user/registerUser",
   async (formData: any, { rejectWithValue }) => {
@@ -157,10 +193,6 @@ export const updateProfileAsync = createAsyncThunk(
             type === "avatar" ? "multipart/form-data" : "application/json",
         },
       };
-      // if (type === "avatar" && payload instanceof FormData) {
-      //   payload.append("updateAction", "profileImageUpdate");
-      // }
-
       const response = await apiClient.post(
         ROUTES.USER.EDIT_PROFILE,
         payload,
@@ -231,7 +263,7 @@ export const getUserNewsAndEventsAsync = createAsyncThunk(
       );
       const transformedData = response.data.data.map((item) => ({
         ...item,
-        images: item.images || item.images || [],
+        images: item.images || [],
       }));
       return { ...response.data, data: transformedData };
     } catch (error: any) {
@@ -241,6 +273,7 @@ export const getUserNewsAndEventsAsync = createAsyncThunk(
     }
   }
 );
+
 export const checkUsernameAsync = createAsyncThunk(
   "user/checkUsername",
   async (username: string, { rejectWithValue }) => {
@@ -344,10 +377,20 @@ const userSlice = createSlice({
   reducers: {
     resetUserState(state) {
       state.user = null;
+      state.userWallet = null;
+      state.userDirects = [];
+      state.userOrders = [];
+      state.hierarchy = [];
+      state.userRankAndTeamMetric = {};
+      state.userTeamMetric = null;
+      state.userCappingStatus = null;
+      state.newsEvents = [];
+      state.newsThumbnails = [];
+      state.latestNews = [];
+      state.fetched = initialState.fetched;
       state.error = null;
     },
     addAmountToWallet: (state, action) => {
-      console.log("action payload", action.payload);
       const { walletType, amount } = action.payload;
       if (state.userWallet && walletType && amount > 0) {
         state.userWallet[walletType] =
@@ -375,6 +418,45 @@ const userSlice = createSlice({
     clearUserWallet: (state) => {
       state.userWallet = null;
     },
+    resetFetched: (state, action: { payload: keyof UserState['fetched'] | 'all' }) => {
+      if (action.payload === 'all') {
+        state.fetched = initialState.fetched;
+        state.user = null;
+        state.userWallet = null;
+        state.userDirects = [];
+        state.userOrders = [];
+        state.hierarchy = [];
+        state.userRankAndTeamMetric = {};
+        state.userTeamMetric = null;
+        state.userCappingStatus = null;
+        state.newsEvents = [];
+        state.newsThumbnails = [];
+        state.latestNews = [];
+      } else {
+        state.fetched[action.payload] = false;
+        if (action.payload === 'getProfile') {
+          state.user = null;
+        } else if (action.payload === 'getUserWallet') {
+          state.userWallet = null;
+        } else if (action.payload === 'getUserDirects') {
+          state.userDirects = [];
+        } else if (action.payload === 'getUserOrders') {
+          state.userOrders = [];
+        } else if (action.payload === 'getUserHierarchy') {
+          state.hierarchy = [];
+        } else if (action.payload === 'getUserRankAndTeamMetric') {
+          state.userRankAndTeamMetric = {};
+        } else if (action.payload === 'getUserTeamMetric') {
+          state.userTeamMetric = null;
+        } else if (action.payload === 'getUserCappingStatus') {
+          state.userCappingStatus = null;
+        } else if (action.payload === 'getUserNewsAndEvents') {
+          state.newsEvents = [];
+          state.newsThumbnails = [];
+          state.latestNews = [];
+        }
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -385,12 +467,15 @@ const userSlice = createSlice({
       })
       .addCase(registerUserAsync.fulfilled, (state, action) => {
         state.loading.registerUser = false;
+        state.fetched.registerUser = true;
         state.user = action.payload.data.user;
       })
       .addCase(registerUserAsync.rejected, (state, action) => {
         state.loading.registerUser = false;
+        state.fetched.registerUser = true;
         state.error = action.payload as string;
       })
+
       // web3RegisterAsync
       .addCase(web3RegisterAsync.pending, (state) => {
         state.loading.web3Register = true;
@@ -398,26 +483,15 @@ const userSlice = createSlice({
       })
       .addCase(web3RegisterAsync.fulfilled, (state, action) => {
         state.loading.web3Register = false;
+        state.fetched.web3Register = true;
         state.user = action.payload.data.user;
       })
       .addCase(web3RegisterAsync.rejected, (state, action) => {
         state.loading.web3Register = false;
+        state.fetched.web3Register = true;
         state.error = action.payload as string;
       })
 
-      // getUserWalletAsync
-      .addCase(getUserWalletAsync.pending, (state) => {
-        state.loading.getUserWallet = true;
-        state.error = null;
-      })
-      .addCase(getUserWalletAsync.fulfilled, (state, action) => {
-        state.loading.getUserWallet = false;
-        state.userWallet = action.payload.data;
-      })
-      .addCase(getUserWalletAsync.rejected, (state, action) => {
-        state.loading.getUserWallet = false;
-        state.error = action.payload as string;
-      })
       // getProfileAsync
       .addCase(getProfileAsync.pending, (state) => {
         state.loading.getProfile = true;
@@ -425,12 +499,15 @@ const userSlice = createSlice({
       })
       .addCase(getProfileAsync.fulfilled, (state, action) => {
         state.loading.getProfile = false;
+        state.fetched.getProfile = true;
         state.user = action.payload.data;
       })
       .addCase(getProfileAsync.rejected, (state, action) => {
         state.loading.getProfile = false;
+        state.fetched.getProfile = true;
         state.error = action.payload as string;
       })
+
       // updateProfileAsync
       .addCase(updateProfileAsync.pending, (state) => {
         state.loading.updateProfile = true;
@@ -438,6 +515,7 @@ const userSlice = createSlice({
       })
       .addCase(updateProfileAsync.fulfilled, (state, action) => {
         state.loading.updateProfile = false;
+        state.fetched.updateProfile = true;
         if (state.user) {
           state.user = {
             ...state.user,
@@ -451,6 +529,23 @@ const userSlice = createSlice({
       })
       .addCase(updateProfileAsync.rejected, (state, action) => {
         state.loading.updateProfile = false;
+        state.fetched.updateProfile = true;
+        state.error = action.payload as string;
+      })
+
+      // getUserWalletAsync
+      .addCase(getUserWalletAsync.pending, (state) => {
+        state.loading.getUserWallet = true;
+        state.error = null;
+      })
+      .addCase(getUserWalletAsync.fulfilled, (state, action) => {
+        state.loading.getUserWallet = false;
+        state.fetched.getUserWallet = true;
+        state.userWallet = action.payload.data;
+      })
+      .addCase(getUserWalletAsync.rejected, (state, action) => {
+        state.loading.getUserWallet = false;
+        state.fetched.getUserWallet = true;
         state.error = action.payload as string;
       })
 
@@ -461,10 +556,12 @@ const userSlice = createSlice({
       })
       .addCase(getUserDirectsAsync.fulfilled, (state, action) => {
         state.loading.getUserDirects = false;
+        state.fetched.getUserDirects = true;
         state.userDirects = action.payload.data;
       })
       .addCase(getUserDirectsAsync.rejected, (state, action) => {
         state.loading.getUserDirects = false;
+        state.fetched.getUserDirects = true;
         state.error = action.payload as string;
       })
 
@@ -475,10 +572,12 @@ const userSlice = createSlice({
       })
       .addCase(getUserHierarchyAsync.fulfilled, (state, action) => {
         state.loading.getUserHierarchy = false;
+        state.fetched.getUserHierarchy = true;
         state.hierarchy = action.payload.data;
       })
       .addCase(getUserHierarchyAsync.rejected, (state, action) => {
         state.loading.getUserHierarchy = false;
+        state.fetched.getUserHierarchy = true;
         state.error = action.payload as string;
       })
 
@@ -488,8 +587,8 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(getUserNewsAndEventsAsync.fulfilled, (state, action) => {
-        console.log("Raw API response:", action.payload.data);
         state.loading.getUserNewsAndEvents = false;
+        state.fetched.getUserNewsAndEvents = true;
         state.newsEvents = action.payload.data;
         state.newsThumbnails = action.payload.data.map(
           (item) => item.thumbnail
@@ -500,37 +599,49 @@ const userSlice = createSlice({
       })
       .addCase(getUserNewsAndEventsAsync.rejected, (state, action) => {
         state.loading.getUserNewsAndEvents = false;
+        state.fetched.getUserNewsAndEvents = true;
+        state.error = action.payload as string;
+      })
+
+      // checkUsernameAsync
+      .addCase(checkUsernameAsync.pending, (state) => {
+        state.loading.checkUsername = true;
+        state.error = null;
+      })
+      .addCase(checkUsernameAsync.fulfilled, (state, action) => {
+        state.loading.checkUsername = false;
+        state.fetched.checkUsername = true;
+      })
+      .addCase(checkUsernameAsync.rejected, (state, action) => {
+        state.loading.checkUsername = false;
+        state.fetched.checkUsername = true;
         state.error = action.payload as string;
       })
 
       // userTopUpAsync
       .addCase(userTopUpAsync.pending, (state) => {
-        state.loading.topUpUser = true;
+        state.loading.userTopUp = true;
         state.error = null;
       })
       .addCase(userTopUpAsync.fulfilled, (state, action) => {
+        state.loading.userTopUp = false;
+        state.fetched.userTopUp = true;
         const newOrder = action.payload.data;
-
-        // Guard against invalid data
         if (!newOrder || !newOrder._id) {
-          state.loading.topUpUser = false;
           return state;
         }
-
         const exists = state.userOrders.some(
           (order) => order._id === newOrder._id
         );
-
         state.userOrders = exists
           ? state.userOrders.map((order) =>
               order._id === newOrder._id ? newOrder : order
             )
           : [...state.userOrders, newOrder];
-
-        state.loading.topUpUser = false;
       })
       .addCase(userTopUpAsync.rejected, (state, action) => {
-        state.loading.topUpUser = false;
+        state.loading.userTopUp = false;
+        state.fetched.userTopUp = true;
         state.error = action.payload as string;
       })
 
@@ -541,10 +652,12 @@ const userSlice = createSlice({
       })
       .addCase(getAllUserOrdersAsync.fulfilled, (state, action) => {
         state.loading.getUserOrders = false;
+        state.fetched.getUserOrders = true;
         state.userOrders = action.payload.data;
       })
       .addCase(getAllUserOrdersAsync.rejected, (state, action) => {
         state.loading.getUserOrders = false;
+        state.fetched.getUserOrders = true;
         state.error = action.payload as string;
       })
 
@@ -555,10 +668,12 @@ const userSlice = createSlice({
       })
       .addCase(getUserRankAndTeamMetricsAsync.fulfilled, (state, action) => {
         state.loading.getUserRankAndTeamMetric = false;
+        state.fetched.getUserRankAndTeamMetric = true;
         state.userRankAndTeamMetric = action.payload.data;
       })
       .addCase(getUserRankAndTeamMetricsAsync.rejected, (state, action) => {
         state.loading.getUserRankAndTeamMetric = false;
+        state.fetched.getUserRankAndTeamMetric = true;
         state.error = action.payload as string;
       })
 
@@ -569,10 +684,12 @@ const userSlice = createSlice({
       })
       .addCase(getUserTeamMetricsAsync.fulfilled, (state, action) => {
         state.loading.getUserTeamMetric = false;
+        state.fetched.getUserTeamMetric = true;
         state.userTeamMetric = action.payload.data;
       })
       .addCase(getUserTeamMetricsAsync.rejected, (state, action) => {
         state.loading.getUserTeamMetric = false;
+        state.fetched.getUserTeamMetric = true;
         state.error = action.payload as string;
       })
 
@@ -583,17 +700,24 @@ const userSlice = createSlice({
       })
       .addCase(getUserCappingStatusAsync.fulfilled, (state, action) => {
         state.loading.getUserCappingStatus = false;
+        state.fetched.getUserCappingStatus = true;
         state.userCappingStatus = action.payload.data;
       })
       .addCase(getUserCappingStatusAsync.rejected, (state, action) => {
         state.loading.getUserCappingStatus = false;
+        state.fetched.getUserCappingStatus = true;
         state.error = action.payload as string;
       });
   },
 });
 
-export const { resetUserState, addAmountToWallet, removeAmountFromWallet } =
-  userSlice.actions;
+export const {
+  resetUserState,
+  addAmountToWallet,
+  removeAmountFromWallet,
+  clearUserWallet,
+  resetFetched,
+} = userSlice.actions;
 
 export const selectTotalOrderAmount = (state: RootState) => {
   return (state.user.userOrders || []).reduce(

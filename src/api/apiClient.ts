@@ -34,7 +34,7 @@ export const setupApiInterceptors = ({
     async (config) => {
       const { getSession } = await import("next-auth/react");
       const session = await getSession();
-
+      console.log("Session data:", session);
       if (session?.user?.backendToken) {
         console.log("Sending backendToken:", session.user.backendToken);
         config.headers.Authorization = `Bearer ${session.user.backendToken}`;

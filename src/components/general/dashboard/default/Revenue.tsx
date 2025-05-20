@@ -33,6 +33,8 @@ const Revenue = () => {
     loading: { getAllIncomeTransaction },
   } = useAppSelector((state) => state.fund);
 
+  const { fetched } = useAppSelector((state) => state.fund);
+
   useEffect(() => {
     const fetchIncomeTransaction = async () => {
       try {
@@ -41,10 +43,10 @@ const Revenue = () => {
         console.error("Error fetching transactions", error);
       }
     };
-    if (!getAllIncomeTransaction && incomeTransaction.length === 0) {
+    if (!fetched && !getAllIncomeTransaction && incomeTransaction.length === 0) {
       fetchIncomeTransaction();
     }
-  }, []);
+  }, [fetched, getAllIncomeTransaction, incomeTransaction.length, dispatch]);
 
   useEffect(() => {
     if (incomeTransaction.length > 0) {

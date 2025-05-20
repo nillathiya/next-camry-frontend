@@ -5,7 +5,7 @@ import CommonDropdown from "@/common-components/CommonDropdown";
 import { SpecialDiscount, TotalProfit } from "@/constants";
 import moment from "moment";
 import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
-import { getAllIncomeTransactionAsync } from "@/redux-toolkit/slices/fundSlice";
+import { getAllIncomeTransactionAsync, resetFetched } from "@/redux-toolkit/slices/fundSlice";
 import { IIncomeTransaction } from "@/types";
 import { useCompanyCurrency } from "@/hooks/useCompanyInfo";
 
@@ -116,8 +116,12 @@ const TotalProfitCard: React.FC = () => {
         setIsDataLoaded(false);
         // Fetch transactions if not already loading
 
-        if (!getAllIncomeTransaction && incomeTransaction.length === 0) {
+        const { fetched } = useAppSelector((state) => state.fund);
+        if (!getAllIncomeTransaction && incomeTransaction.length === 0 && !fetched) {
           await dispatch(getAllIncomeTransactionAsync({})).unwrap();
+        } else if (incomeTransaction.length === 0 && fetched) {
+          // If fetched but still empty, reset fetched flag to allow future fetches
+          dispatch(resetFetched("getAllIncomeTransaction"));
         }
 
         // Filter transactions by createdAt and status
