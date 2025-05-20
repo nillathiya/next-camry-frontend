@@ -21,6 +21,7 @@ const DefaultContainer = () => {
       <Row className="size-column">
         <Col xl="9" className=" col-xl-100 box-col-12">
           <Row>
+          <TotalTransaction />
             <WelcomeCard />
             <UserCards />
             <Col xl="6">
@@ -41,7 +42,7 @@ const DefaultContainer = () => {
         <Col xl="3" className="col-xl-100">
           <Card>
             <Row>
-              <TotalTransaction />
+              {/* <TotalTransaction /> */}
               <RecentOrders />
               <DiscountCard />
               <TodoList />

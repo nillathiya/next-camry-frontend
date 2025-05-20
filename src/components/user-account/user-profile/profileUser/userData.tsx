@@ -40,7 +40,7 @@ const UserData = () => {
   const imageSrc =
   previewImage ||
   (user?.profilePicture ? `${API_URL}${user.profilePicture}?t=${new Date().getTime()}` : null) ||
-  `${ImagePath}/user/7.jpg`;
+  `${ImagePath}/profileimg.jpg`;
 
   return (
     <Col sm="12">

@@ -431,7 +431,7 @@ const Web3RegistrationForm = ({ address: propAddress, chainId: propChainId }: We
   return (
     <Container fluid className="p-0">
       <Row className="m-0">
-        <Col xs="12" className="p-0">
+        <Col xs="12" className="p-0 register_form">
           <div className="mb-4">
             <ConnectButton
               chainStatus="icon"

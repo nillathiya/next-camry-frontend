@@ -107,33 +107,37 @@ export const EarningChartOptions: ApexOptions = {
   ],
 };
 
-
 export const transactionItems = [
   {
-    icon: <PiHandDepositBold size={22} />,
-    label: "Deposit Fund",
+    icon: <PiHandDepositBold size={25} />,
+    label: "Deposit",
     href: "/dashboard/fund/add-fund",
-    bg: "bg-opacity-10 text-primary shadow-lg",
+    bg: "bg-opacity-10 text-primary",
+    shadowColor: "rgba(13, 110, 253, 0.3)",
   },
   {
     icon: <FcMoneyTransfer size={22} />,
-    label: "Fund Transfer",
+    label: "Transfer",
     href: "/dashboard/fund/fund-transfer",
-    bg: " bg-opacity-10 text-secondary shadow-lg",
+    bg: "bg-opacity-10 text-secondary",
+    shadowColor: "rgba(108, 117, 125, 0.3)",
   },
   {
     icon: <SiConvertio size={22} />,
-    label: "Fund Convert",
+    label: "Convert",
     href: "/dashboard/fund/fund-convert",
-    bg: "bg-opacity-10 text-warning shadow-lg",
+    bg: "bg-opacity-10 text-warning",
+    shadowColor: "rgba(255, 193, 7, 0.4)",
   },
   {
     icon: <PiHandWithdrawBold size={22} />,
-    label: "Withdrawal",
+    label: "Withdraw",
     href: "/dashboard/withdrawal/withdrawal",
-    bg: "bg-opacity-10 text-danger shadow-lg",
+    bg: "bg-opacity-10 text-danger",
+    shadowColor: "rgba(220, 53, 69, 0.3)",
   },
 ];
+
 export const RevenueChartOptions: ApexOptions = {
   series: [
     {
@@ -572,7 +576,6 @@ export const RecentOrdersData = [
     price: "$2,000",
   },
 ];
-
 
 export const MembersData = [
   {
