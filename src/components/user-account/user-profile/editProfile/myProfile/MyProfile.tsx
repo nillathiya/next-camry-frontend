@@ -2,44 +2,36 @@
 
 import CommonCardHeader from "@/common-components/CommonCardHeader";
 import { ImagePath, MyProfiles, Save } from "@/constants/index";
-import {
-  Button,
-  Card,
-  CardBody,
-  Col,
-  Form,
-  FormGroup,
-  Input,
-  Label,
-} from "reactstrap";
+import { Button, Card, CardBody, Col, Form, FormGroup, Input, Label } from "reactstrap";
 import { UserFormHead } from "./UserFormHead";
 import { useProfile } from "@/hooks/useProfile";
 import { API_URL } from "@/api/route";
-import { useSession } from "next-auth/react";
 
 const MyProfile = () => {
   const { user } = useProfile();
-  const { data: session } = useSession();
   
+  const imageSrc = user?.profilePicture 
+  ? `${API_URL}${user.profilePicture}` 
+  : `${ImagePath}/profileimg.jpg`; 
+
   return (
     <Col xl="4">
       <Card className="title-line">
         <CommonCardHeader title={MyProfiles} />
         <CardBody>
           <Form onSubmit={(event) => event.preventDefault()}>
-            <UserFormHead
-              name={user?.name || ""}
-              email={user?.email || ""}
-              profilePicture={session?.user?.image || `${ImagePath}/user.png`}
+            <UserFormHead 
+              name={user?.name || ''}
+              email={user?.email || ''}
+              profilePicture={imageSrc} 
             />
-
+            
             <FormGroup>
               <Label>Email Address</Label>
               <Input
                 type="email"
-                value={user?.email || ""}
+                value={user?.email || ''}
                 readOnly
-                disabled
                 placeholder="Email Address"
               />
             </FormGroup>
@@ -50,7 +42,6 @@ const MyProfile = () => {
                 type="password"
                 value="********"
                 readOnly
-                disabled
                 placeholder="Password"
               />
             </FormGroup>
