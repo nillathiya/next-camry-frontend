@@ -5,7 +5,11 @@ import { IPinSettings } from "./setting";
 export interface IUser {
   _id: string;
   parentUCode?: string;
-  sponsorUCode?: string;
+  sponsorUCode?: string | {
+    _id:string;
+    username:string;
+    name:string
+  };
   name: string;
   email: string;
   password: string;
@@ -243,12 +247,35 @@ export interface IUserRankAndTeamMetric {
 }
 
 export interface IUserTeamMetric {
-  userTotalDirects: string;
-  userActiveDirects: string;
-  userInActiveDirects: string;
-  userTotalGeneration: string;
+  activeRoiIncomeRequiredDirects: number;
+  userTotalDirects: number;
+  userActiveDirects: number;
+  userInActiveDirects: number;
+  userTotalGeneration: number;
 }
 
 export interface IUserCappingStatus {
+  totalPackageAmount: number;
+  totalCapping: number;
   remainingCap: number;
+  cappingProgress: string;
+}
+
+export interface IUserLevelWiseGenerationQuery {
+  userId: string;
+  level?: number;
+}
+
+export interface IUseWithPackageQuery {
+  userId: string;
+}
+
+export interface IUserLevelWiseGenerationResponse {
+  level: number;
+  user: IUser;
+  team: IUser[];
+  totalTeamBusiness: number;
+  totalDirects: number;
+  activeDirects: number;
+  inActiveDirects: number;
 }

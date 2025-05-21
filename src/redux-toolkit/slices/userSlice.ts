@@ -17,6 +17,9 @@ import {
   IWebsiteSettings,
   ProfileUpdatePayload,
   ProfileUpdateType,
+  IUserLevelWiseGenerationQuery,
+  IUserLevelWiseGenerationResponse,
+  IUseWithPackageQuery,
 } from "@/types";
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "../store";
@@ -43,6 +46,7 @@ export interface UserState {
   userDirects: IUser[];
   userOrders: IOrder[];
   hierarchy: IUserHierarchy[];
+  levelWiseGeneration: IUserLevelWiseGenerationResponse[];
   userRankAndTeamMetric: IUserRankAndTeamMetric;
   userTeamMetric: IUserTeamMetric | null;
   userCappingStatus: IUserCappingStatus | null;
@@ -54,6 +58,7 @@ export interface UserState {
     getUserWallet: boolean;
     getUserDirects: boolean;
     getUserHierarchy: boolean;
+    getUserLevelWiseGeneration: boolean;
     getUserNewsAndEvents: boolean;
     checkUsername: boolean;
     userTopUp: boolean;
@@ -70,6 +75,8 @@ export interface UserState {
     getUserWallet: boolean;
     getUserDirects: boolean;
     getUserHierarchy: boolean;
+    getUserLevelWiseGeneration: boolean;
+
     getUserNewsAndEvents: boolean;
     checkUsername: boolean;
     userTopUp: boolean;
@@ -90,6 +97,7 @@ const initialState: UserState = {
   userDirects: [],
   userOrders: [],
   hierarchy: [],
+  levelWiseGeneration: [],
   userRankAndTeamMetric: {},
   userTeamMetric: null,
   userCappingStatus: null,
@@ -101,6 +109,7 @@ const initialState: UserState = {
     getUserWallet: false,
     getUserDirects: false,
     getUserHierarchy: false,
+    getUserLevelWiseGeneration: false,
     getUserNewsAndEvents: false,
     checkUsername: false,
     userTopUp: false,
@@ -117,6 +126,7 @@ const initialState: UserState = {
     getUserWallet: false,
     getUserDirects: false,
     getUserHierarchy: false,
+    getUserLevelWiseGeneration: false,
     getUserNewsAndEvents: false,
     checkUsername: false,
     userTopUp: false,
@@ -371,6 +381,38 @@ export const getUserCappingStatusAsync = createAsyncThunk(
   }
 );
 
+export const getUserLevelWiseGenerationAsync = createAsyncThunk(
+  "user/getUserLevelWiseGeneration",
+  async (params: IUserLevelWiseGenerationQuery, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get<
+        IApiResponse<IUserLevelWiseGenerationResponse[]>
+      >(ROUTES.USER.GET_LEVEL_WISE_GENERATION(params));
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "An unknown error occurred"
+      );
+    }
+  }
+);
+
+export const getUserWithPackageInfoAsync = createAsyncThunk(
+  "user/getUserWithPackageInfo",
+  async (params: IUseWithPackageQuery, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get<IApiResponse<IUser>>(
+        ROUTES.USER.GET_INFO_WITH_PACKAGE(params)
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "An unknown error occurred"
+      );
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState,
@@ -418,14 +460,18 @@ const userSlice = createSlice({
     clearUserWallet: (state) => {
       state.userWallet = null;
     },
-    resetFetched: (state, action: { payload: keyof UserState['fetched'] | 'all' }) => {
-      if (action.payload === 'all') {
+    resetFetched: (
+      state,
+      action: { payload: keyof UserState["fetched"] | "all" }
+    ) => {
+      if (action.payload === "all") {
         state.fetched = initialState.fetched;
         state.user = null;
         state.userWallet = null;
         state.userDirects = [];
         state.userOrders = [];
         state.hierarchy = [];
+        state.levelWiseGeneration = [];
         state.userRankAndTeamMetric = {};
         state.userTeamMetric = null;
         state.userCappingStatus = null;
@@ -434,23 +480,25 @@ const userSlice = createSlice({
         state.latestNews = [];
       } else {
         state.fetched[action.payload] = false;
-        if (action.payload === 'getProfile') {
+        if (action.payload === "getProfile") {
           state.user = null;
-        } else if (action.payload === 'getUserWallet') {
+        } else if (action.payload === "getUserWallet") {
           state.userWallet = null;
-        } else if (action.payload === 'getUserDirects') {
+        } else if (action.payload === "getUserDirects") {
           state.userDirects = [];
-        } else if (action.payload === 'getUserOrders') {
+        } else if (action.payload === "getUserOrders") {
           state.userOrders = [];
-        } else if (action.payload === 'getUserHierarchy') {
+        } else if (action.payload === "getUserHierarchy") {
           state.hierarchy = [];
-        } else if (action.payload === 'getUserRankAndTeamMetric') {
+        } else if (action.payload === "getUserLevelWiseGeneration") {
+          state.levelWiseGeneration = [];
+        } else if (action.payload === "getUserRankAndTeamMetric") {
           state.userRankAndTeamMetric = {};
-        } else if (action.payload === 'getUserTeamMetric') {
+        } else if (action.payload === "getUserTeamMetric") {
           state.userTeamMetric = null;
-        } else if (action.payload === 'getUserCappingStatus') {
+        } else if (action.payload === "getUserCappingStatus") {
           state.userCappingStatus = null;
-        } else if (action.payload === 'getUserNewsAndEvents') {
+        } else if (action.payload === "getUserNewsAndEvents") {
           state.newsEvents = [];
           state.newsThumbnails = [];
           state.latestNews = [];
@@ -705,6 +753,22 @@ const userSlice = createSlice({
       })
       .addCase(getUserCappingStatusAsync.rejected, (state, action) => {
         state.loading.getUserCappingStatus = false;
+        state.fetched.getUserCappingStatus = true;
+        state.error = action.payload as string;
+      })
+
+      // getUserLevelWiseGenerationAsync
+      .addCase(getUserLevelWiseGenerationAsync.pending, (state) => {
+        state.loading.getUserLevelWiseGeneration = true;
+        state.error = null;
+      })
+      .addCase(getUserLevelWiseGenerationAsync.fulfilled, (state, action) => {
+        state.loading.getUserLevelWiseGeneration = false;
+        state.fetched.getUserLevelWiseGeneration = true;
+        state.levelWiseGeneration = action.payload.data;
+      })
+      .addCase(getUserLevelWiseGenerationAsync.rejected, (state, action) => {
+        state.loading.getUserLevelWiseGeneration = false;
         state.fetched.getUserCappingStatus = true;
         state.error = action.payload as string;
       });
