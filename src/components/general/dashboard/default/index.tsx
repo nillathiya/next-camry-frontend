@@ -9,7 +9,7 @@ import SatisfactionRate from "./SatisfactionRate";
 import TodoList from "./TodoList";
 import TopReferral from "./top-referral";
 import TotalProfitCard from "./TotalProfit";
-import TotalTransaction from "./TotalTransaction";
+import QuickAccess from "./QuickAccess";
 import UpcomingTransactionCard from "./upcoming-transaction";
 import UserCards from "./UserCards";
 import WelcomeCard from "./WelcomeCard";
@@ -21,7 +21,7 @@ const DefaultContainer = () => {
       <Row className="size-column">
         <Col xl="9" className=" col-xl-100 box-col-12">
           <Row>
-          <TotalTransaction />
+          <QuickAccess />
             <WelcomeCard />
              <UserCards />
             <Col xl="6">
