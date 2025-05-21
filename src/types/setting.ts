@@ -111,6 +111,14 @@ export interface IRankSettings {
 }
 
 
+export interface IRewardSettings {
+  title?: string;
+  slug: string;
+  type?: string;
+  value: string[];
+  status: number;
+}
+
 export interface IPlan {
   _id:string;
   title: string;

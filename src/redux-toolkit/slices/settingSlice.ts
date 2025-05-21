@@ -9,7 +9,7 @@ import {
   IPinSettings,
 } from "@/types";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { IPlan, IRankSettings } from "../../types/setting";
+import { IPlan, IRankSettings, IRewardSettings } from "../../types/setting";
 
 interface SettingState {
   websiteSettings: IWebsiteSettings[];
@@ -18,6 +18,7 @@ interface SettingState {
   companyInfo: ICompanyInfo[];
   pinSettings: IPinSettings[];
   rankSettings: IRankSettings[];
+  rewardSettings: IRewardSettings[];
   plans: IPlan[];
   loading: {
     getWebsiteSettings: boolean;
@@ -26,6 +27,7 @@ interface SettingState {
     getCompanyInfo: boolean;
     getPinSettings: boolean;
     getRankSettings: boolean;
+    getRewardSettings: boolean;
     getPlans: boolean;
   };
   error: any;
@@ -38,6 +40,7 @@ const initialState: SettingState = {
   companyInfo: [],
   pinSettings: [],
   rankSettings: [],
+  rewardSettings: [],
   plans: [],
   loading: {
     getWebsiteSettings: false,
@@ -46,6 +49,7 @@ const initialState: SettingState = {
     getCompanyInfo: false,
     getPinSettings: false,
     getRankSettings: false,
+    getRewardSettings: false,
     getPlans: false,
   },
   error: null,
@@ -142,6 +146,22 @@ export const getRankSettingsAsync = createAsyncThunk(
     try {
       const response = await apiClient.get<IApiResponse<IRankSettings[]>>(
         ROUTES.SETTINGS.GET_RANK_SETTINGS
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch rank settings"
+      );
+    }
+  }
+);
+
+export const getRewardSettingsAsync = createAsyncThunk(
+  "setting/getRewardSettings",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get<IApiResponse<IRewardSettings[]>>(
+        ROUTES.SETTINGS.GET_REWARD_SETTINGS
       );
       return response.data;
     } catch (error: any) {
@@ -269,6 +289,20 @@ const settingSlice = createSlice({
       })
       .addCase(getPlansAsync.rejected, (state, action) => {
         state.loading.getPlans = false;
+        state.error = action.payload as string;
+      })
+
+      // getRewardSettingsAsync
+      .addCase(getRewardSettingsAsync.pending, (state) => {
+        state.loading.getRewardSettings = true;
+        state.error = null;
+      })
+      .addCase(getRewardSettingsAsync.fulfilled, (state, action) => {
+        state.loading.getRewardSettings = false;
+        state.rewardSettings = action.payload.data;
+      })
+      .addCase(getRewardSettingsAsync.rejected, (state, action) => {
+        state.loading.getRewardSettings = false;
         state.error = action.payload as string;
       });
   },

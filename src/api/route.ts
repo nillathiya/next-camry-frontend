@@ -99,6 +99,7 @@ interface Routes {
     GET_COMPANY_INFO_SETTINGS: string;
     GET_PIN_SETTINGS: string;
     GET_RANK_SETTINGS: string;
+    GET_REWARD_SETTINGS: string;
     GET_PLANS: string;
     UPDATE_USER_SETTING: (id: string) => string;
     UPDATE_ADMIN_SETTING: (id: string) => string;
@@ -285,6 +286,7 @@ export const ROUTES: Routes = {
     GET_WALLET_SETTINGS: `${API_URL}/api/wallet-setting`,
     GET_COMPANY_INFO_SETTINGS: `${API_URL}/api/company-info`,
     GET_RANK_SETTINGS: `${API_URL}/api/rank-setting`,
+    GET_REWARD_SETTINGS: `${API_URL}/api/reward-setting`,
     GET_PLANS: `${API_URL}/api/plan`,
     GET_PIN_SETTINGS: `${API_URL}/api/pin-setting`,
     UPDATE_USER_SETTING: (id: string) =>
