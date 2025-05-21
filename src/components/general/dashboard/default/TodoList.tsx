@@ -58,7 +58,7 @@ const TodoList = () => {
   };
 
   useEffect(() => {
-    const userDirects = Number(userTeamMetric?.userTotalDirects) || 0;
+    const userDirects = Number(userTeamMetric?.activeRoiIncomeRequiredDirects) || 0;
 
     if (dailyLevelRequirements.length && dailyLevelDirectRequirements.length) {
       let prev = 0;
@@ -89,7 +89,7 @@ const TodoList = () => {
       setLevelStatus([]);
     }
   }, [
-    userTeamMetric?.userTotalDirects,
+    userTeamMetric?.activeRoiIncomeRequiredDirects,
     dailyLevelRequirements,
     dailyLevelDirectRequirements,
   ]);

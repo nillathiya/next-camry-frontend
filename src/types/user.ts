@@ -243,10 +243,11 @@ export interface IUserRankAndTeamMetric {
 }
 
 export interface IUserTeamMetric {
-  userTotalDirects: string;
-  userActiveDirects: string;
-  userInActiveDirects: string;
-  userTotalGeneration: string;
+  activeRoiIncomeRequiredDirects: number;
+  userTotalDirects: number;
+  userActiveDirects: number;
+  userInActiveDirects: number;
+  userTotalGeneration: number;
 }
 
 export interface IUserCappingStatus {
