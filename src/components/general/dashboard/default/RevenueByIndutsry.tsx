@@ -75,9 +75,9 @@ const RevenueWidget = () => {
   // Prepare capping data
   const cappingData: CappingData[] = useMemo(() => {
     const values = {
-      userTotalCapping: userCappingStatus?.totalCapping.toFixed(1),
-      totalPackageAmount: userCappingStatus?.totalPackageAmount.toFixed(1),
-      remainingCap: userCappingStatus?.remainingCap.toFixed(1),
+      userTotalCapping: (userCappingStatus?.totalCapping ?? 0).toFixed(1),
+      totalPackageAmount: (userCappingStatus?.totalPackageAmount ?? 0).toFixed(1),
+      remainingCap: (userCappingStatus?.remainingCap ?? 0).toFixed(1),
     };
 
     return Object.entries(values).map(([key, value], index) => {
