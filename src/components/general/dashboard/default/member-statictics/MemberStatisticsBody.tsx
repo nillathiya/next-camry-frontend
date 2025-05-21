@@ -57,7 +57,7 @@ const MemberStatisticsBody = () => {
     if (!hasFetched && !getUserDirects) {
       fetchData();
     }
-  }, [hasFetched, getUserDirects, userDirects, fetchData]);
+  }, []);
 
   // Get only 4 latest directs
   const latestDirects = [...userDirects]

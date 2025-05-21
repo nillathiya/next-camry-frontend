@@ -45,7 +45,7 @@ const UserCards = () => {
     if (userWallet === null && !getUserWallet) {
       dispatch(getUserWalletAsync());
     }
-  }, [userWallet, getUserWallet, dispatch]);
+  }, [userWallet]);
 
   // Skip fields that should not be displayed
   const skipFields = ["_id", "username", "createdAt", "updatedAt"];
