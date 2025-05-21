@@ -251,5 +251,8 @@ export interface IUserTeamMetric {
 }
 
 export interface IUserCappingStatus {
+  totalPackageAmount:number;
+  totalCapping: number;
   remainingCap: number;
+  cappingProgress: string;
 }

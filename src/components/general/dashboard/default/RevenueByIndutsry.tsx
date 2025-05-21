@@ -38,30 +38,6 @@ const RevenueWidget = () => {
     }
   }, []);
 
-  // Calculate totals
-  const totalPackageAmount = useMemo(
-    () =>
-      userOrders.reduce((acc, order) => {
-        if (order.status === 1) acc += order.amount;
-        return acc;
-      }, 0),
-    [userOrders]
-  );
-
-  const userTotalCapping = useMemo(
-    () => Number(totalPackageAmount) * Number(CappingMultiplier),
-    [totalPackageAmount]
-  );
-
-  const remainingCap = userCappingStatus?.remainingCap || 0;
-  const cappingProgress = useMemo(
-    () =>
-      remainingCap && userTotalCapping
-        ? Math.min((remainingCap / userTotalCapping) * 100, 100).toFixed(1)
-        : "0",
-    [remainingCap, userTotalCapping]
-  );
-
   const progressStyles = [
     {
       progressClass:
@@ -99,22 +75,30 @@ const RevenueWidget = () => {
   // Prepare capping data
   const cappingData: CappingData[] = useMemo(() => {
     const values = {
-      userTotalCapping: userTotalCapping.toFixed(1),
-      totalPackageAmount: totalPackageAmount.toFixed(1),
-      remainingCap: remainingCap.toFixed(1),
+      userTotalCapping: userCappingStatus?.totalCapping.toFixed(1),
+      totalPackageAmount: userCappingStatus?.totalPackageAmount.toFixed(1),
+      remainingCap: userCappingStatus?.remainingCap.toFixed(1),
     };
 
     return Object.entries(values).map(([key, value], index) => {
       const { progressClass, textClass } = getProgressStyle(index);
       return {
         amount: `${companyCurrency}${value}`,
-        percentage: key === "remainingCap" ? `${cappingProgress}%` : undefined,
+        percentage:
+          key === "remainingCap"
+            ? `${userCappingStatus?.cappingProgress}%`
+            : undefined,
         text: textMapping[key],
         icon: <i className={`fa ${textClass} ${iconMapping[key]} me-1`} />,
         class: progressClass,
       };
     });
-  }, [userTotalCapping, totalPackageAmount, remainingCap, cappingProgress]);
+  }, [
+    userCappingStatus?.totalCapping,
+    userCappingStatus?.totalPackageAmount,
+    userCappingStatus?.remainingCap,
+    userCappingStatus?.cappingProgress,
+  ]);
 
   // Check if data is loading
   const isLoading = loading.getUserCappingStatus || loading.getUserOrders;

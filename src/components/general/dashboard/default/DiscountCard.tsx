@@ -12,7 +12,7 @@ const DiscountCard = () => {
           <h2>
             {"Referral"}
             <span className="f-light f-12 d-block f-w-500">
-              Please refer your friends{" "}
+              Invite more to unlock your next level{" "}
             </span>
           </h2>
         </div>
