@@ -104,8 +104,8 @@ const Generation = () => {
     }));
   }, [hierarchy]);
 
-  console.log("selectedUser", selectedUser);
-  console.log("selectedUserDetail", selectedUserDetail);
+  // console.log("selectedUser", selectedUser);
+  // console.log("selectedUserDetail", selectedUserDetail);
 
   useEffect(() => {
     (async () => {
@@ -213,7 +213,7 @@ const Generation = () => {
   const handleViewTeam = (team: IUser[]) => {
     setSelectedTeam(team || []);
     setShowTeamTable(true);
-    console.log("selectedTeam", selectedTeam);
+    // console.log("selectedTeam", selectedTeam);
   };
 
   const handleBackToLevelTable = () => {
@@ -362,7 +362,7 @@ const Generation = () => {
         </Label>
         <Input
           id="tree-search"
-          onChange={(e: React.ChangeEvent<HTMLFormElement>) =>
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setFilterText(e.target.value)
           }
           type="search"
@@ -586,7 +586,7 @@ const Generation = () => {
           id="level-input"
           type="number"
           value={levelInput}
-          onChange={(e: React.ChangeEvent<HTMLFormElement>) =>
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setLevelInput(e.target.value)
           }
           min="1"

@@ -30,7 +30,7 @@ const RightHeader = () => {
   };
 
   const handleSignOut = () => {
-    console.log("User signed out from Header");
+    // console.log("User signed out from Header");
     signOut({ redirect: true, callbackUrl: "/login" }); // Redirect to /login after sign-out
   };
 

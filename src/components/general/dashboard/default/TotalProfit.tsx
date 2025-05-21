@@ -126,14 +126,14 @@ const TotalProfitCard: React.FC = () => {
 
         // Fetch only if not loading, transactions are empty, and not already fetched
         if (!isLoading && isTransactionsEmpty && !isFetched) {
-          console.log("Fetching transactions"); // Debugging log
+          // console.log("Fetching transactions"); // Debugging log
           await dispatch(getAllIncomeTransactionAsync({})).unwrap();
           return; // Exit early to let useEffect re-run with updated transactions
         }
 
         // If transactions are empty but fetched, show "No Data" without resetting fetched
         if (isTransactionsEmpty && isFetched) {
-          console.log("No transactions available, but fetched"); // Debugging log
+          // console.log("No transactions available, but fetched"); // Debugging log
           setChartData({
             series: [{ name: "No Data", type: "line", data: [0] }],
             options: {

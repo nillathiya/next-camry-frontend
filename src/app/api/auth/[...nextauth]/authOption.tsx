@@ -21,7 +21,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: "password", type: "password" },
       },
       async authorize(credentials) {
-        console.log("Credentials provider called:", credentials); // Debug
+        // console.log("Credentials provider called:", credentials); // Debug
         if (!credentials?.username || !credentials?.password) {
           throw new Error("Username and password are required");
         }
@@ -39,7 +39,7 @@ export const authOptions: NextAuthOptions = {
             }
           );
           const data = await response.json();
-          console.log("Credentials provider response:", data); // Debug
+          // console.log("Credentials provider response:", data); // Debug
           if (!response.ok) {
             throw new Error(data.message || "Authentication failed");
           }
@@ -64,7 +64,7 @@ export const authOptions: NextAuthOptions = {
         token: { label: "Token", type: "text" },
       },
       async authorize(credentials) {
-        console.log("Impersonate provider called:", credentials); // Debug
+        // console.log("Impersonate provider called:", credentials); // Debug
         if (!credentials?.token) {
           throw new Error("Token are required");
         }
@@ -81,7 +81,7 @@ export const authOptions: NextAuthOptions = {
             }
           );
           const data = await response.json();
-          console.log("Impersonate provider response:", data); // Debug
+          // console.log("Impersonate provider response:", data); // Debug
           if (!response.ok) {
             throw new Error(data.message || "Invalid impersonation token");
           }
@@ -107,7 +107,7 @@ export const authOptions: NextAuthOptions = {
         signature: { label: "Signature", type: "text" },
       },
       async authorize(credentials) {
-        console.log("SIWE provider called:", credentials); // Debug
+        // console.log("SIWE provider called:", credentials); // Debug
         if (!credentials?.message || !credentials?.signature) {
           throw new Error("Message and signature are required");
         }
@@ -125,7 +125,7 @@ export const authOptions: NextAuthOptions = {
             }
           );
           const data = await response.json();
-          console.log("SIWE provider response:", data); // Debug
+          // console.log("SIWE provider response:", data); // Debug
           if (!response.ok) {
             throw new Error(data.message || "SIWE authentication failed");
           }
@@ -161,7 +161,7 @@ export const authOptions: NextAuthOptions = {
         token.name = user.name ?? "";
         token.backendToken = user.token;
         token.role = user.role || "user";
-        console.log("JWT callback:", { token, user }); // Debug
+        // console.log("JWT callback:", { token, user }); // Debug
       }
       return token;
     },
@@ -173,7 +173,7 @@ export const authOptions: NextAuthOptions = {
         session.user.username = token.username as string | null;
         session.user.backendToken = token.backendToken as string;
         session.user.role = token.role as string;
-        console.log("Session callback:", { session, token }); // Debug
+        // console.log("Session callback:", { session, token }); // Debug
       }
       return session;
     },

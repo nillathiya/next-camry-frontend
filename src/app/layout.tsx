@@ -41,10 +41,10 @@ export default async function RootLayout({
             href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&amp;family=Nunito+Sans:ital,wght@0,300;0,400;0,700;0,800;0,900;1,700&amp;display=swap"
             rel="stylesheet"
           />
-          <script
+          {/* <script
             src="https://maps.googleapis.com/maps/api/js?key=your_api_key"
             async
-          ></script>
+          ></script> */}
         </head>
         <body suppressHydrationWarning={true}>
           <ErrorBoundary>

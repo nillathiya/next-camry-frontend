@@ -49,7 +49,7 @@ const EarningReports = () => {
       }
     };
     if (!fetched && incomeTransaction.length === 0) {
-      console.log("Fetching income transactions...");
+      // console.log("Fetching income transactions...");
       fetchIncomeTransaction();
     }
   }, [dispatch, fetched, incomeTransaction]);

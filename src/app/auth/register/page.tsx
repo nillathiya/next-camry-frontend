@@ -182,7 +182,7 @@ const RegistrationForm = () => {
     }
   };
 
-  console.log("regFormData:", regFormData);
+  // console.log("regFormData:", regFormData);
 
   return (
     <Container fluid className="p-0">

@@ -64,7 +64,7 @@ export const getWebsiteSettingsAsync = createAsyncThunk(
       );
       return response.data;
     } catch (error: any) {
-      console.log("Website settings error", error);
+      // console.log("Website settings error", error);
       return rejectWithValue(
         error.response?.data?.message || "Failed to fetch website settings"
       );
@@ -81,7 +81,7 @@ export const getUsersiteSettingsAsync = createAsyncThunk(
       );
       return response.data;
     } catch (error: any) {
-      console.log("User settings error", error);
+      // console.log("User settings error", error);
       return rejectWithValue(
         error.response?.data?.message || "Failed to fetch user settings"
       );
@@ -98,7 +98,7 @@ export const getWalletSettingsAsync = createAsyncThunk(
       );
       return response.data;
     } catch (error: any) {
-      console.log("Wallet settings error", error);
+      // console.log("Wallet settings error", error);
       return rejectWithValue(
         error.response?.data?.message || "Failed to fetch wallet settings"
       );
@@ -115,7 +115,7 @@ export const getCompanyInfoSettingsAsync = createAsyncThunk(
       );
       return response.data;
     } catch (error: any) {
-      console.log("Company info settings error", error);
+      // console.log("Company info settings error", error);
       return rejectWithValue(
         error.response?.data?.message || "Failed to fetch company info settings"
       );
@@ -132,7 +132,7 @@ export const getPinSettingsAsync = createAsyncThunk(
       );
       return response.data;
     } catch (error: any) {
-      console.log("Pin settings error", error);
+      // console.log("Pin settings error", error);
       return rejectWithValue(
         error.response?.data?.message || "Failed to fetch company info settings"
       );

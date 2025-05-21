@@ -33,7 +33,7 @@ export const useCompanyInfoValues = (
 
 export const useRegistrationType = (): string | undefined => {
   const registrationType = useCompanyInfo("Registration", "registration_type");
-  console.log("registrationType", registrationType);
+  // console.log("registrationType", registrationType);
   return Array.isArray(registrationType) ? registrationType[0] : undefined;
 };
 

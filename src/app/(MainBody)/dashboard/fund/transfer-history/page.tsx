@@ -66,7 +66,7 @@ const DepositHistory = () => {
     fetchTransferHistory();
   }, []);
 
-  console.log("getAllFundTransaction", loading.getAllFundTransaction);
+  // console.log("getAllFundTransaction", loading.getAllFundTransaction);
 
   const filteredTx = useMemo(() => {
     if (!debouncedFilterText) return fundTransferHistory;

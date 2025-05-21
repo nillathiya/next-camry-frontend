@@ -111,8 +111,8 @@ const WithdrawalComponent: React.FC = () => {
       (day) => day.toLowerCase() === dayName.toLowerCase()
     );
 
-    console.log("fundWithdrawalDays", fundWithdrawalDays);
-    console.log("isAllowed", isAllowed);
+    // console.log("fundWithdrawalDays", fundWithdrawalDays);
+    // console.log("isAllowed", isAllowed);
 
     if (isAllowed) {
       setIsWithdrawalAllowed(true);

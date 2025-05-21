@@ -34,9 +34,9 @@ export const setupApiInterceptors = ({
     async (config) => {
       const { getSession } = await import("next-auth/react");
       const session = await getSession();
-      console.log("Session data:", session);
+      // console.log("Session data:", session);
       if (session?.user?.backendToken) {
-        console.log("Sending backendToken:", session.user.backendToken);
+        // console.log("Sending backendToken:", session.user.backendToken);
         config.headers.Authorization = `Bearer ${session.user.backendToken}`;
       } else {
         console.warn("No backendToken found in session");
@@ -60,10 +60,10 @@ export const setupApiInterceptors = ({
             getWalletInfo();
 
           if (isWalletConnected) {
-            console.log(`Disconnecting wallet: ${walletAddress}`);
+            // console.log(`Disconnecting wallet: ${walletAddress}`);
             disconnectWallet(); // Disconnect the wallet
             toast.success("Wallet disconnected");
-            console.log("Wallet disconnect called");
+            // console.log("Wallet disconnect called");
           } else {
             console.log("No wallet connected");
           }

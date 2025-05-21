@@ -72,9 +72,9 @@ const AddFund = () => {
     useAddFundWallet();
   const companyTokenContract = useCompanyTokenContract();
 
-  console.log("addFundWallet", addFundWallet);
-  console.log("companyCurrency", companyCurrency);
-  console.log("companyTokenContract",companyTokenContract);
+  // console.log("addFundWallet", addFundWallet);
+  // console.log("companyCurrency", companyCurrency);
+  // console.log("companyTokenContract",companyTokenContract);
 
   const { writeContractAsync, isPending: isWriting } = useWriteContract();
 
@@ -344,13 +344,13 @@ const AddFund = () => {
       </div>
     </div>
   );
-  console.log("isWriting", isWriting);
-  console.log("amountInput", amountInput);
-  console.log("isApprovalConfirming", isApprovalConfirming);
-  console.log("isDepositConfirming", isDepositConfirming);
-  console.log("transactionVerificationLoading", transactionVerificationLoading);
-  console.log("isMetaMaskOpen", isMetaMaskOpen);
-  console.log("isConnected", isConnected);
+  // console.log("isWriting", isWriting);
+  // console.log("amountInput", amountInput);
+  // console.log("isApprovalConfirming", isApprovalConfirming);
+  // console.log("isDepositConfirming", isDepositConfirming);
+  // console.log("transactionVerificationLoading", transactionVerificationLoading);
+  // console.log("isMetaMaskOpen", isMetaMaskOpen);
+  // console.log("isConnected", isConnected);
   return (
     <Container>
       <Row>

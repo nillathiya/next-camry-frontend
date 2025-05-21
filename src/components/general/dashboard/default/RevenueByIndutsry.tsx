@@ -26,7 +26,6 @@ const RevenueWidget = () => {
   const { userCappingStatus, loading, userOrders } = useAppSelector(
     (state) => state.user
   );
-
   const companyCurrency = useCompanyCurrency();
   // Fetch data only when needed
   useEffect(() => {

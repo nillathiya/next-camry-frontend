@@ -29,7 +29,7 @@ const RoyalityAndRewards = () => {
   }, [dispatch]);
 
   const userRank = userRankAndTeamMetric.rank || 0;
-  console.log("userRank", userRank);
+  // console.log("userRank", userRank);
 
   const maxRows = useMemo(
     () => Math.max(...rankSettings.map((d) => d.value.length), 0),

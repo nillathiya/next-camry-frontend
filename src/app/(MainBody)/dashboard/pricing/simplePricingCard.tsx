@@ -31,8 +31,8 @@ const SimplePricingCard = () => {
     new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
   );
 
-  console.log("userOrders",userOrders);
-  console.log("sortedOrders",sortedOrders);
+  // console.log("userOrders",userOrders);
+  // console.log("sortedOrders",sortedOrders);
   return (
     <Card className="shadow-sm border-0">
       <CommonCardHeader title={"Purchased Packages"} />

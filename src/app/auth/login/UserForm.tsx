@@ -36,7 +36,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 export const checkWalletAddress = async (address: string): Promise<boolean> => {
   try {
-    console.log(`Checking wallet address: ${address}`);
+    // console.log(`Checking wallet address: ${address}`);
     const result = await axios.get<IApiResponse<boolean>>(
       ROUTES.USER.CHECK_WALLET({ address })
     );
@@ -65,7 +65,7 @@ const UserForm = () => {
   const { signMessageAsync } = useSignMessage();
   const hasRunAddressExistUseEffect = useRef(false);
 
-  console.log("registrationType", registrationType);
+  // console.log("registrationType", registrationType);
   // Handle normal form submission
   const formSubmitHandle = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -76,7 +76,7 @@ const UserForm = () => {
       callbackUrl: "/dashboard/default",
     });
 
-    console.log("result", result);
+    // console.log("result", result);
     if (result?.ok) {
       toast.success("Successfully Logged in. Redirecting...");
       router.push("/dashboard/default");
@@ -90,7 +90,7 @@ const UserForm = () => {
     if (hasRunAddressExistUseEffect.current) return;
 
     const handleWalletLogin = async () => {
-      console.log("isConnected",isConnected);
+      // console.log("isConnected",isConnected);
       if (!isConnected || !address || isCheckingAddress) {
         // Handle disconnection
         if (!isConnected) {
@@ -123,10 +123,10 @@ const UserForm = () => {
           // Login existing user with SIWE
           try {
             // Fetch nonce from backend
-            console.log(
-              "Fetching nonce for login:",
-              `${process.env.NEXT_PUBLIC_API_URL}/api/auth/nonce`
-            );
+            // console.log(
+            //   "Fetching nonce for login:",
+            //   `${process.env.NEXT_PUBLIC_API_URL}/api/auth/nonce`
+            // );
             const nonceResponse = await fetch(
               `${process.env.NEXT_PUBLIC_API_URL}/api/auth/nonce`,
               { credentials: "include" }
@@ -138,7 +138,7 @@ const UserForm = () => {
             }
             const response = await nonceResponse.json();
             const nonce = response.data.nonce;
-            console.log("Received nonce for login:", nonce);
+            // console.log("Received nonce for login:", nonce);
 
             // Create SIWE message
             const siweMessage = new SiweMessage({
@@ -150,13 +150,13 @@ const UserForm = () => {
               chainId: chain?.id || wagmiConfig.chains[0].id,
               nonce,
             });
-            console.log("SIWE message for login:", siweMessage);
+            // console.log("SIWE message for login:", siweMessage);
 
             // Sign the message
             const message = siweMessage.prepareMessage();
-            console.log("Prepared message for signing:", message);
+            // console.log("Prepared message for signing:", message);
             const signature = await signMessageAsync({ message });
-            console.log("Signature for login:", signature);
+            // console.log("Signature for login:", signature);
 
             // Log in using SIWE
             console.log("Calling signIn with SIWE credentials");

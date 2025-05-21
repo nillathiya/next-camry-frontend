@@ -174,9 +174,9 @@ const TransferComponent: React.FC = () => {
     }
   };
 
-  console.log("fundTransferWalletLoading", fundTransferWalletLoading);
-  console.log("settingsLoading", getWalletSettings);
-  console.log("getUserWallet", getUserWallet);
+  // console.log("fundTransferWalletLoading", fundTransferWalletLoading);
+  // console.log("settingsLoading", getWalletSettings);
+  // console.log("getUserWallet", getUserWallet);
   if (fundTransferWalletLoading) {
     return (
       <div className="text-center p-4">

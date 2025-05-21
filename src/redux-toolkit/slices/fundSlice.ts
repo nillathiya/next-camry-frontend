@@ -76,7 +76,7 @@ export const verifyTransactionAsync = createAsyncThunk(
       );
       return response.data;
     } catch (error: any) {
-      console.log("Verify transaction error", error);
+      // console.log("Verify transaction error", error);
       return rejectWithValue(
         error.response?.data?.message || "Failed to verify transaction"
       );
@@ -94,7 +94,7 @@ export const fundConvertAsync = createAsyncThunk(
       );
       return response.data;
     } catch (error: any) {
-      console.log("Fund convert error", error);
+      // console.log("Fund convert error", error);
       return rejectWithValue(
         error.response?.data?.message || "Failed to convert fund"
       );
@@ -112,7 +112,7 @@ export const fundTransferAsync = createAsyncThunk(
       );
       return response.data;
     } catch (error: any) {
-      console.log("Fund transfer error", error);
+      // console.log("Fund transfer error", error);
       return rejectWithValue(
         error.response?.data?.message || "Failed to transfer fund"
       );
@@ -130,7 +130,7 @@ export const fundWithdrawalAsync = createAsyncThunk(
       );
       return response.data;
     } catch (error: any) {
-      console.log("Fund withdrawal error", error);
+      // console.log("Fund withdrawal error", error);
       return rejectWithValue(
         error.response?.data?.message || "Failed to withdraw fund"
       );
@@ -147,7 +147,7 @@ export const getAllFundTransactionAsync = createAsyncThunk(
       );
       return response.data;
     } catch (error: any) {
-      console.log("Get all fund transactions error", error);
+      // console.log("Get all fund transactions error", error);
       return rejectWithValue(
         error.response?.data?.message || "Failed to fetch fund transactions"
       );
@@ -164,7 +164,7 @@ export const getAllIncomeTransactionAsync = createAsyncThunk(
       );
       return response.data;
     } catch (error: any) {
-      console.log("Get all income transactions error", error);
+      // console.log("Get all income transactions error", error);
       return rejectWithValue(
         error.response?.data?.message || "Failed to fetch income transactions"
       );
@@ -181,7 +181,7 @@ export const getUserIncomeInfoAsync = createAsyncThunk(
       );
       return response.data;
     } catch (error: any) {
-      console.log("Get user income info error", error);
+      // console.log("Get user income info error", error);
       return rejectWithValue(
         error.response?.data?.message || "Failed to fetch user income info"
       );
