@@ -7,11 +7,10 @@ import {
   updateProfileAsync,
 } from "@/redux-toolkit/slices/userSlice";
 import React, { useEffect, useMemo } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { Table, Badge, Spinner, Container } from "reactstrap";
 
-const growthBooster = () => {
+const GrowthBooster = () => {
   const dispatch = useAppDispatch();
   const {
     userRankAndTeamMetric,
@@ -24,12 +23,16 @@ const growthBooster = () => {
   } = useAppSelector((state) => state.setting);
 
   useEffect(() => {
-    dispatch(getRewardSettingsAsync());
-    dispatch(getUserRankAndTeamMetricsAsync());
-  }, [dispatch]);
+    // Only dispatch if data is not already loaded
+    if (!rewardSettings.length) {
+      dispatch(getRewardSettingsAsync());
+    }
+    if (!userRankAndTeamMetric) {
+      dispatch(getUserRankAndTeamMetricsAsync());
+    }
+  }, [dispatch, rewardSettings.length, userRankAndTeamMetric]);
 
-  const userRank = userRankAndTeamMetric.rank || 0;
-  // console.log("userRank", userRank);
+  const userRank = userRankAndTeamMetric?.rank || 0;
 
   const maxRows = useMemo(
     () => Math.max(...rewardSettings.map((d) => d.value.length), 0),
@@ -195,4 +198,4 @@ const growthBooster = () => {
   );
 };
 
-export default growthBooster;
+export default GrowthBooster;
