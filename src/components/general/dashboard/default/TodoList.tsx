@@ -125,9 +125,9 @@ const TodoList = () => {
                     item.status === 1 ? "success" : "danger"
                   }`}
                 />
-                <div className="d-flex w-100 align-items-center">
+                <div className="d-flex w-100 justify-content-between">
                   <div className="checkbox-checked">
-                    <div className="form-check">
+                    <div className="form-check" style={{marginTop:"8px"}}>
                       <Input
                         className="form-check-input"
                         id={`list-level-${item.level}`}
@@ -141,6 +141,7 @@ const TodoList = () => {
                     <span className="f-w-500 f-12 f-light">
                       {item.reqDirects} Directs
                     </span>
+                    <span className="f-w-500 f-12 f-light" style={{marginLeft:"5px"}}>{`(${item.levelIncome})`}</span>
                   </div>
                   <Badge
                     color={`light-${item.status === 1 ? "success" : "danger"}`}
