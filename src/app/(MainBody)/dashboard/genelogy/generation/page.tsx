@@ -23,19 +23,13 @@ import { API_URL } from "@/api/route";
 import { useSession } from "next-auth/react";
 import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
 import { toast } from "react-toastify";
-import { getUserHierarchyAsync } from "@/redux-toolkit/slices/userSlice";
-
-interface IUser {
-  _id: string;
-  username: string;
-  name: string;
-  email?: string;
-  contactNumber?: string;
-  wallet_address?: string;
-  profileImage?: string;
-  sponsorUCode?: string;
-  profilePicture?: string;
-}
+import {
+  getUserHierarchyAsync,
+  getUserLevelWiseGenerationAsync,
+  getUserWithPackageInfoAsync,
+} from "@/redux-toolkit/slices/userSlice";
+import { IUser, IUserLevelWiseGenerationResponse } from "@/types";
+import DataTable, { TableColumn } from "react-data-table-component";
 
 interface ITreeNode {
   _id: string;
@@ -74,20 +68,30 @@ const useDebounce = (value: string, delay: number) => {
 const Generation = () => {
   const dispatch = useAppDispatch();
   const { data: session } = useSession();
-  const { hierarchy, user: selectedUserDetail } = useAppSelector(
-    (state: any) => state.user
-  );
+  const { hierarchy } = useAppSelector((state: any) => state.user);
 
   const [treeData, setTreeData] = useState<ITreeNode | null>(null);
+  // show selected user info
   const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
+  const [selectedUserDetail, setSelectedUserDetail] = useState<IUser | null>(
+    null
+  );
   const [userGenerationTreeLoading, setUserGenerationTreeLoading] =
     useState(false);
   const [selectedUserDetailsLoading, setSelectedUserDetailsLoading] =
     useState(false);
   const [modal, setModal] = useState(false);
   const [filterText, setFilterText] = useState("");
+  const [showTableView, setShowTableView] = useState(false);
+  const [levelData, setLevelData] = useState<
+    IUserLevelWiseGenerationResponse[]
+  >([]);
+  const [levelDataLoading, setLevelDataLoading] = useState(false);
+  // showing selected team
+  const [levelInput, setLevelInput] = useState<string>("2");
+  const [showTeamTable, setShowTeamTable] = useState(false);
+  const [selectedTeam, setSelectedTeam] = useState<IUser[]>([]);
   const debouncedFilterText = useDebounce(filterText, 300);
-
   const normalizedUserGenerationTree: ITreeNode[] = useMemo(() => {
     return hierarchy.map((user: any) => ({
       _id: user._id || "",
@@ -99,6 +103,9 @@ const Generation = () => {
       wallet_address: user.wallet_address || "",
     }));
   }, [hierarchy]);
+
+  console.log("selectedUser", selectedUser);
+  console.log("selectedUserDetail", selectedUserDetail);
 
   useEffect(() => {
     (async () => {
@@ -119,7 +126,7 @@ const Generation = () => {
         setUserGenerationTreeLoading(false);
       }
     })();
-  }, [dispatch, normalizedUserGenerationTree, session]);
+  }, [dispatch, normalizedUserGenerationTree.length, session]);
 
   useEffect(() => {
     if (!session || normalizedUserGenerationTree.length === 0) return;
@@ -171,6 +178,48 @@ const Generation = () => {
       setTreeData(null);
     }
   }, [normalizedUserGenerationTree, session?.user.id]);
+
+  const handleShowTableWiseGeneration = async () => {
+    if (!session) return;
+    const level = parseInt(levelInput);
+    if (isNaN(level) || level < 1) {
+      toast.error("Please enter a valid level (positive number)");
+      return;
+    }
+    setLevelDataLoading(true);
+    try {
+      const response = await dispatch(
+        getUserLevelWiseGenerationAsync({
+          userId: session.user.id,
+          level,
+        })
+      ).unwrap();
+      setLevelData(response.data || []);
+      setShowTableView(true);
+    } catch (error: any) {
+      toast.error(error || "Server error");
+    } finally {
+      setLevelDataLoading(false);
+    }
+  };
+
+  const handleBackToTreeView = () => {
+    setShowTableView(false);
+    setShowTeamTable(false);
+    setLevelData([]);
+    setSelectedTeam([]);
+  };
+
+  const handleViewTeam = (team: IUser[]) => {
+    setSelectedTeam(team || []);
+    setShowTeamTable(true);
+    console.log("selectedTeam", selectedTeam);
+  };
+
+  const handleBackToLevelTable = () => {
+    setShowTeamTable(false);
+    setSelectedTeam([]);
+  };
 
   const renderCustomNodeElement = ({ nodeDatum, toggleNode }: any) => {
     return (
@@ -249,9 +298,10 @@ const Generation = () => {
     (async () => {
       setSelectedUserDetailsLoading(true);
       try {
-        // await dispatch(
-        //   getUserDetailsWithInvestmentInfoAsync({ userId: selectedUser._id })
-        // ).unwrap();
+        const result = await dispatch(
+          getUserWithPackageInfoAsync({ userId: selectedUser._id })
+        ).unwrap();
+        setSelectedUserDetail(result.data);
       } catch (error: any) {
         toast.error(error || "Server error");
       } finally {
@@ -271,7 +321,10 @@ const Generation = () => {
     if (!debouncedFilterText || !treeData) return treeData;
     const lowercasedFilter = debouncedFilterText.toLowerCase();
 
-    const filterNodes = (node: ITreeNode, visited: Set<string> = new Set()): ITreeNode | null => {
+    const filterNodes = (
+      node: ITreeNode,
+      visited: Set<string> = new Set()
+    ): ITreeNode | null => {
       if (visited.has(node._id)) {
         console.warn(`Cycle detected in filter for node: ${node._id}`);
         return null;
@@ -309,7 +362,7 @@ const Generation = () => {
         </Label>
         <Input
           id="tree-search"
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          onChange={(e: React.ChangeEvent<HTMLFormElement>) =>
             setFilterText(e.target.value)
           }
           type="search"
@@ -335,41 +388,309 @@ const Generation = () => {
     );
   }, [filterText, debouncedFilterText, userGenerationTreeLoading]);
 
-  console.log("filteredTreeData",filteredTreeData);
+  // Columns for level-wise data
+  const levelColumns: TableColumn<IUserLevelWiseGenerationResponse>[] = useMemo(
+    () => [
+      {
+        name: "Level",
+        selector: (row) => row?.level ?? 0,
+        sortable: true,
+      },
+      {
+        name: "Parent",
+        selector: (row) => row?.user?.username ?? "N/A",
+        sortable: true,
+        cell: (row) => (
+          <span>
+            {row?.user?.username ?? "N/A"} ({row?.user?.name ?? "N/A"})
+          </span>
+        ),
+      },
+      {
+        name: "Total Directs",
+        selector: (row) => row?.totalDirects ?? 0,
+        sortable: true,
+      },
+      {
+        name: "Active Directs",
+        selector: (row) => row?.activeDirects ?? 0,
+        sortable: true,
+      },
+      {
+        name: "Inactive Directs",
+        selector: (row) => row?.inActiveDirects ?? 0,
+        sortable: true,
+      },
+      {
+        name: "Team Business",
+        selector: (row) => row?.totalTeamBusiness ?? "N/A",
+        sortable: true,
+      },
+      {
+        name: "Actions",
+        cell: (row) => {
+          if (!row) return null;
+
+          // Helper to normalize a user object
+          const normalizeUser = (user: IUser) => ({
+            ...user,
+            sponsorUCode:
+              typeof user.sponsorUCode === "object"
+                ? user.sponsorUCode.username
+                : user.sponsorUCode,
+          });
+
+          return (
+            <div className="d-flex flex-column flex-lg-row gap-2 ">
+              <Button
+                color="primary"
+                size="sm"
+                onClick={() => {
+                  if (row?.user) {
+                    const userData = normalizeUser(row.user);
+                    setSelectedUser(userData);
+                    setModal(true);
+                  } else {
+                    toast.error("User data not available");
+                  }
+                }}
+                disabled={!row?.user}
+                className="w-100 w-md-auto"
+              >
+                View User
+              </Button>
+              <Button
+                color="info"
+                size="sm"
+                onClick={() => {
+                  const normalizedTeam = (row?.team ?? []).map(normalizeUser);
+                  handleViewTeam(normalizedTeam);
+                }}
+                className="w-100 w-md-auto"
+              >
+                View Team
+              </Button>
+            </div>
+          );
+        },
+      },
+    ],
+    []
+  );
+  // Columns for team table
+  const teamColumns: TableColumn<IUser>[] = useMemo(
+    () => [
+      {
+        name: "Username",
+        selector: (row) => row?.username ?? "N/A",
+        sortable: true,
+      },
+      {
+        name: "Name",
+        selector: (row) => row?.name ?? "N/A",
+        sortable: true,
+      },
+      {
+        name: "Email",
+        selector: (row) => row?.email ?? "N/A",
+        sortable: true,
+      },
+      {
+        name: "Contact Number",
+        selector: (row) => row?.contactNumber ?? "N/A",
+        sortable: true,
+      },
+      {
+        name: "Wallet Address",
+        selector: (row) => row?.wallet_address ?? "N/A",
+        sortable: true,
+      },
+      {
+        name: "Sponsor",
+        selector: (row) => {
+          if (
+            typeof row.sponsorUCode === "object" &&
+            row.sponsorUCode !== null
+          ) {
+            const username = row.sponsorUCode.username || "N/A";
+            const name = row.sponsorUCode.name
+              ? ` (${row.sponsorUCode.name})`
+              : "";
+            return username + name;
+          }
+          return row.sponsorUCode ?? "N/A";
+        },
+        sortable: true,
+      },
+      {
+        name: "Actions",
+        cell: (row) => (
+          <Button
+            color="primary"
+            size="sm"
+            onClick={() => {
+              setSelectedUser(row);
+              setModal(true);
+            }}
+          >
+            View
+          </Button>
+        ),
+        button: true,
+      },
+    ],
+    []
+  );
+
+  const levelTableSubHeader = useMemo(() => {
+    return (
+      <div
+        id="level_filter"
+        className="dataTables_filter d-flex align-items-center gap-2"
+      >
+        <Button
+          color="secondary"
+          size="sm"
+          onClick={handleBackToTreeView}
+          aria-label="Back to tree view"
+        >
+          Back to Tree View
+        </Button>
+      </div>
+    );
+  }, []);
+
+  const teamTableSubHeader = useMemo(() => {
+    return (
+      <div
+        id="team_filter"
+        className="dataTables_filter d-flex align-items-center gap-2"
+      >
+        <Button
+          color="secondary"
+          size="sm"
+          onClick={handleBackToLevelTable}
+          aria-label="Back to level table"
+        >
+          Back to Levels
+        </Button>
+      </div>
+    );
+  }, []);
+
+  const headerComponentMemo = useMemo(() => {
+    return (
+      <div className="d-flex align-items-center gap-2 mt-4">
+        <Label htmlFor="level-input">Level:</Label>
+        <Input
+          id="level-input"
+          type="number"
+          value={levelInput}
+          onChange={(e: React.ChangeEvent<HTMLFormElement>) =>
+            setLevelInput(e.target.value)
+          }
+          min="1"
+          style={{ width: "100px" }}
+          disabled={userGenerationTreeLoading}
+        />
+        <Button
+          color="light"
+          onClick={handleShowTableWiseGeneration}
+          disabled={userGenerationTreeLoading}
+        >
+          Show Table Wise
+        </Button>
+      </div>
+    );
+  }, [levelInput, userGenerationTreeLoading]);
+  // console.log("filteredTreeData", filteredTreeData);
   return (
-    <Container fluid>
+    <Container fluid className="advance-init-table">
       <Row>
         <Col sm="12">
           <Card>
             <CardHeader className="pb-0 card-no-border">
               <h2>User Team Hierarchy</h2>
+              {!showTableView && headerComponentMemo}
             </CardHeader>
             <CardBody>
-              <div className="theme-scrollbar" id="tree_view">
-                {subHeaderComponentMemo}
-                <div className="darkmode_generation">
-                  {userGenerationTreeLoading ? (
-                    <div className="text-center">
-                      <Spinner color="primary">Loading...</Spinner>
-                    </div>
-                  ) : filteredTreeData ? (
-                    <Tree
-                      data={filteredTreeData}
-                      orientation="vertical"
-                      translate={{ x: 300, y: 50 }}
-                      pathFunc="step"
-                      nodeSize={{ x: 200, y: 100 }}
-                      separation={{ siblings: 1.5, nonSiblings: 2 }}
-                      collapsible={true}
-                      renderCustomNodeElement={renderCustomNodeElement}
+              {showTableView ? (
+                showTeamTable ? (
+                  <div
+                    className="table-responsive theme-scrollbar"
+                    id="team_table"
+                  >
+                    <DataTable
+                      data={selectedTeam}
+                      columns={teamColumns}
+                      noDataComponent={
+                        <div className="text-center py-3 w-100">
+                          No team members found.
+                        </div>
+                      }
+                      highlightOnHover
+                      striped
+                      pagination
+                      className="border custom-scrollbar display dataTable"
+                      subHeader
+                      subHeaderComponent={teamTableSubHeader}
                     />
-                  ) : (
-                    <p className="text-gray-500 dark:text-gray-400">
-                      No downline members found.
-                    </p>
-                  )}
+                  </div>
+                ) : (
+                  <div
+                    className="table-responsive theme-scrollbar"
+                    id="level_table"
+                  >
+                    <DataTable
+                      data={levelData}
+                      columns={levelColumns}
+                      progressPending={levelDataLoading}
+                      progressComponent={
+                        <div className="text-center py-3 w-100">
+                          <Spinner color="primary">Loading...</Spinner>
+                        </div>
+                      }
+                      noDataComponent={
+                        <div className="text-center py-3 w-100">
+                          No hierarchy data found.
+                        </div>
+                      }
+                      highlightOnHover
+                      striped
+                      pagination
+                      className="border custom-scrollbar display dataTable"
+                      subHeader
+                      subHeaderComponent={levelTableSubHeader}
+                    />
+                  </div>
+                )
+              ) : (
+                <div className="theme-scrollbar" id="tree_view">
+                  {subHeaderComponentMemo}
+                  <div className="darkmode_generation">
+                    {userGenerationTreeLoading ? (
+                      <div className="text-center">
+                        <Spinner color="primary">Loading...</Spinner>
+                      </div>
+                    ) : filteredTreeData ? (
+                      <Tree
+                        data={filteredTreeData}
+                        orientation="vertical"
+                        translate={{ x: 300, y: 50 }}
+                        pathFunc="step"
+                        nodeSize={{ x: 200, y: 100 }}
+                        separation={{ siblings: 1.5, nonSiblings: 2 }}
+                        collapsible={true}
+                        renderCustomNodeElement={renderCustomNodeElement}
+                      />
+                    ) : (
+                      <p className="text-gray-500 dark:text-gray-400">
+                        No downline members found.
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
             </CardBody>
           </Card>
         </Col>
@@ -384,28 +705,43 @@ const Generation = () => {
             <div className="text-center">
               <Spinner color="primary">Loading...</Spinner>
             </div>
-          ) : selectedUser ? (
+          ) : selectedUserDetail ? (
             <div className="d-flex align-items-center gap-4">
               <img
                 src={
-                  selectedUser.profileImage ||
-                  "https://img.icons8.com/ios-filled/100/000000/user-male-circle.png"
+                  selectedUserDetail.profilePicture
+                    ? selectedUserDetail.profilePicture.startsWith("http")
+                      ? selectedUserDetail.profilePicture
+                      : `${API_URL}${selectedUserDetail.profilePicture}`
+                    : "https://img.icons8.com/ios-filled/100/000000/user-male-circle.png"
                 }
                 alt="User"
                 className="w-14 h-14 rounded-circle shadow-md"
               />
               <div className="text-gray-900 dark:text-gray-100">
                 <p>
-                  <strong>Username:</strong> {selectedUser.username || "N/A"}
+                  <strong>Username:</strong>{" "}
+                  {selectedUserDetail.username || "N/A"}
                 </p>
                 <p>
-                  <strong>Name:</strong> {selectedUser.name || "N/A"}
+                  <strong>Name:</strong> {selectedUserDetail.name || "N/A"}
                 </p>
                 <p>
-                  <strong>Sponsor:</strong> {selectedUser.sponsorUCode || "N/A"}
+                  <strong>Sponsor:</strong>{" "}
+                  {typeof selectedUserDetail.sponsorUCode === "object" &&
+                  selectedUserDetail.sponsorUCode.username ? (
+                    <>
+                      {selectedUserDetail.sponsorUCode.username}
+                      {selectedUserDetail.sponsorUCode.name &&
+                        ` (${selectedUserDetail.sponsorUCode.name})`}
+                    </>
+                  ) : (
+                    "N/A"
+                  )}
                 </p>
+
                 <p>
-                  <strong>Package:</strong> {"N/A"}
+                  <strong>Package:</strong> {selectedUserDetail.package || "0"}
                 </p>
               </div>
             </div>

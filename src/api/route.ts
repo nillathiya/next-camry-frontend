@@ -4,6 +4,8 @@ import {
   IGetAllIncomeTransactionQuery,
   IIncomeTransaction,
   IUserDirectsQuery,
+  IUserLevelWiseGenerationQuery,
+  IUseWithPackageQuery,
 } from "@/types";
 import { VerifyParamsKeys } from "siwe";
 
@@ -52,6 +54,10 @@ interface Routes {
     UPDATE_USER: any;
     CHECK_WALLET: (params: ICheckWalletQuery) => string;
     GET_USER_DIRECTS: (params: IUserDirectsQuery) => string;
+    GET_LEVEL_WISE_GENERATION: (
+      params: IUserLevelWiseGenerationQuery
+    ) => string;
+    GET_INFO_WITH_PACKAGE: (params: IUseWithPackageQuery) => string;
     GET_PROFILE: string;
     EDIT_PROFILE: string;
     GET_NEWS_EVENTS: string;
@@ -192,6 +198,30 @@ export const ROUTES: Routes = {
         }
       });
       return `${API_URL}/api/user/list/directs?${query.toString()}`;
+    },
+    GET_LEVEL_WISE_GENERATION: (params: IUserLevelWiseGenerationQuery) => {
+      const query = new URLSearchParams();
+      (Object.keys(params) as (keyof IUserLevelWiseGenerationQuery)[]).forEach(
+        (param) => {
+          const value = params[param];
+          if (value !== undefined && value !== null) {
+            query.append(param, String(value));
+          }
+        }
+      );
+      return `${API_URL}/api/user/level-wise/generation-tree?${query.toString()}`;
+    },
+    GET_INFO_WITH_PACKAGE: (params: IUseWithPackageQuery) => {
+      const query = new URLSearchParams();
+      (Object.keys(params) as (keyof IUseWithPackageQuery)[]).forEach(
+        (param) => {
+          const value = params[param];
+          if (value !== undefined && value !== null) {
+            query.append(param, String(value));
+          }
+        }
+      );
+      return `${API_URL}/api/user/with-package?${query.toString()}`;
     },
     GET_PROFILE: `${API_URL}/api/user/profile`,
     EDIT_PROFILE: `${API_URL}/api/user/edit-profile`,
