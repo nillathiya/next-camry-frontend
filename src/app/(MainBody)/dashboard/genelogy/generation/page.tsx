@@ -362,7 +362,7 @@ const Generation = () => {
         </Label>
         <Input
           id="tree-search"
-          onChange={(e: React.ChangeEvent<HTMLFormElement>) =>
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setFilterText(e.target.value)
           }
           type="search"
@@ -586,7 +586,7 @@ const Generation = () => {
           id="level-input"
           type="number"
           value={levelInput}
-          onChange={(e: React.ChangeEvent<HTMLFormElement>) =>
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setLevelInput(e.target.value)
           }
           min="1"

@@ -24,7 +24,7 @@ const useFetchUserSettings = () => {
       if (userSettings.length === 0) {
         setLoading(true);
         try {
-          await dispatch(getUsersiteSettingsAsync()).unwrap(); // Use unwrap to handle the async thunk
+          await dispatch(getUsersiteSettingsAsync()).unwrap();
         } catch (error) {
           console.error("Failed to fetch user settings:", error);
         } finally {
@@ -51,7 +51,7 @@ export const useUserSetting = (
   const { userSettings, loading } = useFetchUserSettings();
 
   const value = useMemo(() => {
-    if (loading) return undefined; // Return undefined while loading
+    if (loading) return undefined;
     const setting = userSettings.find(
       (data: IUserSetting) => data.title === title && data.slug === slug
     );
@@ -70,7 +70,7 @@ export const useUserSettingValues = (
   const { userSettings, loading } = useFetchUserSettings();
 
   const values = useMemo(() => {
-    if (loading) return criteria.map(() => undefined); // Return undefined for each while loading
+    if (loading) return criteria.map(() => undefined);
     return criteria.map(
       ({ title, slug }) =>
         userSettings.find(
@@ -89,7 +89,7 @@ export const useMenuItems = (): {
   const { userSettings, loading } = useFetchUserSettings();
 
   const items = useMemo(() => {
-    if (loading) return undefined; // Return undefined while loading
+    if (loading) return undefined;
     const setting = userSettings.find(
       (data: IUserSetting) =>
         data.title === "Menu Items" && data.slug === "menu_items"
@@ -229,7 +229,7 @@ export const useFundWithdrawalDays = (): {
   return { value, loading };
 };
 
-export const userShowSlidingHighlight = (): {
+export const useShowSlidingHighlight = (): {
   value: boolean;
   loading: boolean;
 } => {

@@ -1,6 +1,6 @@
 "use client";
 import {
-  userShowSlidingHighlight,
+  useShowSlidingHighlight,
   useSlidingHighlightText,
 } from "@/hooks/useUserSettings";
 import { useAppSelector } from "@/redux-toolkit/Hooks";
@@ -9,7 +9,7 @@ import React, { useState, useEffect } from "react";
 const Highlight = () => {
   const { darkMode } = useAppSelector((state) => state.themeCustomizer);
   const { loading: ShowSlidingHighlightLoading, value: showSlidingHighlight } =
-    userShowSlidingHighlight();
+    useShowSlidingHighlight();
   const { loading: slidingHighlightTextLoading, value: slidingHighlightText } =
     useSlidingHighlightText();
 
