@@ -1,4 +1,5 @@
 import { Href } from "@/constants";
+import { useCompanyCurrency } from "@/hooks/useCompanyInfo";
 import { usePlan } from "@/hooks/usePlans";
 import { useAppSelector } from "@/redux-toolkit/Hooks";
 import { useEffect, useState } from "react";
@@ -38,6 +39,7 @@ const TodoList = () => {
   const { loading: userSliceLoading, userTeamMetric } = useAppSelector(
     (state) => state.user
   );
+  const currency = useCompanyCurrency()
   const { usePlanDailyLevel, usePlanDailyLevelReqDirect, loading } = usePlan();
   
   // Call hooks at the top level
@@ -141,7 +143,7 @@ const TodoList = () => {
                     <span className="f-w-500 f-12 f-light">
                       {item.reqDirects} Directs
                     </span>
-                    <span className="f-w-500 f-12 f-light" style={{marginLeft:"5px"}}>{`(${item.levelIncome})`}</span>
+                    <span className="f-w-500 f-12 f-light" style={{marginLeft:"5px"}}>{`(${currency} ${item.levelIncome})`}</span>
                   </div>
                   <Badge
                     color={`light-${item.status === 1 ? "success" : "danger"}`}
