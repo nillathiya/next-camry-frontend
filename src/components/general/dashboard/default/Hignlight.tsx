@@ -1,19 +1,19 @@
 "use client";
+import {
+  userShowSlidingHighlight,
+  useSlidingHighlightText,
+} from "@/hooks/useUserSettings";
+import { useAppSelector } from "@/redux-toolkit/Hooks";
 import React, { useState, useEffect } from "react";
 
 const Highlight = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { darkMode } = useAppSelector((state) => state.themeCustomizer);
+  const { loading: ShowSlidingHighlightLoading, value: showSlidingHighlight } =
+    userShowSlidingHighlight();
+  const { loading: slidingHighlightTextLoading, value: slidingHighlightText } =
+    useSlidingHighlightText();
 
-  useEffect(() => {
-    const checkDarkMode = () => {
-      setIsDarkMode(document.body.classList.contains("dark-only"));
-    };
-    checkDarkMode();
-    const observer = new MutationObserver(checkDarkMode);
-    observer.observe(document.body, { attributes: true, attributeFilter: ["class"] });
-
-    return () => observer.disconnect();
-  }, []);
+  console.log("showSlidingHighlight", showSlidingHighlight);
 
   return (
     <div>
@@ -22,8 +22,8 @@ const Highlight = () => {
           width: 100%;
           overflow: hidden;
           white-space: nowrap;
-          background: ${isDarkMode ? "#23262e" : "#fff"};
-          color: ${isDarkMode ? "#eee" : "#000"};
+          background: ${darkMode ? "#23262e" : "#fff"};
+          color: ${darkMode ? "#eee" : "#000"};
           padding: 10px 0;
           position: relative;
           border-radius: 10px;
@@ -52,11 +52,20 @@ const Highlight = () => {
         }
       `}</style>
 
-      <div className="marquee-wrapper mb-3">
-        <div className="marquee-content">
-          <span>🔥 Welcome to Our Website • </span>
-        </div>
-      </div>
+      {showSlidingHighlight &&
+        !ShowSlidingHighlightLoading &&
+        !slidingHighlightTextLoading && (
+          <div className="marquee-wrapper mb-3">
+            <div className="marquee-content">
+              <span>
+                {"\u{1F525}"}
+                {"\u26A0\uFE0F"}
+                {"\u{1F3A4}"}
+                {slidingHighlightText}{" "}
+              </span>
+            </div>
+          </div>
+        )}
     </div>
   );
 };
