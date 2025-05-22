@@ -1,4 +1,17 @@
-import { Card, Col, Container, Row } from "reactstrap";
+"use client";
+
+import { useState } from "react";
+import {
+  Card,
+  Col,
+  Container,
+  Row,
+  Button,
+  Modal,
+  ModalBody,
+  ModalHeader,
+} from "reactstrap";
+import { IoCloseCircleOutline } from "react-icons/io5";
 import DiscountCard from "./DiscountCard";
 import MemberStatisticsCard from "./member-statictics";
 import RecentOrders from "./RecentOrders";
@@ -17,11 +30,28 @@ import EarningReports from "./EarningReports";
 import Highlight from "./Hignlight";
 
 const DefaultContainer = () => {
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const toggleModal = () => setModalOpen(!modalOpen);
+
   return (
     <Container fluid className="default-dashboard">
+      <style>{`
+        .modal-backdrop.show {
+          background-color: rgba(0, 0, 0, 0.8) !important;
+          backdrop-filter: blur(15px);
+          -webkit-backdrop-filter: blur(15px);
+        }
+      `}</style>
       <Row className="size-column">
-        <Highlight/>
-        <Col xl="9" className=" col-xl-100 box-col-12">
+        <Col xl="12" className="mb-3">
+          <Button color="primary" onClick={toggleModal}>
+            Open Image Popup
+          </Button>
+        </Col>
+
+        <Highlight />
+        <Col xl="9" className="col-xl-100 box-col-12">
           <Row>
             <QuickAccess />
             <WelcomeCard />
@@ -51,6 +81,34 @@ const DefaultContainer = () => {
           </Card>
         </Col>
       </Row>
+
+      <Modal
+        isOpen={modalOpen}
+        toggle={toggleModal}
+        centered
+        contentClassName="p-0"
+      >
+        <ModalBody className="position-relative p-0 text-center">
+          <IoCloseCircleOutline
+            size={30}
+            style={{
+              position: "absolute",
+              top: 10,
+              right: 10,
+              cursor: "pointer",
+              color: "#fff",
+              zIndex: 1051,
+            }}
+            onClick={toggleModal}
+            aria-label="Close popup"
+          />
+          <img
+            src="/assets/images/profileimg.jpg"
+            alt="Popup"
+            style={{ maxWidth: "100%", height: "auto", display: "block" }}
+          />
+        </ModalBody>
+      </Modal>
     </Container>
   );
 };
