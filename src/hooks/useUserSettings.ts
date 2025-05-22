@@ -134,11 +134,25 @@ export const useAddFundWallet = (): { value: SettingOption | undefined; loading:
   return { value, loading };
 };
 
-export const useFundConvertWallets = (): {
+export const useFundConvertToWallets = (): {
   value: SettingOption[] | undefined;
   loading: boolean;
 } => {
   const { value: setting, loading } = useUserSetting("Fund", "convert_fund_to_wallets");
+
+  const value = useMemo(() => {
+    if (loading || !Array.isArray(setting)) return undefined;
+    return setting as SettingOption[];
+  }, [setting, loading]);
+
+  return { value, loading };
+};
+
+export const useFundConvertFromWallets = (): {
+  value: SettingOption[] | undefined;
+  loading: boolean;
+} => {
+  const { value: setting, loading } = useUserSetting("Fund", "convert_fund_from_wallets");
 
   const value = useMemo(() => {
     if (loading || !Array.isArray(setting)) return undefined;

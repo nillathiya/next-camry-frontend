@@ -6,6 +6,7 @@ import {
   getUserRankAndTeamMetricsAsync,
   updateProfileAsync,
 } from "@/redux-toolkit/slices/userSlice";
+import { IRankSettings } from "@/types";
 import React, { useEffect, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
@@ -32,70 +33,113 @@ const RoyalityAndRewards = () => {
   // console.log("userRank", userRank);
 
   const maxRows = useMemo(
-    () => Math.max(...rankSettings.map((d) => d.value.length), 0),
+    () =>
+      Math.max(
+        ...(rankSettings?.map((d: IRankSettings) => d.value.length) || [0]),
+        0
+      ),
     [rankSettings]
   );
 
-  const userLevel = useMemo(() => {
-    if (!userRankAndTeamMetric || !rankSettings.length) return 0;
+  // Check if a specific level is achieved
+  const isLevelAchieved = (level: number): boolean => {
+    if (!userRankAndTeamMetric) return false;
 
+    return rankSettings.every((setting: IRankSettings) => {
+      const requiredValueRaw = setting.value[level];
+      const requiredValue =
+        typeof requiredValueRaw === "string"
+          ? parseFloat(requiredValueRaw)
+          : requiredValueRaw;
+
+      const value = userRankAndTeamMetric[setting.slug];
+      const userValue = Array.isArray(value) ? value[level] : value;
+
+      return typeof userValue === "number" && userValue >= requiredValue;
+    });
+  };
+
+  // Get the highest achieved level
+  const getUserLevel = (): number => {
+    let highestAchievedLevel = 0;
     for (let level = 0; level < maxRows; level++) {
-      const allCriteriaMet = rankSettings.every((setting) => {
-        const userValue = userRankAndTeamMetric[setting.slug] ?? 0;
-        const requiredValue = parseFloat(setting.value[level]) || 0;
+      if (isLevelAchieved(level)) {
+        highestAchievedLevel = level + 1;
+      }
+    }
+    return highestAchievedLevel;
+  };
 
-        if (
-          setting.slug === "rank" ||
-          setting.slug === "months" ||
-          setting.slug === "reward"
-        ) {
-          return true;
+  // Get status for a specific level
+  const getUserLevelStatus = (
+    currentLevel: number
+  ): "achieved" | "running" | "next" => {
+    if (isLevelAchieved(currentLevel)) {
+      return "achieved";
+    }
+
+    // Check if this is the "running" level (first unachieved level with some progress)
+    const hasProgress = rankSettings.some((setting: IRankSettings) => {
+      const value = userRankAndTeamMetric?.[setting.slug];
+      const userValue = Array.isArray(value) ? value[currentLevel] : value;
+      return typeof userValue === "number" && userValue > 0;
+    });
+
+    // Find the first unachieved level
+    for (let level = 0; level < maxRows; level++) {
+      if (!isLevelAchieved(level)) {
+        if (level === currentLevel && hasProgress) {
+          return "running";
         }
-
-        return userValue >= requiredValue;
-      });
-
-      if (!allCriteriaMet) return level;
+        return "next";
+      }
     }
-    return maxRows;
-  }, [rankSettings, userRankAndTeamMetric, maxRows]);
 
-  useEffect(() => {
-    if (userRank !== userLevel + 1) {
-      const updateData = {
-        myRank: userLevel + 1,
-      };
-      dispatch(
-        updateProfileAsync({
-          payload: updateData,
-          type: "data",
-        })
-      )
-        .unwrap()
-        .then(() => console.log("User rank updated successfully"))
-        .catch(() => toast.error("Failed to update rank"));
-    }
-  }, [userRank, userLevel, dispatch]);
+    return "next";
+  };
 
-  const getUserProgress = (slug: string, levelIndex: number) => {
+  const userLevel = getUserLevel();
+
+  // Update user rank when level changes
+  // useEffect(() => {
+  //   if (userRank !== userLevel && userLevel > 0) {
+  //     const updateData = {
+  //       myRank: userLevel,
+  //     };
+  //     dispatch(
+  //       updateProfileAsync({
+  //         payload: updateData,
+  //         type: "data",
+  //       })
+  //     )
+  //       .unwrap()
+  //       .then(() => console.log("User rank updated successfully"))
+  //       .catch(() => toast.error("Failed to update rank"));
+  //   }
+  // }, [userRank, userLevel, dispatch]);
+
+  const getUserProgress = (slug: string, levelIndex: number): string => {
     if (!userRankAndTeamMetric) return "0 / 0";
 
-    const userValue = userRankAndTeamMetric[slug] ?? 0;
+    const value = userRankAndTeamMetric[slug];
+    const userValue = Array.isArray(value)
+      ? value[levelIndex] || 0
+      : value || 0;
     const requiredValue =
-      rankSettings.find((d) => d.slug === slug)?.value[levelIndex] || "0";
+      rankSettings.find((d: IRankSettings) => d.slug === slug)?.value[
+        levelIndex
+      ] || 0;
 
     switch (slug) {
       case "rank":
         return userValue === 0
-          ? requiredValue
+          ? `${requiredValue}`
           : `${userValue}/${requiredValue}`;
       case "reward":
       case "self_business":
       case "direct_business":
       case "total_team_business":
-        return `${userValue.toLocaleString()} / ${parseFloat(
-          requiredValue
-        ).toLocaleString()}`;
+        return `${userValue.toLocaleString()} / ${requiredValue.toLocaleString()}`;
       default:
         return `${userValue} / ${requiredValue}`;
     }
@@ -108,82 +152,83 @@ const RoyalityAndRewards = () => {
           <h3 className="mb-0">Royalty & Rewards</h3>
         </div>
         <div className="card-body p-4">
-          {getRankSettings ||
-          getUserRankAndTeamMetric ||
-          !userRankAndTeamMetric ? (
+          {(getRankSettings || getUserRankAndTeamMetric) && (
             <div className="text-center py-5">
               <Spinner color="primary" />
               <p className="mt-2">Loading...</p>
             </div>
-          ) : rankSettings.length === 0 ? (
-            <div className="text-center py-5 text-muted">
-              No rank settings available
-            </div>
-          ) : (
-            <div className="table-responsive rounded">
-              <Table hover bordered className="table-striped rounded">
-                <thead className="table-dark">
-                  <tr>
-                    <th scope="col" className="px-4 py-3">
-                      Levels
-                    </th>
-                    {rankSettings.map((d) => (
-                      <th key={d.slug} scope="col" className="px-4 py-3">
-                        {d.title ? d.title.toUpperCase() : "N/A"}
-                      </th>
-                    ))}
-                    <th scope="col" className="px-4 py-3">
-                      Status
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Array.from({ length: maxRows }).map((_, level) => {
-                    const isAchieved = level < userLevel;
-                    const isRunning = level === userLevel;
-                    const isNext = level > userLevel;
-
-                    return (
-                      <tr
-                        key={level}
-                        className={
-                          isRunning
-                            ? "table-warning font-weight-bold"
-                            : isAchieved
-                            ? "table-success"
-                            : ""
-                        }
-                      >
-                        <td className="px-4 py-3 font-weight-bold">
-                          Level {level + 1}
-                        </td>
-                        {rankSettings.map((setting) => (
-                          <td key={setting.slug} className="px-4 py-3">
-                            {getUserProgress(setting.slug, level)}
-                          </td>
-                        ))}
-                        <td className="px-4 py-3">
-                          {isAchieved ? (
-                            <Badge color="success" pill>
-                              Level Achieved ✅
-                            </Badge>
-                          ) : isRunning ? (
-                            <Badge color="warning" pill>
-                              🔹 Running
-                            </Badge>
-                          ) : (
-                            <Badge color="info" pill>
-                              🚀 Next Level
-                            </Badge>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
-            </div>
           )}
+          {!getRankSettings &&
+            !getUserRankAndTeamMetric &&
+            rankSettings?.length === 0 && (
+              <div className="text-center py-5 text-muted">
+                No rank settings available
+              </div>
+            )}
+          {!getRankSettings &&
+            !getUserRankAndTeamMetric &&
+            rankSettings?.length > 0 && (
+              <div className="table-responsive rounded">
+                <Table hover bordered className="table-striped rounded">
+                  <thead className="table-dark">
+                    <tr>
+                      <th scope="col" className="px-4 py-3">
+                        Levels
+                      </th>
+                      {rankSettings.map((d: IRankSettings) => (
+                        <th key={d.slug} scope="col" className="px-4 py-3">
+                          {d.title ? d.title.toUpperCase() : "N/A"}
+                        </th>
+                      ))}
+                      <th scope="col" className="px-4 py-3">
+                        Status
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Array.from({ length: maxRows }).map((_, level) => {
+                      const status = getUserLevelStatus(level);
+                      return (
+                        <tr
+                          key={level}
+                          className={
+                            status === "running"
+                              ? "table-warning font-weight-bold"
+                              : status === "achieved"
+                              ? "table-success"
+                              : ""
+                          }
+                        >
+                          <td className="px-4 py-3 font-weight-bold">
+                            Level {level + 1}
+                          </td>
+                          {rankSettings.map((setting: IRankSettings) => (
+                            <td key={setting.slug} className="px-4 py-3">
+                              {getUserProgress(setting.slug, level)}
+                            </td>
+                          ))}
+                          <td className="px-4 py-3">
+                            {status === "achieved" ? (
+                              <Badge color="success" pill>
+                                Level Achieved ✅
+                              </Badge>
+                            ) : status === "running" ? (
+                              <Badge color="warning" pill>
+                                🔹 Running
+                              </Badge>
+                            ) : (
+                              <Badge color="info" pill>
+                                🚀 Next Level
+                              </Badge>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </Table>
+              </div>
+            )}
         </div>
       </div>
     </Container>

@@ -20,6 +20,7 @@ import {
   IUserLevelWiseGenerationQuery,
   IUserLevelWiseGenerationResponse,
   IUseWithPackageQuery,
+  IUserRewardTeamMetrics,
 } from "@/types";
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "../store";
@@ -49,6 +50,7 @@ export interface UserState {
   levelWiseGeneration: IUserLevelWiseGenerationResponse[];
   userRankAndTeamMetric: IUserRankAndTeamMetric;
   userTeamMetric: IUserTeamMetric | null;
+  userRewardTeamMetrics: IUserRewardTeamMetrics | null;
   userCappingStatus: IUserCappingStatus | null;
   fetched: {
     registerUser: boolean;
@@ -64,6 +66,7 @@ export interface UserState {
     userTopUp: boolean;
     getUserOrders: boolean;
     getUserRankAndTeamMetric: boolean;
+    getUserRewardTeamMetrics: boolean;
     getUserTeamMetric: boolean;
     getUserCappingStatus: boolean;
   };
@@ -76,12 +79,12 @@ export interface UserState {
     getUserDirects: boolean;
     getUserHierarchy: boolean;
     getUserLevelWiseGeneration: boolean;
-
     getUserNewsAndEvents: boolean;
     checkUsername: boolean;
     userTopUp: boolean;
     getUserOrders: boolean;
     getUserRankAndTeamMetric: boolean;
+    getUserRewardTeamMetrics: boolean;
     getUserTeamMetric: boolean;
     getUserCappingStatus: boolean;
   };
@@ -100,6 +103,7 @@ const initialState: UserState = {
   levelWiseGeneration: [],
   userRankAndTeamMetric: {},
   userTeamMetric: null,
+  userRewardTeamMetrics: null,
   userCappingStatus: null,
   fetched: {
     registerUser: false,
@@ -115,6 +119,7 @@ const initialState: UserState = {
     userTopUp: false,
     getUserOrders: false,
     getUserRankAndTeamMetric: false,
+    getUserRewardTeamMetrics: false,
     getUserTeamMetric: false,
     getUserCappingStatus: false,
   },
@@ -132,6 +137,7 @@ const initialState: UserState = {
     userTopUp: false,
     getUserOrders: false,
     getUserRankAndTeamMetric: false,
+    getUserRewardTeamMetrics: false,
     getUserTeamMetric: false,
     getUserCappingStatus: false,
   },
@@ -340,6 +346,22 @@ export const getUserRankAndTeamMetricsAsync = createAsyncThunk(
       const response = await apiClient.get<
         IApiResponse<IUserRankAndTeamMetric>
       >(ROUTES.USER.GET_RANK_TEAM_METRICS);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "An unknown error occurred"
+      );
+    }
+  }
+);
+
+export const getUserRewardTeamMetricsAsync = createAsyncThunk(
+  "user/getUserRewardTeamMetrics",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get<
+        IApiResponse<IUserRewardTeamMetrics>
+      >(ROUTES.USER.GET_REWARD_TEAM_METRICS);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(
@@ -770,6 +792,22 @@ const userSlice = createSlice({
       .addCase(getUserLevelWiseGenerationAsync.rejected, (state, action) => {
         state.loading.getUserLevelWiseGeneration = false;
         state.fetched.getUserCappingStatus = true;
+        state.error = action.payload as string;
+      })
+
+      // getUserRewardTeamMetricsAsync
+      .addCase(getUserRewardTeamMetricsAsync.pending, (state) => {
+        state.loading.getUserRewardTeamMetrics = true;
+        state.error = null;
+      })
+      .addCase(getUserRewardTeamMetricsAsync.fulfilled, (state, action) => {
+        state.loading.getUserRewardTeamMetrics = false;
+        state.fetched.getUserRewardTeamMetrics = true;
+        state.userRewardTeamMetrics = action.payload.data;
+      })
+      .addCase(getUserRewardTeamMetricsAsync.rejected, (state, action) => {
+        state.loading.getUserRewardTeamMetrics = false;
+        state.fetched.getUserRewardTeamMetrics = true;
         state.error = action.payload as string;
       });
   },

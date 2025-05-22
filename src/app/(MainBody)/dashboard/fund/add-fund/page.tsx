@@ -133,7 +133,9 @@ const AddFund = () => {
     }))
   );
 
-  const handleAmountChange = (e: React.ChangeEvent<HTMLFormElement | HTMLInputElement>) => {
+  const handleAmountChange = (
+    e: React.ChangeEvent<HTMLFormElement | HTMLInputElement>
+  ) => {
     const value = e.target.value;
     if (/^\d*\.?\d*$/.test(value)) {
       setAmountInput(value);
@@ -264,11 +266,13 @@ const AddFund = () => {
         const confirmToastId = toast.loading(
           "Confirming deposit on blockchain..."
         );
+        let verifyToastId: any;
+
         try {
           toast.dismiss(confirmToastId);
           toast.success("Deposit transaction confirmed!");
           setTransactionVerificationLoading(true);
-          const verifyToastId = toast.loading("Verifying transaction...");
+          verifyToastId = toast.loading("Verifying transaction...");
 
           const formData = {
             txHash: depositTxHash,
@@ -293,6 +297,7 @@ const AddFund = () => {
           }
         } catch (error) {
           toast.dismiss(confirmToastId);
+          if (verifyToastId) toast.dismiss(verifyToastId);
           toast.error("Verification failed. Please try again.");
         } finally {
           setTransactionVerificationLoading(false);
