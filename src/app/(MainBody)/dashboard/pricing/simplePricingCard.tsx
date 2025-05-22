@@ -27,8 +27,8 @@ const SimplePricingCard = () => {
   }, [dispatch]);
 
   // Sort userOrders by createdAt in ascending order
-  const sortedOrders = [...userOrders].sort((a, b) => 
-    new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  const sortedOrders = [...userOrders].sort(
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
   );
 
   // console.log("userOrders",userOrders);
@@ -53,9 +53,9 @@ const SimplePricingCard = () => {
           ) : (
             sortedOrders.map((order, index) => (
               <Col xl="3" sm="6" className="xl-50 box-col-6" key={index}>
-                <Card 
+                <Card
                   className="text-center pricing-simple shadow-lg border-0 rounded-3 transition-all duration-300 hover:shadow-xl hover:scale-105"
-                  style={{ transition: 'transform 0.3s, box-shadow 0.3s' }}
+                  style={{ transition: "transform 0.3s, box-shadow 0.3s" }}
                 >
                   <CardBody className="p-4">
                     <h3 className="fw-bold text-primary mb-3">
@@ -65,17 +65,20 @@ const SimplePricingCard = () => {
                     </h3>
                     <h1 className="text-success mb-3">${order.amount}</h1>
                     <h5 className="text-muted mb-3">
-                      {typeof order.pinId === "object" && order.pinId?.description
+                      {typeof order.pinId === "object" &&
+                      order.pinId?.description
                         ? order.pinId.description
                         : "N/A"}
                     </h5>
-                    <h6 className={`mb-3 fw-semibold ${
-                      order.status === 1
-                        ? "text-success"
-                        : order.status === 0
-                        ? "text-warning"
-                        : "text-danger"
-                    }`}>
+                    <h6
+                      className={`mb-3 fw-semibold ${
+                        order.status === 1
+                          ? "text-success"
+                          : order.status === 0
+                          ? "text-warning"
+                          : "text-danger"
+                      }`}
+                    >
                       {order.status === 1
                         ? "Running"
                         : order.status === 0
@@ -87,17 +90,17 @@ const SimplePricingCard = () => {
                     </h6>
                   </CardBody>
                   <div className="p-3">
-                    <Button 
-                      block 
-                      tag="a" 
-                      color="primary" 
-                      size="lg" 
-                      href={"#"} 
+                    <Button
+                      block
+                      tag="a"
+                      color="primary"
+                      size="lg"
+                      href={"#"}
                       disabled={true}
                       className="btn-gradient fw-bold rounded-pill"
                       style={{
-                        background: 'linear-gradient(90deg, #007bff, #00b4db)',
-                        border: 'none'
+                        background: "linear-gradient(90deg, #007bff, #00b4db)",
+                        border: "none",
                       }}
                     >
                       Purchase

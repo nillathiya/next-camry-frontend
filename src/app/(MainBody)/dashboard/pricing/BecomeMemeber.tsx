@@ -14,9 +14,15 @@ import CommonCardHeader from "@/common-components/CommonCardHeader";
 import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
 import { useEffect, useState } from "react";
 import { getPinSettingsAsync } from "@/redux-toolkit/slices/settingSlice";
-import { getAllUserOrdersAsync, userTopUpAsync } from "@/redux-toolkit/slices/userSlice";
+import {
+  getAllUserOrdersAsync,
+  getUserWalletAsync,
+  userTopUpAsync,
+} from "@/redux-toolkit/slices/userSlice";
 import { toast } from "react-toastify";
 import { useCompanyCurrency } from "@/hooks/useCompanyInfo";
+import { useTopUpFundWallet } from "@/hooks/useUserSettings";
+import { useWalletSettings } from "@/hooks/useWalletSettings";
 
 const BecomeMember = () => {
   const [error, setError] = useState("");
@@ -24,22 +30,32 @@ const BecomeMember = () => {
     pinSettings,
     loading: { getPinSettings },
   } = useAppSelector((state) => state.setting);
+
   const {
-    loading: { userTopUp }, // Replace 'topUpUser' with the correct property, e.g., 'userTopUp'
+    loading: { getUserWallet },
   } = useAppSelector((state) => state.user);
+
+  const { loading: topUpFundWalletLoading, value: topUpFundWallet } =
+    useTopUpFundWallet();
+
+  const filterdTopUpFundWallet = topUpFundWallet?.filter(
+    (wallet) => wallet.status
+  );
   const dispatch = useAppDispatch();
   const currency = useCompanyCurrency();
   const [selectedPin, setSelectedPin] = useState("");
+  const { getWalletBalanceBySlug, getWalletNameBySlug } = useWalletSettings();
 
   useEffect(() => {
-    const fetchPinSettings = async () => {
+    const fetchData = async () => {
       try {
         await dispatch(getPinSettingsAsync()).unwrap();
+        await dispatch(getUserWalletAsync()).unwrap();
       } catch (error) {
         setError(error || "Package Not Found");
       }
     };
-    fetchPinSettings();
+    fetchData();
   }, []);
 
   const handleTopUp = async (pinId: string) => {
@@ -53,17 +69,44 @@ const BecomeMember = () => {
       await Promise.all([
         dispatch(getPinSettingsAsync()).unwrap(),
         dispatch(getAllUserOrdersAsync()).unwrap(),
+        dispatch(getUserWalletAsync()).unwrap(),
       ]);
     } catch (error) {
       toast.error(error || "Server Error,Please Try Later");
     }
   };
+
   return (
     <Card>
       <CommonCardHeader title={"Become Member"} />
       <CardBody className="pricing-block">
+        <Row className="mb-4">
+          <Col>
+            <div className="d-flex align-items-center">
+              {topUpFundWalletLoading || getUserWallet ? (
+                <Spinner size="sm" color="primary" />
+              ) : topUpFundWallet !== null ? (
+                <h5 className="mb-0 d-flex align-items-center flex-wrap">
+                  {topUpFundWallet?.map((wallet, index) => (
+                    <span key={wallet.key || index} className="me-3">
+                      {getWalletNameBySlug(wallet.key)}: {currency} (
+                      {Number(getWalletBalanceBySlug(wallet.key) ?? 0).toFixed(
+                        2
+                      )}
+                      )
+                    </span>
+                  ))}
+                </h5>
+              ) : (
+                <Alert color="warning" className="mb-0">
+                  Unable to load wallet balance
+                </Alert>
+              )}
+            </div>
+          </Col>
+        </Row>
         <Row>
-          {getPinSettings ? (
+          {getPinSettings || getUserWallet ? (
             <div className="text-center py-4">
               <Spinner color="primary" />
             </div>
@@ -99,10 +142,14 @@ const BecomeMember = () => {
                       size="lg"
                       color="primary"
                       href={"#"}
-                      disabled={userTopUp}
+                      disabled={topUpFundWalletLoading}
                       onClick={() => handleTopUp(setting._id)}
                     >
-                      {userTopUp ? <Spinner color="primary" /> : "Buy"}
+                      {topUpFundWalletLoading ? (
+                        <Spinner color="primary" />
+                      ) : (
+                        "Buy"
+                      )}
                     </Button>
                   </div>
                 </div>

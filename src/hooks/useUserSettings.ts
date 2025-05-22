@@ -260,3 +260,20 @@ export const useSlidingHighlightText = (): {
 
   return { value, loading };
 };
+
+export const useTopUpFundWallet = (): {
+  value: SettingOption[] | undefined;
+  loading: boolean;
+} => {
+  const { value: setting, loading } = useUserSetting(
+    "TopUp",
+    "topup_fund_wallet"
+  );
+
+  const value = useMemo(() => {
+    if (loading || !Array.isArray(setting)) return undefined;
+    return setting as SettingOption[];
+  }, [setting, loading]);
+
+  return { value, loading };
+};
