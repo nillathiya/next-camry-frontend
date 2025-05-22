@@ -3,98 +3,182 @@
 import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
 import { getRewardSettingsAsync } from "@/redux-toolkit/slices/settingSlice";
 import {
-  getUserRankAndTeamMetricsAsync,
+  getUserRewardTeamMetricsAsync,
   updateProfileAsync,
 } from "@/redux-toolkit/slices/userSlice";
-import React, { useEffect, useMemo } from "react";
+import { IRewardSettings } from "@/types";
+import React, { useEffect, useMemo, useRef } from "react";
 import { toast } from "react-toastify";
 import { Table, Badge, Spinner, Container } from "reactstrap";
 
 const GrowthBooster = () => {
   const dispatch = useAppDispatch();
   const {
-    userRankAndTeamMetric,
-    loading: { getUserRankAndTeamMetric },
+    userRewardTeamMetrics,
+    loading: { getUserRewardTeamMetrics },
   } = useAppSelector((state) => state.user);
 
   const {
     rewardSettings,
     loading: { getRewardSettings },
   } = useAppSelector((state) => state.setting);
+  const hasFetched = useRef(false);
 
   useEffect(() => {
+    if (hasFetched.current) return;
+
     // Only dispatch if data is not already loaded
     if (!rewardSettings.length) {
       dispatch(getRewardSettingsAsync());
     }
-    if (!userRankAndTeamMetric) {
-      dispatch(getUserRankAndTeamMetricsAsync());
+    if (
+      !userRewardTeamMetrics ||
+      (typeof userRewardTeamMetrics === "object" &&
+        Object.keys(userRewardTeamMetrics).length === 0)
+    ) {
+      dispatch(getUserRewardTeamMetricsAsync());
     }
-  }, [dispatch, rewardSettings.length, userRankAndTeamMetric]);
 
-  const userRank = userRankAndTeamMetric?.rank || 0;
+    hasFetched.current = true;
+  }, [dispatch, rewardSettings.length, userRewardTeamMetrics]);
+
+  const userRank = userRewardTeamMetrics?.rank || 0;
 
   const maxRows = useMemo(
-    () => Math.max(...rewardSettings.map((d) => d.value.length), 0),
+    () =>
+      Math.max(
+        ...rewardSettings.map((d: IRewardSettings) => d.value.length),
+        0
+      ),
     [rewardSettings]
   );
 
-  const userLevel = useMemo(() => {
-    if (!userRankAndTeamMetric || !rewardSettings.length) return 0;
+  // Check if a specific level is achieved
+  const isLevelAchieved = (level: number): boolean => {
+    if (!userRewardTeamMetrics || !rewardSettings.length) return false;
 
+    return rewardSettings.every((setting: IRewardSettings) => {
+      const requiredValueRaw = setting.value[level];
+      const requiredValue =
+        typeof requiredValueRaw === "string"
+          ? parseFloat(requiredValueRaw)
+          : requiredValueRaw;
+
+      let userValue: number;
+      if (setting.slug === "growth_booster") {
+        // Use the value at the specific level from total_team_business
+        userValue = Array.isArray(userRewardTeamMetrics.total_team_business)
+          ? userRewardTeamMetrics.total_team_business[level] ?? 0
+          : userRewardTeamMetrics.total_team_business ?? 0;
+      } else {
+        const value = userRewardTeamMetrics[setting.slug];
+        userValue = Array.isArray(value) ? value[level] : value || 0;
+      }
+
+      // Skip certain slugs that don't require comparison
+      if (
+        setting.slug === "rank" ||
+        setting.slug === "months" ||
+        setting.slug === "reward"
+      ) {
+        return true;
+      }
+
+      return typeof userValue === "number" && userValue >= requiredValue;
+    });
+  };
+
+  // Get the highest achieved level
+  const getUserLevel = (): number => {
+    let highestAchievedLevel = 0;
     for (let level = 0; level < maxRows; level++) {
-      const allCriteriaMet = rewardSettings.every((setting) => {
-        const userValue = userRankAndTeamMetric[setting.slug] ?? 0;
-        const requiredValue = parseFloat(setting.value[level]) || 0;
+      if (isLevelAchieved(level)) {
+        highestAchievedLevel = level + 1;
+      } else {
+        break;
+      }
+    }
+    return highestAchievedLevel;
+  };
 
-        if (
-          setting.slug === "rank" ||
-          setting.slug === "months" ||
-          setting.slug === "reward"
-        ) {
-          return true;
+  // Get status for a specific level
+  const getUserLevelStatus = (
+    currentLevel: number
+  ): "achieved" | "running" | "next" => {
+    if (isLevelAchieved(currentLevel)) {
+      return "achieved";
+    }
+
+    // Check if this is the "running" level (first unachieved level with some progress)
+    const hasProgress = rewardSettings.some((setting: IRewardSettings) => {
+      let userValue: number;
+      if (setting.slug === "growth_booster") {
+        userValue = Array.isArray(userRewardTeamMetrics?.total_team_business)
+          ? userRewardTeamMetrics.total_team_business[currentLevel] ?? 0
+          : userRewardTeamMetrics?.total_team_business ?? 0;
+      } else {
+        const value = userRewardTeamMetrics?.[setting.slug];
+        userValue = Array.isArray(value) ? value[currentLevel] : value || 0;
+      }
+      return typeof userValue === "number" && userValue > 0;
+    });
+    // Find the first unachieved level
+    for (let level = 0; level < maxRows; level++) {
+      if (!isLevelAchieved(level)) {
+        if (level === currentLevel && hasProgress) {
+          return "running";
         }
-
-        return userValue >= requiredValue;
-      });
-
-      if (!allCriteriaMet) return level;
+        return "next";
+      }
     }
-    return maxRows;
-  }, [rewardSettings, userRankAndTeamMetric, maxRows]);
 
-  useEffect(() => {
-    if (userRank !== userLevel + 1) {
-      const updateData = {
-        myRank: userLevel + 1,
-      };
-      dispatch(
-        updateProfileAsync({
-          payload: updateData,
-          type: "data",
-        })
-      )
-        .unwrap()
-        .then(() => console.log("User rank updated successfully"))
-        .catch(() => toast.error("Failed to update rank"));
+    return "next";
+  };
+
+  const userLevel = getUserLevel();
+
+  // Update user rank when level changes
+  // useEffect(() => {
+  //   if (userRank !== userLevel && userLevel > 0) {
+  //     const updateData = {
+  //       myRank: userLevel,
+  //     };
+  //     dispatch(
+  //       updateProfileAsync({
+  //         payload: updateData,
+  //         type: "data",
+  //       })
+  //     )
+  //       .unwrap()
+  //       .then(() => console.log("User rank updated successfully"))
+  //       .catch(() => toast.error("Failed to update rank"));
+  //   }
+  // }, [userRank, userLevel, dispatch]);
+
+  const getUserProgress = (slug: string, levelIndex: number): string => {
+    if (!userRewardTeamMetrics) return "0 / 0";
+
+    let userValue: number;
+
+    if (slug === "growth_booster") {
+      if (Array.isArray(userRewardTeamMetrics.total_team_business)) {
+        userValue = userRewardTeamMetrics.total_team_business[levelIndex] ?? 0;
+      } else {
+        userValue = Number(userRewardTeamMetrics.total_team_business) || 0;
+      }
+    } else {
+      userValue = Number(userRewardTeamMetrics[slug]) || 0;
     }
-  }, [userRank, userLevel, dispatch]);
-
-  const getUserProgress = (slug: string, levelIndex: number) => {
-    if (!userRankAndTeamMetric) return "0 / 0";
-
-    const userValue =
-      slug === "growth_booster"
-        ? userRankAndTeamMetric.total_team_business
-        : userRankAndTeamMetric[slug] ?? 0;
 
     const requiredValue =
-      rewardSettings.find((d) => d.slug === slug)?.value[levelIndex] || "0";
+      rewardSettings.find((d: IRewardSettings) => d.slug === slug)?.value[
+        levelIndex
+      ] || "0";
 
     switch (slug) {
       case "rank":
         return userValue === 0
-          ? requiredValue
+          ? `${requiredValue}`
           : `${userValue}/${requiredValue}`;
       case "reward":
       case "self_business":
@@ -116,82 +200,83 @@ const GrowthBooster = () => {
           <h3 className="mb-0">Camry Growth Booster</h3>
         </div>
         <div className="card-body p-4">
-          {getRewardSettings ||
-          getUserRankAndTeamMetric ||
-          !userRankAndTeamMetric ? (
+          {(getRewardSettings || getUserRewardTeamMetrics) && (
             <div className="text-center py-5">
               <Spinner color="primary" />
               <p className="mt-2">Loading...</p>
             </div>
-          ) : rewardSettings.length === 0 ? (
-            <div className="text-center py-5 text-muted">
-              No Reward settings available
-            </div>
-          ) : (
-            <div className="table-responsive rounded">
-              <Table hover bordered className="table-striped rounded">
-                <thead className="table-dark">
-                  <tr>
-                    <th scope="col" className="px-4 py-3">
-                      Levels
-                    </th>
-                    {rewardSettings.map((d) => (
-                      <th key={d.slug} scope="col" className="px-4 py-3">
-                        {d.title ? d.title.toUpperCase() : "N/A"}
-                      </th>
-                    ))}
-                    <th scope="col" className="px-4 py-3">
-                      Status
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Array.from({ length: maxRows }).map((_, level) => {
-                    const isAchieved = level < userLevel;
-                    const isRunning = level === userLevel;
-                    const isNext = level > userLevel;
-
-                    return (
-                      <tr
-                        key={level}
-                        className={
-                          isRunning
-                            ? "table-warning font-weight-bold"
-                            : isAchieved
-                            ? "table-success"
-                            : ""
-                        }
-                      >
-                        <td className="px-4 py-3 font-weight-bold">
-                          Level {level + 1}
-                        </td>
-                        {rewardSettings.map((setting) => (
-                          <td key={setting.slug} className="px-4 py-3">
-                            {getUserProgress(setting.slug, level)}
-                          </td>
-                        ))}
-                        <td className="px-4 py-3">
-                          {isAchieved ? (
-                            <Badge color="success" pill>
-                              Level Achieved ✅
-                            </Badge>
-                          ) : isRunning ? (
-                            <Badge color="warning" pill>
-                              🔹 Running
-                            </Badge>
-                          ) : (
-                            <Badge color="info" pill>
-                              🚀 Next Level
-                            </Badge>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
-            </div>
           )}
+          {!getRewardSettings &&
+            !getUserRewardTeamMetrics &&
+            rewardSettings?.length === 0 && (
+              <div className="text-center py-5 text-muted">
+                No Reward settings available
+              </div>
+            )}
+          {!getRewardSettings &&
+            !getUserRewardTeamMetrics &&
+            rewardSettings?.length > 0 && (
+              <div className="table-responsive rounded">
+                <Table hover bordered className="table-striped rounded">
+                  <thead className="table-dark">
+                    <tr>
+                      <th scope="col" className="px-4 py-3">
+                        Levels
+                      </th>
+                      {rewardSettings.map((d: IRewardSettings) => (
+                        <th key={d.slug} scope="col" className="px-4 py-3">
+                          {d.title ? d.title.toUpperCase() : "N/A"}
+                        </th>
+                      ))}
+                      <th scope="col" className="px-4 py-3">
+                        Status
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Array.from({ length: maxRows }).map((_, level) => {
+                      const status = getUserLevelStatus(level);
+                      return (
+                        <tr
+                          key={level}
+                          className={
+                            status === "running"
+                              ? "table-warning font-weight-bold"
+                              : status === "achieved"
+                              ? "table-success"
+                              : ""
+                          }
+                        >
+                          <td className="px-4 py-3 font-weight-bold">
+                            Level {level + 1}
+                          </td>
+                          {rewardSettings.map((setting: IRewardSettings) => (
+                            <td key={setting.slug} className="px-4 py-3">
+                              {getUserProgress(setting.slug, level)}
+                            </td>
+                          ))}
+                          <td className="px-4 py-3">
+                            {status === "achieved" ? (
+                              <Badge color="success" pill>
+                                Level Achieved ✅
+                              </Badge>
+                            ) : status === "running" ? (
+                              <Badge color="warning" pill>
+                                🔹 Running
+                              </Badge>
+                            ) : (
+                              <Badge color="info" pill>
+                                🚀 Next Level
+                              </Badge>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </Table>
+              </div>
+            )}
         </div>
       </div>
     </Container>

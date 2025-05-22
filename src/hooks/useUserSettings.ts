@@ -44,7 +44,10 @@ const useFetchUserSettings = () => {
 export const useUserSetting = (
   title: string,
   slug: string
-): { value: SettingOption[] | string | string[] | undefined; loading: boolean } => {
+): {
+  value: SettingOption[] | string | string[] | boolean | undefined;
+  loading: boolean;
+} => {
   const { userSettings, loading } = useFetchUserSettings();
 
   const value = useMemo(() => {
@@ -68,17 +71,21 @@ export const useUserSettingValues = (
 
   const values = useMemo(() => {
     if (loading) return criteria.map(() => undefined); // Return undefined for each while loading
-    return criteria.map(({ title, slug }) =>
-      userSettings.find(
-        (data: IUserSetting) => data.title === title && data.slug === slug
-      )?.value as string | undefined
+    return criteria.map(
+      ({ title, slug }) =>
+        userSettings.find(
+          (data: IUserSetting) => data.title === title && data.slug === slug
+        )?.value as string | undefined
     );
   }, [userSettings, criteria, loading]);
 
   return { values, loading };
 };
 
-export const useMenuItems = (): { items: MenuItem[] | undefined; loading: boolean } => {
+export const useMenuItems = (): {
+  items: MenuItem[] | undefined;
+  loading: boolean;
+} => {
   const { userSettings, loading } = useFetchUserSettings();
 
   const items = useMemo(() => {
@@ -123,7 +130,10 @@ export const useMenuItems = (): { items: MenuItem[] | undefined; loading: boolea
   return { items, loading };
 };
 
-export const useAddFundWallet = (): { value: SettingOption | undefined; loading: boolean } => {
+export const useAddFundWallet = (): {
+  value: SettingOption | undefined;
+  loading: boolean;
+} => {
   const { value: setting, loading } = useUserSetting("Fund", "add_fund_wallet");
 
   const value = useMemo(() => {
@@ -134,11 +144,31 @@ export const useAddFundWallet = (): { value: SettingOption | undefined; loading:
   return { value, loading };
 };
 
-export const useFundConvertWallets = (): {
+export const useFundConvertToWallets = (): {
   value: SettingOption[] | undefined;
   loading: boolean;
 } => {
-  const { value: setting, loading } = useUserSetting("Fund", "convert_fund_to_wallets");
+  const { value: setting, loading } = useUserSetting(
+    "Fund",
+    "convert_fund_to_wallets"
+  );
+
+  const value = useMemo(() => {
+    if (loading || !Array.isArray(setting)) return undefined;
+    return setting as SettingOption[];
+  }, [setting, loading]);
+
+  return { value, loading };
+};
+
+export const useFundConvertFromWallets = (): {
+  value: SettingOption[] | undefined;
+  loading: boolean;
+} => {
+  const { value: setting, loading } = useUserSetting(
+    "Fund",
+    "convert_fund_from_wallets"
+  );
 
   const value = useMemo(() => {
     if (loading || !Array.isArray(setting)) return undefined;
@@ -152,7 +182,10 @@ export const useFundTransferWallets = (): {
   value: SettingOption[] | undefined;
   loading: boolean;
 } => {
-  const { value: setting, loading } = useUserSetting("Fund", "transfer_fund_wallet");
+  const { value: setting, loading } = useUserSetting(
+    "Fund",
+    "transfer_fund_wallet"
+  );
 
   const value = useMemo(() => {
     if (loading || !Array.isArray(setting)) return undefined;
@@ -166,7 +199,10 @@ export const useFundWithdrawalWallets = (): {
   value: SettingOption[] | undefined;
   loading: boolean;
 } => {
-  const { value: setting, loading } = useUserSetting("Withdrawal", "withdrawal_fund_wallets");
+  const { value: setting, loading } = useUserSetting(
+    "Withdrawal",
+    "withdrawal_fund_wallets"
+  );
 
   const value = useMemo(() => {
     if (loading || !Array.isArray(setting)) return undefined;
@@ -180,11 +216,63 @@ export const useFundWithdrawalDays = (): {
   value: string[] | undefined;
   loading: boolean;
 } => {
-  const { value: setting, loading } = useUserSetting("Withdrawal", "withdrawal_days");
+  const { value: setting, loading } = useUserSetting(
+    "Withdrawal",
+    "withdrawal_days"
+  );
 
   const value = useMemo(() => {
     if (loading || !Array.isArray(setting)) return undefined;
     return setting as string[];
+  }, [setting, loading]);
+
+  return { value, loading };
+};
+
+export const userShowSlidingHighlight = (): {
+  value: boolean;
+  loading: boolean;
+} => {
+  const { value: setting, loading } = useUserSetting(
+    "Sliding Highlight",
+    "show_sliding_highlight"
+  );
+
+  const value = useMemo(() => {
+    return setting as boolean;
+  }, [setting, loading]);
+
+  return { value, loading };
+};
+
+export const useSlidingHighlightText = (): {
+  value: string;
+  loading: boolean;
+} => {
+  const { value: setting, loading } = useUserSetting(
+    "Sliding Highlight",
+    "sliding_highlight_text"
+  );
+
+  const value = useMemo(() => {
+    return setting as string;
+  }, [setting, loading]);
+
+  return { value, loading };
+};
+
+export const useTopUpFundWallet = (): {
+  value: SettingOption[] | undefined;
+  loading: boolean;
+} => {
+  const { value: setting, loading } = useUserSetting(
+    "TopUp",
+    "topup_fund_wallet"
+  );
+
+  const value = useMemo(() => {
+    if (loading || !Array.isArray(setting)) return undefined;
+    return setting as SettingOption[];
   }, [setting, loading]);
 
   return { value, loading };

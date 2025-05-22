@@ -21,12 +21,15 @@ import {
   ErrorMessage,
   SwapIcon,
 } from "./SwapComponentStyles";
-import { useFundConvertWallets } from "@/hooks/useUserSettings";
 import { useWalletSettings } from "@/hooks/useWalletSettings";
 import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
 import { FUND_TX_TYPE } from "@/lib/fundType";
 import { fundConvertAsync } from "@/redux-toolkit/slices/fundSlice";
 import { Spinner } from "reactstrap";
+import {
+  useFundConvertFromWallets,
+  useFundConvertToWallets,
+} from "@/hooks/useUserSettings";
 
 // Types
 interface SwapFormData {
@@ -40,9 +43,16 @@ const SwapComponent: React.FC = () => {
   const dispatch = useAppDispatch();
   const { darkMode } = useAppSelector((state) => state.themeCustomizer);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { loading: fundConvertWalletLoading, value: fundConvertWallets } =
-    useFundConvertWallets();
-  const filteredFundConvertWallets = fundConvertWallets?.filter(
+
+  const { loading: fundConvertToLoading, value: fundConvertToWallet } =
+    useFundConvertToWallets();
+  const { loading: fundConvertFromLoading, value: fundConvertFromWallet } =
+    useFundConvertFromWallets();
+
+  const filteredFundConvertToWallets = fundConvertToWallet?.filter(
+    (wallet) => wallet.status
+  );
+  const filteredFundConvertFromWallets = fundConvertFromWallet?.filter(
     (wallet) => wallet.status
   );
   const { getWalletNameBySlug, getWalletBalanceBySlug } = useWalletSettings();
@@ -85,7 +95,7 @@ const SwapComponent: React.FC = () => {
     getUserWallet,
   ]);
 
-  if (fundConvertWalletLoading) {
+  if (fundConvertToLoading || fundConvertFromLoading) {
     return (
       <div className="text-center p-4">
         <Spinner color="primary">Loading...</Spinner>
@@ -171,7 +181,7 @@ const SwapComponent: React.FC = () => {
               render={({ field }) => (
                 <Select {...field} theme={darkMode ? "dark" : "light"}>
                   <option value="">Select Wallet</option>
-                  {filteredFundConvertWallets?.map((wallet, index) => (
+                  {filteredFundConvertFromWallets?.map((wallet, index) => (
                     <option key={index} value={wallet.key}>
                       {getWalletNameBySlug(wallet.key)}(
                       {Number(getWalletBalanceBySlug(wallet.key) ?? 0).toFixed(
@@ -212,7 +222,7 @@ const SwapComponent: React.FC = () => {
               render={({ field }) => (
                 <Select {...field} theme={darkMode ? "dark" : "light"}>
                   <option value="">Select Wallet</option>
-                  {fundConvertWallets?.map((wallet, index) => (
+                  {filteredFundConvertToWallets?.map((wallet, index) => (
                     <option key={index} value={wallet.key}>
                       {getWalletNameBySlug(wallet.key)} (
                       {Number(getWalletBalanceBySlug(wallet.key) ?? 0).toFixed(

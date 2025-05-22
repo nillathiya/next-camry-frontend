@@ -68,6 +68,7 @@ interface Routes {
     SEND_AUTHENTICATED_OTP: string;
     TOP_UP: string;
     GET_ORDERS: string;
+    GET_REWARD_TEAM_METRICS: string;
     GET_RANK_TEAM_METRICS: string;
     GET_TEAM_MATRICS: string;
     GET_CAPPING_STATUS: string;
@@ -234,6 +235,7 @@ export const ROUTES: Routes = {
     SEND_AUTHENTICATED_OTP: `${API_URL}/api/user/send-otp`,
     TOP_UP: `${API_URL}/api/top-up`,
     GET_ORDERS: `${API_URL}/api/user/orders`,
+    GET_REWARD_TEAM_METRICS: `${API_URL}/api/reward-setting/team-metrics`,
     GET_RANK_TEAM_METRICS: `${API_URL}/api/rank-setting/user/rank-and-team-metrics`,
     GET_TEAM_MATRICS: `${API_URL}/api/user/team-metrics`,
     GET_CAPPING_STATUS: `${API_URL}/api/user/capping-status`,

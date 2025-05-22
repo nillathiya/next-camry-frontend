@@ -243,9 +243,12 @@ export interface IOrder {
 }
 
 export interface IUserRankAndTeamMetric {
-  [slug: string]: number;
+  [slug: string]: number | number[];
 }
 
+export interface IUserRewardTeamMetrics {
+  [slug: string]: number | number[];
+}
 export interface IUserTeamMetric {
   activeRoiIncomeRequiredDirects: number;
   userTotalDirects: number;
