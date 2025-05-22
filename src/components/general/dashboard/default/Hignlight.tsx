@@ -18,52 +18,52 @@ const Highlight = () => {
   return (
     <div>
       <style>{`
-        .marquee-wrapper {
-                width: 100%;
-                overflow: hidden;
-                white-space: nowrap;
-                background: ${darkMode ? "#23262e" : "#fff"};
-                color: ${darkMode ? "#eee" : "#000"};
-                padding: 10px 0;
-                position: relative;
-                border-radius: 10px;
-            }
+.marquee-wrapper {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  background: ${darkMode ? "#23262e" : "#fff"};
+  color: ${darkMode ? "#eee" : "#000"};
+  padding: 10px 0;
+  position: relative;
+  border-radius: 10px;
+}
 
-        .marquee-inner {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                padding-left: 10px;
-                overflow: hidden;
-            }
+.marquee-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: 10px;
+  overflow: hidden;
+}
 
-        .icon {
-            flex-shrink: 0;
-        }
+.icon {
+  flex-shrink: 0;
+}
 
-        marquee-content {
-            flex: 1;
-            overflow: hidden;
-            white-space: nowrap;
-            position: relative;
-        }
+.marquee-content {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+}
 
-        .marquee-content span {
-            display: inline-block;
-            min-width: 100%;
-            padding-right: 50px;
-            font-size: 1rem;
-            animation: marquee 15s linear infinite;
-        }
+.marquee-content span {
+  display: inline-block;
+  min-width: 100%;
+  padding-right: 50px;
+  font-size: 1rem;
+  animation: marquee 15s linear infinite;
+}
 
-        @keyframes marquee {
-            0% {
-               transform: translateX(100%);
-            }
-            100% {
-               transform: translateX(-100%);
-        }
-    }
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
 
       `}</style>
 
