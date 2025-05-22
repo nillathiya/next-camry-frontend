@@ -28,8 +28,12 @@ import UserCards from "./UserCards";
 import WelcomeCard from "./WelcomeCard";
 import EarningReports from "./EarningReports";
 import Highlight from "./Hignlight";
+import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
+import { setShowDashboardPopup } from "@/redux-toolkit/slices/userSlice";
 
 const DefaultContainer = () => {
+  const dispatch = useAppDispatch();
+  const { showDashboardPopup } = useAppSelector((state) => state.user);
   const [modalOpen, setModalOpen] = useState(false);
 
   const toggleModal = () => setModalOpen(!modalOpen);
@@ -44,12 +48,6 @@ const DefaultContainer = () => {
         }
       `}</style>
       <Row className="size-column">
-        <Col xl="12" className="mb-3">
-          <Button color="primary" onClick={toggleModal}>
-            Open Image Popup
-          </Button>
-        </Col>
-
         <Highlight />
         <Col xl="9" className="col-xl-100 box-col-12">
           <Row>
@@ -82,12 +80,7 @@ const DefaultContainer = () => {
         </Col>
       </Row>
 
-      <Modal
-        isOpen={modalOpen}
-        toggle={toggleModal}
-        centered
-        contentClassName="p-0"
-      >
+      <Modal isOpen={showDashboardPopup} centered contentClassName="p-0">
         <ModalBody className="position-relative p-0 text-center">
           <IoCloseCircleOutline
             size={30}
@@ -99,7 +92,7 @@ const DefaultContainer = () => {
               color: "#fff",
               zIndex: 1051,
             }}
-            onClick={toggleModal}
+            onClick={() => dispatch(setShowDashboardPopup(false))}
             aria-label="Close popup"
           />
           <img

@@ -33,6 +33,8 @@ import { IApiResponse } from "@/types";
 import Web3RegistrationForm from "./Web3RegistrationForm";
 import { SiweMessage } from "siwe";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useAppDispatch } from "@/redux-toolkit/Hooks";
+import { setShowDashboardPopup } from "@/redux-toolkit/slices/userSlice";
 
 export const checkWalletAddress = async (address: string): Promise<boolean> => {
   try {
@@ -64,6 +66,7 @@ const UserForm = () => {
   const { switchChainAsync } = useSwitchChain();
   const { signMessageAsync } = useSignMessage();
   const hasRunAddressExistUseEffect = useRef(false);
+  const dispatch = useAppDispatch();
 
   // console.log("registrationType", registrationType);
   // Handle normal form submission
@@ -176,6 +179,7 @@ const UserForm = () => {
             console.log("SIWE login successful:", loginResult);
             localStorage.removeItem("showWeb3RegForm");
             toast.success("Successfully Logged in. Redirecting...");
+            dispatch(setShowDashboardPopup(true));
             router.push("/dashboard/default");
           } catch (error) {
             console.error("SIWE login error:", error);
@@ -296,15 +300,21 @@ const UserForm = () => {
     <div className="web3-login-form">
       <h4>{SignInToAccount}</h4>
       <p>{"Connect your wallet to login or register"}</p>
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-      <ConnectButton
-        chainStatus="icon"
-        showBalance={false}
-        accountStatus={{
-          smallScreen: "avatar",
-          largeScreen: "full",
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
         }}
-      />
+      >
+        <ConnectButton
+          chainStatus="icon"
+          showBalance={false}
+          accountStatus={{
+            smallScreen: "avatar",
+            largeScreen: "full",
+          }}
+        />
       </div>
     </div>
   );

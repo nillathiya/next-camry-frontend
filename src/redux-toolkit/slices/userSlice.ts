@@ -43,6 +43,7 @@ export interface INewsEvent {
 
 export interface UserState {
   user: IUser | null;
+  showDashboardPopup: boolean;
   userWallet: IUserWalletInfo | null;
   userDirects: IUser[];
   userOrders: IOrder[];
@@ -95,6 +96,7 @@ export interface UserState {
 }
 
 const initialState: UserState = {
+  showDashboardPopup: false,
   user: null,
   userWallet: null,
   userDirects: [],
@@ -479,6 +481,11 @@ const userSlice = createSlice({
         );
       }
     },
+
+    setShowDashboardPopup: (state, action) => {
+      state.showDashboardPopup = action.payload;
+    },
+
     clearUserWallet: (state) => {
       state.userWallet = null;
     },
@@ -819,6 +826,7 @@ export const {
   removeAmountFromWallet,
   clearUserWallet,
   resetFetched,
+  setShowDashboardPopup,
 } = userSlice.actions;
 
 export const selectTotalOrderAmount = (state: RootState) => {
