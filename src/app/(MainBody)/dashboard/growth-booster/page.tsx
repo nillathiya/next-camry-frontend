@@ -6,7 +6,7 @@ import {
   getUserRankAndTeamMetricsAsync,
   updateProfileAsync,
 } from "@/redux-toolkit/slices/userSlice";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { toast } from "react-toastify";
 import { Table, Badge, Spinner, Container } from "reactstrap";
 
@@ -21,15 +21,24 @@ const GrowthBooster = () => {
     rewardSettings,
     loading: { getRewardSettings },
   } = useAppSelector((state) => state.setting);
+  const hasFetched = useRef(false);
 
   useEffect(() => {
+    if (hasFetched.current) return;
+
     // Only dispatch if data is not already loaded
     if (!rewardSettings.length) {
       dispatch(getRewardSettingsAsync());
     }
-    if (!userRankAndTeamMetric) {
+    if (
+      !userRankAndTeamMetric ||
+      (typeof userRankAndTeamMetric === "object" &&
+        Object.keys(userRankAndTeamMetric).length === 0)
+    ) {
       dispatch(getUserRankAndTeamMetricsAsync());
     }
+
+    hasFetched.current = true;
   }, [dispatch, rewardSettings.length, userRankAndTeamMetric]);
 
   const userRank = userRankAndTeamMetric?.rank || 0;
@@ -44,7 +53,11 @@ const GrowthBooster = () => {
 
     for (let level = 0; level < maxRows; level++) {
       const allCriteriaMet = rewardSettings.every((setting) => {
-        const userValue = userRankAndTeamMetric[setting.slug] ?? 0;
+        const userValue =
+          setting.slug === "growth_booster"
+            ? userRankAndTeamMetric.total_team_business
+            : userRankAndTeamMetric[setting.slug] ?? 0;
+        console.log("userValue", userValue);
         const requiredValue = parseFloat(setting.value[level]) || 0;
 
         if (
@@ -63,29 +76,31 @@ const GrowthBooster = () => {
     return maxRows;
   }, [rewardSettings, userRankAndTeamMetric, maxRows]);
 
-  useEffect(() => {
-    if (userRank !== userLevel + 1) {
-      const updateData = {
-        myRank: userLevel + 1,
-      };
-      dispatch(
-        updateProfileAsync({
-          payload: updateData,
-          type: "data",
-        })
-      )
-        .unwrap()
-        .then(() => console.log("User rank updated successfully"))
-        .catch(() => toast.error("Failed to update rank"));
-    }
-  }, [userRank, userLevel, dispatch]);
+  // useEffect(() => {
+  //   if (userRank !== userLevel + 1) {
+  //     const updateData = {
+  //       myRank: userLevel + 1,
+  //     };
+  //     dispatch(
+  //       updateProfileAsync({
+  //         payload: updateData,
+  //         type: "data",
+  //       })
+  //     )
+  //       .unwrap()
+  //       .then(() => console.log("User rank updated successfully"))
+  //       .catch(() => toast.error("Failed to update rank"));
+  //   }
+  // }, [userRank, userLevel, dispatch]);
 
   const getUserProgress = (slug: string, levelIndex: number) => {
     if (!userRankAndTeamMetric) return "0 / 0";
 
+    console.log("slug", slug);
+    console.log("userRankAndTeamMetric", userRankAndTeamMetric);
     const userValue =
       slug === "growth_booster"
-        ? userRankAndTeamMetric.total_team_business
+        ? userRankAndTeamMetric.total_team_business ?? 0
         : userRankAndTeamMetric[slug] ?? 0;
 
     const requiredValue =
