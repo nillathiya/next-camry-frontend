@@ -14,16 +14,18 @@ import UpcomingTransactionCard from "./upcoming-transaction";
 import UserCards from "./UserCards";
 import WelcomeCard from "./WelcomeCard";
 import EarningReports from "./EarningReports";
+import Highlight from "./Hignlight";
 
 const DefaultContainer = () => {
   return (
     <Container fluid className="default-dashboard">
       <Row className="size-column">
+        <Highlight/>
         <Col xl="9" className=" col-xl-100 box-col-12">
           <Row>
-          <QuickAccess />
+            <QuickAccess />
             <WelcomeCard />
-             <UserCards />
+            <UserCards />
             <Col xl="6">
               <Row className="small-charts">
                 <Revenue />
@@ -32,11 +34,11 @@ const DefaultContainer = () => {
                 <RevenueWidget />
               </Row>
             </Col>
-             <TopReferral />
+            <TopReferral />
             <TotalProfitCard />
             <EarningReports />
             <UpcomingTransactionCard />
-           <MemberStatisticsCard />
+            <MemberStatisticsCard />
           </Row>
         </Col>
         <Col xl="3" className="col-xl-100">

@@ -88,37 +88,37 @@ const TopReferralSection = () => {
             <div className="referral-left-details">
               <div className="d-flex justify-content-between">
                 <div>
-                  <span className="f-light f-12 f-w-500 income_text">
-                    Today Income
-                  </span>
-                  <br />
-                  <span
+                <span
                     style={{
                       fontWeight: "bold",
                       marginLeft: "5px",
-                      fontSize: "19px",
+                      fontSize: "16px",
                     }}
                     className="income_text_value"
                   >
                     {currency}
                     {todayIncome.toLocaleString()}
                   </span>
+                  <br />
+                  <span className="f-light f-12 f-w-500 income_text">
+                    Today Income
+                  </span>                  
                 </div>
                 <div style={{ marginLeft: "20px" }}>
-                  <span className="f-light f-12 f-w-500 income_text">
-                    Total Income
-                  </span>
-                  <br />
-                  <span
+                <span
                     style={{
                       fontWeight: "bold",
                       marginLeft: "5px",
-                      fontSize: "19px",
+                      fontSize: "16px",
                     }}
                     className="income_text_value"
                   >
                     {currency}
                     {totalIncome.toLocaleString()}
+                  </span>
+                  <br />
+                  <span className="f-light f-12 f-w-500 income_text">
+                    Total Income
                   </span>
                 </div>
               </div>
