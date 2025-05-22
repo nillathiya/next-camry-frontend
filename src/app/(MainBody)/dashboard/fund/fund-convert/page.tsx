@@ -147,18 +147,20 @@ const SwapComponent: React.FC = () => {
       await dispatch(
         fundConvertAsync({ ...data, txType: FUND_TX_TYPE.FUND_CONVERT })
       ).unwrap();
-      dispatch(
-        removeAmountFromWallet({
-          walletType: data.fromWalletType,
-          amount: data.amount,
-        })
-      );
-      dispatch(
-        addAmountToWallet({
-          walletType: data.walletType,
-          amount: data.amount,
-        })
-      );
+
+      await dispatch(getUserWalletAsync()).unwrap();
+      // dispatch(
+      //   removeAmountFromWallet({
+      //     walletType: data.fromWalletType,
+      //     amount: data.amount,
+      //   })
+      // );
+      // dispatch(
+      //   addAmountToWallet({
+      //     walletType: data.walletType,
+      //     amount: data.amount,
+      //   })
+      // );
 
       toast.success("Swap completed successfully!");
     } catch (error: any) {
