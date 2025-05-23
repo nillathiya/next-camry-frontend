@@ -26,6 +26,8 @@ import { useWalletSettings } from "@/hooks/useWalletSettings";
 
 const BecomeMember = () => {
   const [error, setError] = useState("");
+  const [loadingButtons, setLoadingButtons] = useState<{ [key: string]: boolean }>({});
+
   const {
     pinSettings,
     loading: { getPinSettings },
@@ -59,6 +61,7 @@ const BecomeMember = () => {
   }, []);
 
   const handleTopUp = async (pinId: string) => {
+    setLoadingButtons((prev) => ({ ...prev, [pinId]: true }));
     try {
       const formData = {
         pinId,
@@ -72,7 +75,9 @@ const BecomeMember = () => {
         dispatch(getUserWalletAsync()).unwrap(),
       ]);
     } catch (error) {
-      toast.error(error || "Server Error,Please Try Later");
+      toast.error(error || "Server Error, Please Try Later");
+    } finally {
+      setLoadingButtons((prev) => ({ ...prev, [pinId]: false }));
     }
   };
 
@@ -142,11 +147,14 @@ const BecomeMember = () => {
                       size="lg"
                       color="primary"
                       href={"#"}
-                      disabled={topUpFundWalletLoading}
+                      disabled={loadingButtons[setting._id] || topUpFundWalletLoading}
                       onClick={() => handleTopUp(setting._id)}
                     >
-                      {topUpFundWalletLoading ? (
-                        <Spinner color="primary" />
+                      {loadingButtons[setting._id] ? (
+                        <>
+                          <Spinner size="sm" color="light" className="me-2" />
+                          Processing
+                        </>
                       ) : (
                         "Buy"
                       )}

@@ -34,7 +34,7 @@ interface IUser {
   email: string;
   contactNumber: string;
   wallet_address: string;
-  accountStatus: { activeStatus: number; blockStatus: number };
+  accountStatus: { activeStatus: number;};
   createdAt: string;
 }
 
@@ -261,22 +261,22 @@ const UserDirects = () => {
         },
         sortable: true,
       },
-      {
-        name: "Block Status",
-        cell: (row) => {
-          const status = row.accountStatus?.blockStatus;
-          const label =
-            status === 1 ? "UnBlock" : status === 0 ? "Block" : "N/A";
-          const color =
-            status === 1
-              ? "txt-primary"
-              : status === 0
-              ? "txt-danger"
-              : "txt-light";
-          return <span className={color}>{label}</span>;
-        },
-        sortable: true,
-      },
+      // {
+      //   name: "Block Status",
+      //   cell: (row) => {
+      //     const status = row.accountStatus?.blockStatus;
+      //     const label =
+      //       status === 1 ? "UnBlock" : status === 0 ? "Block" : "N/A";
+      //     const color =
+      //       status === 1
+      //         ? "txt-primary"
+      //         : status === 0
+      //         ? "txt-danger"
+      //         : "txt-light";
+      //     return <span className={color}>{label}</span>;
+      //   },
+      //   sortable: true,
+      // },
       {
         name: "Join Date",
         selector: (row) => new Date(row.createdAt).getTime(),
@@ -311,7 +311,7 @@ const UserDirects = () => {
           disabled={loading.getUserDirects}
         />
         {filterText && debouncedFilterText !== filterText && (
-          <span className="ms-2">Filtering...</span>
+          <Spinner size="sm" color="primary" className="ms-2" />
         )}
         {filterText && (
           <button
@@ -421,6 +421,22 @@ const UserDirects = () => {
     );
   };
 
+  // Pagination configuration
+  const paginationOptions = {
+    rowsPerPageText: "Rows per page:",
+    rangeSeparatorText: "of",
+    selectAllRowsItem: true,
+    selectAllRowsItemText: "All",
+  };
+
+  // Debug data flow
+  useEffect(() => {
+    console.log("userDirects:", userDirects);
+    console.log("normalizedUserDirects:", normalizedUserDirects);
+    console.log("filteredItems:", filteredItems);
+    console.log("loading.getUserDirects:", loading.getUserDirects);
+  }, [userDirects, normalizedUserDirects, filteredItems, loading.getUserDirects]);
+
   return (
     <Container fluid className="advance-init-table">
       <Row>
@@ -439,7 +455,7 @@ const UserDirects = () => {
                     <Spinner color="primary">Loading...</Spinner>
                   }
                   noDataComponent={
-                    !loading.getUserDirects && userDirects.length === 0 ? (
+                    !loading.getUserDirects && filteredItems.length === 0 ? (
                       <div className="text-center py-4">
                         <p className="text-muted">
                           No direct users found for this account.
@@ -452,9 +468,15 @@ const UserDirects = () => {
                   highlightOnHover
                   striped
                   pagination
+                  paginationPerPage={10}
+                  paginationRowsPerPageOptions={[10, 25, 50, 100]}
+                  paginationComponentOptions={paginationOptions}
+                  paginationResetDefaultPage={filterText !== debouncedFilterText}
                   className="border custom-scrollbar display dataTable"
                   subHeader
                   subHeaderComponent={subHeaderComponentMemo}
+                  // Ensure pagination is enabled even for small datasets
+                  paginationTotalRows={filteredItems.length}
                 />
               </div>
             </CardBody>
