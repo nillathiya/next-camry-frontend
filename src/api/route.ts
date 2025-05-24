@@ -22,12 +22,14 @@ interface Routes {
     CHANGE_PASSWORD: string;
     IMPERSONATE: string;
     SEND_OTP: string;
+    EXISTING_UPDATE_USER: any;
   };
   COMPANY_INFO: {
     GET_ALL: string;
     UPDATE: (id: string) => string;
     DELETE: string;
   };
+  
   SUPPORT: {
     GET_ALL: (
       ticket?: string,
@@ -132,6 +134,7 @@ export const ROUTES: Routes = {
     CHANGE_PASSWORD: `${API_URL}/api/auth/change-password`,
     IMPERSONATE: `${API_URL}/api/auth/admin/impersonate`,
     SEND_OTP: `${API_URL}/api/auth/send-otp`,
+    EXISTING_UPDATE_USER: `${API_URL}/api/user/update-existing`,
   },
   COMPANY_INFO: {
     GET_ALL: `${API_URL}/api/company-info/get`,

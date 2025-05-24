@@ -166,6 +166,22 @@ export const registerUserAsync = createAsyncThunk(
   }
 );
 
+export const existingUpdateUserAsync = createAsyncThunk(
+  "user/existingUpdateUser",
+  async (formData: any, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.post<
+        IApiResponse<IRegisterUserResponse>
+      >(ROUTES.AUTH.EXISTING_UPDATE_USER, formData);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "An unknown error occurred"
+      );
+    }
+  }
+);
+
 export const web3RegisterAsync = createAsyncThunk(
   "user/web3Register",
   async (formData: any, { rejectWithValue }) => {

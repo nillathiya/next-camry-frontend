@@ -43,7 +43,7 @@ import { SiweMessage } from "siwe";
 import { useOtp } from "@/hooks/useOtp";
 import { contractAbi } from "@/ABI/contract";
 import { abi as usdtAbi } from "@/ABI/usdtAbi";
-import { parseUnits, maxUint256 } from "viem";
+import { parseUnits, maxUint256, isAddress } from "viem";
 
 // Load English locale for country names
 countries.registerLocale(require("i18n-iso-countries/langs/en.json"));
@@ -122,7 +122,7 @@ const Web3RegistrationForm = ({ address: propAddress, chainId: propChainId }: We
   const web3RegistrationWithUsdt = useWeb3RegistrationWithUsdt() || "no";
   const web3RegistrationWithUsdtFees = useWeb3RegistrationWithUsdtFees() ?? 1;
   const tokenContract = useCompanyTokenContract();
-  const comapnyBscAddress = useComapnyBscAddress();
+  const companyBscAddress = useComapnyBscAddress();
   const value = useWeb3RegistrationFields() || [];
 
   // State
@@ -147,7 +147,10 @@ const Web3RegistrationForm = ({ address: propAddress, chainId: propChainId }: We
   const [isOtpSent, setIsOtpSent] = useState<boolean>(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState<"approving" | "depositing" | null>(null);
   const [formErrors, setFormErrors] = useState<Partial<Record<string, string>>>({});
-  const [transactionHash, setTransactionHash] = useState<`0x${string}` | null>(null);
+  const [approvalTxHash, setApprovalTxHash] = useState<`0x${string}` | null>(null);
+  const [depositTxHash, setDepositTxHash] = useState<`0x${string}` | null>(null);
+  const [hasDeposited, setHasDeposited] = useState(false);
+  const [isWalletInteractionOpen, setIsWalletInteractionOpen] = useState(false);
 
   // OTP hook
   const { sendOtp, isLoading: isOtpLoading, timeRemaining, error: otpError } = useOtp();
@@ -168,10 +171,110 @@ const Web3RegistrationForm = ({ address: propAddress, chainId: propChainId }: We
     query: { enabled: !!walletAddress && web3RegistrationWithUsdt === "yes" },
   });
 
-  // Wait for transaction receipt
-  const { data: receipt, error: receiptError, isLoading: isReceiptLoading } = useWaitForTransactionReceipt({
-    hash: transactionHash || undefined,
+  // Check USDT allowance
+  const { data: usdtAllowance } = useReadContract({
+    address: tokenContract as `0x${string}`,
+    abi: usdtAbi,
+    functionName: "allowance",
+    args: [walletAddress!, companyBscAddress as `0x${string}`],
+    query: { enabled: !!walletAddress && !!companyBscAddress && web3RegistrationWithUsdt === "yes" },
   });
+
+  // Wait for approval transaction receipt
+  const {
+    isLoading: isApprovalConfirming,
+    isSuccess: isApprovalConfirmed,
+    error: approvalError,
+  } = useWaitForTransactionReceipt({
+    hash: approvalTxHash || undefined,
+  });
+
+  // Wait for deposit transaction receipt
+  const {
+    isLoading: isDepositConfirming,
+    isSuccess: isDepositConfirmed,
+    error: depositError,
+  } = useWaitForTransactionReceipt({
+    hash: depositTxHash || undefined,
+  });
+
+  // Handle approval confirmation or error
+  useEffect(() => {
+    if (isApprovalConfirmed && approvalTxHash && !hasDeposited) {
+      toast.success(
+        <>
+          USDT allowance approved!{" "}
+          <a
+            href={`https://testnet.bscscan.com/tx/${approvalTxHash}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View on BscScan
+          </a>
+        </>
+      );
+      setIsProcessingPayment("depositing");
+      const initiateDeposit = async () => {
+        const depositToastId = toast.loading("Initiating USDT deposit...");
+        try {
+          if (!companyBscAddress) {
+            throw new Error("Company BSC address not found");
+          }
+          const depositTx = await writeContractAsync({
+            address: companyBscAddress as `0x${string}`,
+            abi: contractAbi,
+            functionName: "package",
+            args: [AMOUNT],
+          });
+          toast.dismiss(depositToastId);
+          toast.success("Deposit transaction sent!");
+          setDepositTxHash(depositTx);
+          setHasDeposited(true);
+        } catch (error: any) {
+          toast.dismiss(depositToastId);
+          toast.error(
+            error.message?.includes("User rejected")
+              ? "Transaction rejected by user"
+              : error.message || "Deposit failed"
+          );
+          setIsProcessingPayment(null);
+          setIsWalletInteractionOpen(false);
+        }
+      };
+      initiateDeposit();
+    } else if (approvalError && approvalTxHash) {
+      toast.error(`Approval failed: ${approvalError.message || "Unknown error"}`);
+      setIsProcessingPayment(null);
+      setApprovalTxHash(null);
+      setIsWalletInteractionOpen(false);
+    }
+  }, [isApprovalConfirmed, approvalError, approvalTxHash, hasDeposited, writeContractAsync, companyBscAddress, AMOUNT]);
+
+  // Handle deposit confirmation or error
+  useEffect(() => {
+    if (isDepositConfirmed && depositTxHash) {
+      toast.success(
+        <>
+          Payment successful!{" "}
+          <a
+            href={`https://testnet.bscscan.com/tx/${depositTxHash}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View on BscScan
+          </a>
+        </>
+      );
+      setIsProcessingPayment(null);
+      setDepositTxHash(null);
+      setIsWalletInteractionOpen(false);
+    } else if (depositError && depositTxHash) {
+      toast.error(`Deposit failed: ${depositError.message || "Unknown error"}`);
+      setIsProcessingPayment(null);
+      setDepositTxHash(null);
+      setIsWalletInteractionOpen(false);
+    }
+  }, [isDepositConfirmed, depositError, depositTxHash]);
 
   // Form fields
   const formFields = useMemo(() => parseFormFields(value), [value]);
@@ -248,85 +351,85 @@ const Web3RegistrationForm = ({ address: propAddress, chainId: propChainId }: We
     }
   }, [formData.username, formData.contactNumber, sendOtp, otpError]);
 
-  // Handle USDT payment
-  const handleUsdtPayment = useCallback(
-    async (): Promise<string> => {
-      if (!walletAddress || !tokenContract || !comapnyBscAddress) {
-        throw new Error("Wallet or contract addresses missing");
-      }
+  // Handle USDT payment initiation
+  const handleUsdtPayment = useCallback(async (): Promise<string> => {
+    if (!walletAddress || !tokenContract || !companyBscAddress) {
+      throw new Error("Wallet or contract addresses missing");
+    }
 
-      if (usdtBalance && (usdtBalance as bigint) < AMOUNT) {
-        throw new Error("Insufficient USDT balance");
-      }
+    if (!isAddress(companyBscAddress) || companyBscAddress.length !== 42) {
+      throw new Error("Invalid company BSC address");
+    }
 
+    if (usdtBalance && (usdtBalance as bigint) < AMOUNT) {
+      throw new Error(`Insufficient USDT balance. Required: ${web3RegistrationWithUsdtFees} USDT`);
+    }
+
+    setIsWalletInteractionOpen(true);
+    setHasDeposited(false);
+
+    const hasSufficientAllowance = usdtAllowance && (usdtAllowance as bigint) >= AMOUNT;
+
+    if (!hasSufficientAllowance) {
+      setIsProcessingPayment("approving");
+      const approvalToastId = toast.loading("Approving USDT allowance...");
       try {
-        // Approve USDT
-        setIsProcessingPayment("approving");
-        const approveHash = await writeContractAsync({
+        const approvalHash = await writeContractAsync({
           address: tokenContract as `0x${string}`,
           abi: usdtAbi,
           functionName: "approve",
-          args: [comapnyBscAddress, maxUint256],
+          args: [companyBscAddress, maxUint256],
         });
-        setTransactionHash(approveHash);
-
-        // Wait for approval confirmation
-        await new Promise<void>((resolve, reject) => {
-          const checkReceipt = () => {
-            if (receiptError) {
-              reject(new Error(`Approval failed: ${receiptError.message}`));
-            } else if (receipt) {
-              resolve();
-            }
-          };
-          checkReceipt();
-          if (!receipt && !receiptError) {
-            const interval = setInterval(checkReceipt, 1000);
-            return () => clearInterval(interval);
-          }
-        });
-        toast.success("USDT allowance approved!");
-        setTransactionHash(null); // Clear hash
-
-        // Deposit USDT
-        setIsProcessingPayment("depositing");
+        toast.dismiss(approvalToastId);
+        toast.success("Approval transaction sent!");
+        setApprovalTxHash(approvalHash);
+        return "";
+      } catch (error: any) {
+        toast.dismiss(approvalToastId);
+        const message = error.message?.includes("User rejected")
+          ? "Transaction rejected by user"
+          : error.message || "Approval failed";
+        toast.error(message);
+        setIsProcessingPayment(null);
+        setIsWalletInteractionOpen(false);
+        throw new Error(message);
+      }
+    } else {
+      setIsProcessingPayment("depositing");
+      const depositToastId = toast.loading("Initiating USDT deposit...");
+      try {
         const depositHash = await writeContractAsync({
-          address: comapnyBscAddress as `0x${string}`,
+          address: companyBscAddress as `0x${string}`,
           abi: contractAbi,
           functionName: "package",
           args: [AMOUNT],
         });
-        setTransactionHash(depositHash);
-
-        // Wait for deposit confirmation
-        await new Promise<void>((resolve, reject) => {
-          const checkReceipt = () => {
-            if (receiptError) {
-              reject(new Error(`Deposit failed: ${receiptError.message}`));
-            } else if (receipt) {
-              resolve();
-            }
-          };
-          checkReceipt();
-          if (!receipt && !receiptError) {
-            const interval = setInterval(checkReceipt, 1000);
-            return () => clearInterval(interval);
-          }
-        });
-        toast.success("Payment successful!");
+        toast.dismiss(depositToastId);
+        toast.success("Deposit transaction sent!");
+        setDepositTxHash(depositHash);
+        setHasDeposited(true);
         return depositHash;
       } catch (error: any) {
-        const message = error?.message?.includes("User rejected")
+        toast.dismiss(depositToastId);
+        const message = error.message?.includes("User rejected")
           ? "Transaction rejected by user"
-          : error?.message || "Transaction failed";
-        throw new Error(message);
-      } finally {
+          : error.message || "Deposit failed";
+        toast.error(message);
         setIsProcessingPayment(null);
-        setTransactionHash(null);
+        setIsWalletInteractionOpen(false);
+        throw new Error(message);
       }
-    },
-    [walletAddress, tokenContract, comapnyBscAddress, usdtBalance, AMOUNT, writeContractAsync, receipt, receiptError]
-  );
+    }
+  }, [
+    walletAddress,
+    tokenContract,
+    companyBscAddress,
+    usdtBalance,
+    usdtAllowance,
+    AMOUNT,
+    writeContractAsync,
+    web3RegistrationWithUsdtFees,
+  ]);
 
   // Handle form submission
   const handleSubmit = useCallback(
@@ -347,7 +450,7 @@ const Web3RegistrationForm = ({ address: propAddress, chainId: propChainId }: We
         let depositHash: string | undefined;
 
         // Process USDT payment if required
-        if (web3RegistrationWithUsdt === "yes") {
+        if (web3RegistrationWithUsdt === "yes" && parseFloat(web3RegistrationWithUsdtFees.toString()) > 0) {
           depositHash = await handleUsdtPayment();
         }
 
@@ -361,6 +464,19 @@ const Web3RegistrationForm = ({ address: propAddress, chainId: propChainId }: We
 
         await dispatch(web3RegisterAsync(registrationData)).unwrap();
         toast.success("Registration successful!");
+
+        // Skip SIWE login for free registrations
+        if (web3RegistrationWithUsdt === "no" || parseFloat(web3RegistrationWithUsdtFees.toString()) <= 0) {
+          localStorage.removeItem("showWeb3RegForm");
+          setFormData(formFields.reduce((acc, { key }) => {
+            acc[key] = key === "sponsor" ? ref || "" : key === "contactNumber" ? "" : "";
+            if (key === "contactNumber") acc["address"] = { country: "", countryCode: "" };
+            return acc;
+          }, {} as FormData));
+          setInputOtp("");
+          router.push("/dashboard/default");
+          return;
+        }
 
         // Fetch nonce for SIWE
         const nonceResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/nonce`, {
@@ -416,6 +532,7 @@ const Web3RegistrationForm = ({ address: propAddress, chainId: propChainId }: We
       walletAddress,
       chainId,
       web3RegistrationWithUsdt,
+      web3RegistrationWithUsdtFees,
       handleUsdtPayment,
       formData,
       inputOtp,
@@ -447,7 +564,9 @@ const Web3RegistrationForm = ({ address: propAddress, chainId: propChainId }: We
                 <div className="text-center py-4">
                   <Spinner color="primary" />
                   <p className="mt-2">
-                    {isProcessingPayment === "approving" ? "Approving USDT..." : "Processing Payment..."}
+                    {isProcessingPayment === "approving"
+                      ? "Approving USDT..."
+                      : "Processing Payment..."}
                   </p>
                 </div>
               ) : (
@@ -522,10 +641,24 @@ const Web3RegistrationForm = ({ address: propAddress, chainId: propChainId }: We
                         type="submit"
                         color="primary"
                         block
-                        disabled={isProcessingPayment !== null || isWritingContract || !walletAddress || isReceiptLoading}
+                        disabled={
+                          isProcessingPayment !== null ||
+                          isWritingContract ||
+                          !walletAddress ||
+                          isApprovalConfirming ||
+                          isDepositConfirming ||
+                          isWalletInteractionOpen
+                        }
                       >
-                        Register{" "}
-                        {web3RegistrationWithUsdt === "yes" ? `(${web3RegistrationWithUsdtFees} USDT)` : ""}
+                        {isWalletInteractionOpen
+                          ? "Waiting for Wallet..."
+                          : isApprovalConfirming
+                          ? "Confirming Approval..."
+                          : isDepositConfirming
+                          ? "Confirming Deposit..."
+                          : `Register${web3RegistrationWithUsdt === "yes" && parseFloat(web3RegistrationWithUsdtFees.toString()) > 0
+                              ? ` (${web3RegistrationWithUsdtFees} USDT)`
+                              : ""}`}
                       </Button>
                     </div>
                   </FormGroup>
