@@ -3,7 +3,7 @@
 
 import { useEffect, useRef } from "react";
 import { useAccount, useDisconnect } from "wagmi";
-import { store } from "@/redux-toolkit/store";
+import { store,persistor } from "@/redux-toolkit/store";
 import { setupApiInterceptors } from "@/api/apiClient";
 
 const InterceptorInitializer = () => {
@@ -23,6 +23,7 @@ const InterceptorInitializer = () => {
   useEffect(() => {
     setupApiInterceptors({
       store,
+      persistor,
       getWalletInfo: () => ({
         isWalletConnected: isConnectedRef.current,
         walletAddress: addressRef.current,

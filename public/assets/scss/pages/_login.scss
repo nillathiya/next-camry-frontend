@@ -15,7 +15,7 @@
     margin-bottom: 20px;
     text-align: center;
     >img {
-      height: calc(28px + (40 - 28) * ((100vw - 320px) / (1920 - 320)));
+      //  height: calc(28px + (40 - 28) * ((100vw - 320px) / (1920 - 320)));
     }
   }
   .btn-showcase {
@@ -35,7 +35,8 @@
   .login-main {
     width: 450px;
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 20px;
+    text-align: center;
     box-shadow: 0 0 37px rgba(8, 21, 66, 0.05);
     margin: 0 auto;
     background-color: $white;
@@ -134,7 +135,7 @@
 // sign-up wizard
 .theme-logo {
   img {
-    height: calc(28px + (40 - 28) * ((100vw - 320px) / (1920 - 320)));
+    // height: calc(28px + (40 - 28) * ((100vw - 320px) / (1920 - 320)));
   }
 }
 /**=====================

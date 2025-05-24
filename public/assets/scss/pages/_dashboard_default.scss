@@ -589,6 +589,11 @@
             }
         }
     }
+    .referral-link-section{
+        @media (min-width:768px) and (max-width:1199px) {
+            width: 100%;
+        }
+    }
 
     @media (min-width:768px) and (max-width:1199px) {
         margin-bottom: 16px;
@@ -925,6 +930,14 @@
     h2 {
         color: $white;
     }
+    .referral-qr-section{
+        margin-left: -120px;
+        @media (min-width:769px) and (max-width:1200px) {
+            .QR_responseive{
+                margin-right: 210px;
+            }
+        }
+    }
 
     .offer-content {
         width: 66%;
@@ -940,24 +953,25 @@
     img {
         position: absolute;
         right: 10px;
-        bottom: 0;
-        width: 33%;
+        width: 40%;
 
         [dir="rtl"] & {
             right: unset;
             left: 10px;
         }
 
-        @media (max-width: 767px) {
-            width: 14%;
+        @media (max-width: 768px) {
+            width: 30% !important;
+            margin-right: 50px;
         }
 
         @media (max-width: 575px) {
-            width: 21%;
+            width: 40% !important;
+            margin-right: 0px;
         }
 
         @media (max-width: 420px) {
-            width: 28%;
+            width: 40%;
         }
     }
 
@@ -1010,9 +1024,10 @@
         }
     }
 
-    @media (min-width:768px) and (max-width:1200px) {
+    @media (min-width:769px) and (max-width:1200px) {
         img {
-            width: 12%;
+            width: 25% !important;
+            right: 225px;
         }
     }
 }
@@ -1051,6 +1066,11 @@
                 display: -webkit-box;
                 -webkit-box-orient: vertical;
             }
+        }
+    }
+    .sales_content{
+        @media (max-width: 320px) {
+            display: block !important;
         }
     }
 }
@@ -1541,7 +1561,7 @@
         .card {
             .card-header {
                 .card-header-right-icon {
-                    display: none;
+                    display: block;
                 }
             }
         }

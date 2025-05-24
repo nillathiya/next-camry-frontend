@@ -10,11 +10,16 @@ const MemberStatisticsCard = () => {
           <div className="header-top">
             <h2>
               {MembersStatistics}
-              <span className="f-12 f-w-500 f-light d-block">Over 10k members</span>
+              <span className="f-12 f-w-500 f-light d-block">
+                Latest 4 Directs
+              </span>
             </h2>
             <div className="card-header-right-icon">
-              <a className="link-with-icon" href={Href}>
-                + Add New Member
+              <a
+                className="link-with-icon"
+                href={"/dashboard/genelogy/directs"}
+              >
+                Show All
               </a>
             </div>
           </div>

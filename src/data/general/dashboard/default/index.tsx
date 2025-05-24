@@ -1,4 +1,7 @@
 import SvgIcon from "@/common-components/common-icon/CommonSvgIcons";
+import { PiHandDepositBold, PiHandWithdrawBold } from "react-icons/pi";
+import { FcMoneyTransfer } from "react-icons/fc";
+import { SiConvertio } from "react-icons/si";
 import { Href } from "@/constants";
 import { ApexOptions } from "apexcharts";
 
@@ -104,30 +107,34 @@ export const EarningChartOptions: ApexOptions = {
   ],
 };
 
-export const UserCardData = [
+export const transactionItems = [
   {
-    svg: "crown",
-    heading: "User Profile",
-    title: "Consectetur adipiscing ",
-    color: "primary",
+    icon: <PiHandDepositBold size={25} />,
+    label: "Deposit",
+    href: "/dashboard/fund/add-fund",
+    bg: "bg-opacity-10 text-primary",
+    shadowColor: "rgba(13, 110, 253, 0.3)",
   },
   {
-    svg: "flash",
-    heading: "Latest Trends",
-    title: "Minim veniam",
-    color: "success",
+    icon: <FcMoneyTransfer size={22} />,
+    label: "Transfer",
+    href: "/dashboard/fund/fund-transfer",
+    bg: "bg-opacity-10 text-secondary",
+    shadowColor: "rgba(108, 117, 125, 0.3)",
   },
   {
-    svg: "blend-2",
-    heading: "New Arrivals",
-    title: "Excepteur sint",
-    color: "warning",
+    icon: <SiConvertio size={22} />,
+    label: "Convert",
+    href: "/dashboard/fund/fund-convert",
+    bg: "bg-opacity-10 text-warning",
+    shadowColor: "rgba(255, 193, 7, 0.4)",
   },
   {
-    svg: "color-filter",
-    heading: "Best Referrals",
-    title: "Quis nostrud exercitation",
-    color: "secondary",
+    icon: <PiHandWithdrawBold size={22} />,
+    label: "Withdraw",
+    href: "/dashboard/withdrawal/withdrawal",
+    bg: "bg-opacity-10 text-danger",
+    shadowColor: "rgba(220, 53, 69, 0.3)",
   },
 ];
 
@@ -567,51 +574,6 @@ export const RecentOrdersData = [
     code: "#101098",
     quantity: "1 Item",
     price: "$2,000",
-  },
-];
-
-export const TodoListData = [
-  {
-    heading: "Products",
-    time: "Today 2:00pm Clock",
-    status: "In Progress",
-    color: "primary",
-  },
-  {
-    heading: "Web developing..",
-    time: "Due in 4 Days",
-    status: "pending",
-    color: "warning",
-  },
-  {
-    heading: "UI/UX Design ",
-    time: "Due in 3 Days",
-    status: "Completed",
-    color: "success",
-  },
-  {
-    heading: "Client Meeting ..",
-    time: "Today 1:00pm Clock",
-    status: "In Progress",
-    color: "primary",
-  },
-  {
-    heading: "Web Layout..",
-    time: "Due in 10 Days",
-    status: "Completed",
-    color: "success",
-  },
-  {
-    heading: "Web developing..",
-    time: "Due in 4 Days",
-    status: "Pending",
-    color: "warning",
-  },
-  {
-    heading: "UI/UX Design",
-    time: "Due in 3 Days",
-    status: "Completed",
-    color: "success",
   },
 ];
 

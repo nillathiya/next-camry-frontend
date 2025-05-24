@@ -53,3 +53,78 @@ export interface IUserSetting {
   adminStatus: number;
 }
 
+export interface IWalletSettings {
+  _id: string;
+  parentId?: string; // Ref to Wallet._id
+  slug: string;
+  name?: string;
+  wallet?: string;
+  type?: string;
+  binary: number;
+  matrix: number;
+  universal: number;
+  singleLeg: number;
+  status: number;
+  adminStatus: number;
+  column?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ICompanyInfo {
+  _id: string;
+  name: string;
+  title: string;
+  slug: string;
+  type: string;
+  value?: string;
+  description?: string;
+  adminStatus: number;
+  status: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IPinSettings {
+  _id: string;
+  slug: string;
+  name: string;
+  rateMin?: number;
+  rateMax?: number;
+  description?: string;
+  type?: "fix" | "range";
+  roi?: number;
+  bv?: number;
+  pv?: number;
+  gst?: number;
+  status?: number;
+  createdAt: string;
+  updatedAt:string;
+}
+
+export interface IRankSettings {
+  title?: string;
+  slug: string;
+  type?: string;
+  value: string[];
+  status: number;
+}
+
+
+export interface IRewardSettings {
+  title?: string;
+  slug: string;
+  type?: string;
+  value: string[];
+  status: number;
+}
+
+export interface IPlan {
+  _id:string;
+  title: string;
+  slug: string;
+  value: string[];
+  order:number;
+  createdAt: string;
+  updatedAt: string;
+}

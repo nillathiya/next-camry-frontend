@@ -21,7 +21,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: "password", type: "password" },
       },
       async authorize(credentials) {
-        console.log("Credentials provider called:", credentials); // Debug
+        // console.log("Credentials provider called:", credentials); // Debug
         if (!credentials?.username || !credentials?.password) {
           throw new Error("Username and password are required");
         }
@@ -39,7 +39,7 @@ export const authOptions: NextAuthOptions = {
             }
           );
           const data = await response.json();
-          console.log("Credentials provider response:", data); // Debug
+          // console.log("Credentials provider response:", data); // Debug
           if (!response.ok) {
             throw new Error(data.message || "Authentication failed");
           }
@@ -64,7 +64,7 @@ export const authOptions: NextAuthOptions = {
         token: { label: "Token", type: "text" },
       },
       async authorize(credentials) {
-        console.log("Impersonate provider called:", credentials); // Debug
+        // console.log("Impersonate provider called:", credentials); // Debug
         if (!credentials?.token) {
           throw new Error("Token are required");
         }
@@ -81,13 +81,13 @@ export const authOptions: NextAuthOptions = {
             }
           );
           const data = await response.json();
-          console.log("Impersonate provider response:", data); // Debug
+          // console.log("Impersonate provider response:", data); // Debug
           if (!response.ok) {
             throw new Error(data.message || "Invalid impersonation token");
           }
           return {
             id: data.data.user._id,
-            username: data.data.username,
+            username: data.data.user.username,
             email: data.data.user.email || null,
             name: data.data.user.name || null,
             token: credentials.token, // backendToken
@@ -107,7 +107,7 @@ export const authOptions: NextAuthOptions = {
         signature: { label: "Signature", type: "text" },
       },
       async authorize(credentials) {
-        console.log("SIWE provider called:", credentials); // Debug
+        // console.log("SIWE provider called:", credentials); // Debug
         if (!credentials?.message || !credentials?.signature) {
           throw new Error("Message and signature are required");
         }
@@ -125,13 +125,13 @@ export const authOptions: NextAuthOptions = {
             }
           );
           const data = await response.json();
-          console.log("SIWE provider response:", data); // Debug
+          // console.log("SIWE provider response:", data); // Debug
           if (!response.ok) {
             throw new Error(data.message || "SIWE authentication failed");
           }
           return {
             id: data.data.user._id || data.data.user.walletAddress,
-            username: data.data.username || data.data.user.walletAddress,
+            username: data.data.user.username || data.data.user.walletAddress,
             email: data.data.user.email || null,
             name: data.data.user.name || null,
             token: data.data.token, // backendToken
@@ -156,11 +156,12 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.username = user.username ?? "";
         token.email = user.email ?? "";
         token.name = user.name ?? "";
         token.backendToken = user.token;
         token.role = user.role || "user";
-        console.log("JWT callback:", { token, user }); // Debug
+        // console.log("JWT callback:", { token, user }); // Debug
       }
       return token;
     },
@@ -169,9 +170,10 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string;
         session.user.email = token.email as string;
         session.user.name = token.name as string | null;
+        session.user.username = token.username as string | null;
         session.user.backendToken = token.backendToken as string;
         session.user.role = token.role as string;
-        console.log("Session callback:", { session, token }); // Debug
+        // console.log("Session callback:", { session, token }); // Debug
       }
       return session;
     },
@@ -181,5 +183,5 @@ export const authOptions: NextAuthOptions = {
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
-  debug: true, // Enable debug mode for detailed logs
+  debug: false, // Enable debug mode for detailed logs
 };

@@ -13,7 +13,6 @@ export const Paypal = "Paypal";
 //ui-kits
 export const Home = "Home";
 
-
 //Buttons
 export const SquareButtonsTitle: string = "Square Buttons";
 export const DefaultButtonTitle: string = "Default buttons";
@@ -30,8 +29,9 @@ export const BlockLevelButtonsTitle: string = "Block Level Buttons";
 export const ButtonVariationsTitle: string = "Button Variations";
 export const VerticalVariationTitle: string = "Vertical variation";
 export const HorizontalVariationTitle: string = "Horizontal variation";
-export const ButtonToolbarTitle : string = "Button toolbar";
-export const BoldBorderOutlineButtonsTitle: string = "Bold Border Outline Buttons";
+export const ButtonToolbarTitle: string = "Button toolbar";
+export const BoldBorderOutlineButtonsTitle: string =
+  "Bold Border Outline Buttons";
 export const RadioCheckboxGroupTitle: string = "Radio and Checkbox Group";
 export const RadioButtonTitle: string = "Radio Button";
 export const CheckboxButtonTitle: string = "Checkbox";
@@ -59,9 +59,12 @@ export const ColoredHeadingTitle: string = "Colored headings";
 export const FontWeightTitle: string = "Font weight";
 export const Bolder: string = " You can set bolder font weight Heading 1 using";
 export const BoldFont: string = " You can set bold font weight Heading 2 using";
-export const MediumBold: string = "You can set medium font weight Heading 3 using";
-export const NormalFont: string = "You can set normal font weight Heading 4 using";
-export const LightFont: string = "You can set light font weight Heading 5 using";
+export const MediumBold: string =
+  "You can set medium font weight Heading 3 using";
+export const NormalFont: string =
+  "You can set normal font weight Heading 4 using";
+export const LightFont: string =
+  "You can set light font weight Heading 5 using";
 export const fw700: string = "f-w-700";
 export const fw600: string = "f-w-600";
 export const fw500: string = "f-w-500";
@@ -126,10 +129,12 @@ export const RowCreateCallbackHeading = "Row Create Callback";
 export const StockResultHeading = "Stock Result";
 export const AddRowsHeading = "Add Rows";
 export const AddNewRow = "Add New Row";
-export const ChildrenRowsHeading = "Child Rows (Show Extra / Detailed Information)";
+export const ChildrenRowsHeading =
+  "Child Rows (Show Extra / Detailed Information)";
 export const ExtraInfo = "ExtraInfo";
 export const ExtraInformation = "Extra Information";
-export const RowsSelectionAndDeletionHeading = "Row Selection And Deletion (Single Row)";
+export const RowsSelectionAndDeletionHeading =
+  "Row Selection And Deletion (Single Row)";
 export const CustomFilteringHeading = "Custom Filtering Search";
 export const AjaxSourcedDataHeading = "Ajax Source Data";
 export const HtmlSourcedHeading = "HTML (DOM) Sourced Data";
@@ -195,7 +200,6 @@ export const FontAwesomeListConst = "Font Awesome List";
 export const OrderListConst = "Order List";
 export const UnOrderListConst = "Unordered List";
 export const Href = "#javascript";
-export const ImagePath = "/assets/images";
 export const Dashboard = "Dashboard";
 export const Widgets = "Widgets";
 export const Summary = "Summary";
@@ -422,7 +426,8 @@ export const ShowingProducts = "Showing Products 1 - 24 Of 200 Results";
 export const Featured = "Featured";
 export const LowestPrices = "Lowest Prices";
 export const HighestPrices = "Highest Prices";
-export const NotFoundData = "Sorry, We didn't find any results matching this search";
+export const NotFoundData =
+  "Sorry, We didn't find any results matching this search";
 export const ProductDetails = "Product Details";
 export const AddToCart = "Add to Cart";
 export const BuyNow = "Buy Now";
@@ -440,13 +445,15 @@ export const ProductSizeArray = ["M", "L", "Xl"];
 
 export const Fusion = "Fusion white & blue printed regular fit asymmetric";
 export const ProductReview = "(250 review)";
-export const ProductPageDetails = "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters,It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters";
+export const ProductPageDetails =
+  "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters,It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters";
 export const Febric = "Febric";
 export const Brand = "Brand";
 export const Availability = "Availability";
 
 export const ProductListTitle = "Individual column searching (text inputs)";
-export const ProductListDesc = "The searching functionality provided by DataTables is useful for quickly search through the information in the table - however the search is global, and you may wish to present controls that search on specific columns.";
+export const ProductListDesc =
+  "The searching functionality provided by DataTables is useful for quickly search through the information in the table - however the search is global, and you may wish to present controls that search on specific columns.";
 
 export const CreditCard = "Credit card";
 export const DebitCard = "Debit card";
@@ -457,10 +464,23 @@ export const NetBanking = "Net Banking";
 export const Submit = "Submit";
 
 export const SelectMonth = ["Select Month", "Jan", "Fab", "March", "April"];
-export const SelectYear = ["Select Year", "2015", "2016", "2017", "2018", "2024"];
+export const SelectYear = [
+  "Select Year",
+  "2015",
+  "2016",
+  "2017",
+  "2018",
+  "2024",
+];
 export const BankName = ["Bank Name", "SBI", "ICICI", "KOTAK", "BOB"];
 export const SelectCard = ["Select Card", "2", "3", "4", "5"];
-export const SelectDuration = ["Select Duration", "2015-2016", "2016-2017", "2017-2018", "2018-2024"];
+export const SelectDuration = [
+  "Select Duration",
+  "2015-2016",
+  "2016-2017",
+  "2017-2018",
+  "2018-2024",
+];
 
 export const ShippedOrders = "Shipped Orders";
 export const CancelledOrders = "Cancelled Orders";
@@ -481,7 +501,14 @@ export const LorumIpsum = "Lorum Ipsum";
 export const Purchase = "Purchase";
 
 export const CartTitle = "Cart";
-export const CartTableHeader = ["Product", "Product Name", "Price", "Quantity", "Action", "Total"];
+export const CartTableHeader = [
+  "Product",
+  "Product Name",
+  "Price",
+  "Quantity",
+  "Action",
+  "Total",
+];
 
 export const NewOrders = "New Orders";
 export const TotalPrice = "Total Price";
@@ -491,17 +518,28 @@ export const ExploreShortlistItems = "Explore more shortlist some items.";
 
 export const WishlistTitle = "Wishlist";
 export const MoveToCarts = "Move to Cart";
-export const WishlistTableHeader = ["Product", "Product Name", "Price", "Availability", "Action"];
+export const WishlistTableHeader = [
+  "Product",
+  "Product Name",
+  "Price",
+  "Availability",
+  "Action",
+];
 
 // check out
 export const BillingDetails = "Billing Details";
-export const FirstName = "First Name";
+export const FirstName = "Name";
 export const LastName = "Last Name";
 export const Phone = "Phone";
-export const EmailAddress = "Email Address";
+export const EmailAddress = "Email";
 export const Country = "Country";
 
-export const CountryMenu = ["India", "South Africa", "United State", "Australia"];
+export const CountryMenu = [
+  "India",
+  "South Africa",
+  "United State",
+  "Australia",
+];
 
 export const Address = "Address";
 export const TownCity = "Town/City";
@@ -536,11 +574,13 @@ export const PaymentDue = "Payment Due: June";
 export const JohanDeo = "Johan Deo";
 export const JohanDeoMailId = "JohanDeo@gmail.com";
 export const ProjectDescription = "Project Description";
-export const ProjectDescriptionDetails = "Lorem Ipsum is simply dummy text of the printing and typesetting industry.It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.";
+export const ProjectDescriptionDetails =
+  "Lorem Ipsum is simply dummy text of the printing and typesetting industry.It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.";
 export const ProductName = "Product Name";
 export const Sub_total = "Sub-total";
 export const ThankBusiness = "Thank you for your business!";
-export const ThankBusinessDesc = "Payment is expected within 31 days; please process this invoice within that time. There will be a 5% interest charge per month on late invoices.";
+export const ThankBusinessDesc =
+  "Payment is expected within 31 days; please process this invoice within that time. There will be a 5% interest charge per month on late invoices.";
 export const Print = "Print";
 
 // Users
@@ -569,7 +609,13 @@ export const Save = "Save";
 export const EditProfile = "Edit Profile";
 export const Company = "Company";
 export const Username = "Username";
-export const UsersCountryMenu = ["--Select--", "Germany", "Canada", "Usa", "Aus"];
+export const UsersCountryMenu = [
+  "--Select--",
+  "Germany",
+  "Canada",
+  "Usa",
+  "Aus",
+];
 export const AboutMe = "About Me";
 export const UpdateProfile = "Update Profile";
 export const UsersTableTitle = "Add projects And Upload";
@@ -798,7 +844,8 @@ export const Trending = "Trending";
 export const LinkColorInDarkTheme = "Link color in dark theme";
 export const LeftBorderAlerts = "Left Border Alerts";
 export const AdditionalContents = "Additional Content";
-export const PleaseCheckYourNotifications: string = "Please! Check your notifications";
+export const PleaseCheckYourNotifications: string =
+  "Please! Check your notifications";
 export const LinkColorInLightTheme = "Link color in light theme";
 export const TagsWithNumber = "Number Of Badge";
 export const PillsWithNumber = "Number Of Pills Tags";
@@ -905,13 +952,15 @@ export const StaticBackdropModalBtn: string = "Static backdrop modal";
 export const SomethingWentWrong: string = "Ohh! Something went wrong!";
 export const AlreadyLeaving: string = "Already leaving??";
 export const YesLogOut: string = "Yes, Log out";
-export const ParentToggleTitle: string = "Remove your complete account from your phone or tablet to sign out of the Gmail app.";
+export const ParentToggleTitle: string =
+  "Remove your complete account from your phone or tablet to sign out of the Gmail app.";
 export const ConnectNewAccount: string = "Connect new account";
 export const ConnectNewRegisterAccount: string = "Register";
 export const YuriEmail: string = "Yuritheme@gmail.com";
 export const EnterYourFirstName: string = "Enter your first-name";
 export const EnterYourLastName: string = "Enter your last-name";
-export const TermsAndCondition: string = "You accept our Terms and Privacy Policy by clicking Submit below.";
+export const TermsAndCondition: string =
+  "You accept our Terms and Privacy Policy by clicking Submit below.";
 export const ExtraLargeModal: string = "Extra large modal";
 export const StartWithYourGoals: string = "Start with your goals";
 export const FullscreenModal: string = "Fullscreen modal";
@@ -1077,7 +1126,8 @@ export const PillRating = "Pill Rating";
 
 export const SingleFileUpload = "Single File Upload";
 export const MultiImageUpload = "Multi only Image Upload";
-export const MultipleImageVideoAudioUpload = "Multiple Image Video Audio Upload";
+export const MultipleImageVideoAudioUpload =
+  "Multiple Image Video Audio Upload";
 export const LimitationFileUpload = "Limitation File Upload";
 export const CustomFileUpload = "Custom File Upload";
 
@@ -1314,7 +1364,8 @@ export const LineChartWithArea = "Line chart with area";
 export const BipolarBarChart = "Bi-polar bar chart";
 export const StackedBarChart = "Stacked bar chart";
 export const HorizontalBarChart = "Horizontal bar chart";
-export const ExtremeResponsiveConfiguration = "Extreme responsive configuration";
+export const ExtremeResponsiveConfiguration =
+  "Extreme responsive configuration";
 export const SimpleLineChart = "Simple line chart";
 export const HolesInData = "Holes in data";
 export const FilledHolesInData = "Filled holes in data";
@@ -1452,7 +1503,8 @@ export const YY = "YY";
 //  tables
 export const BasicTable = "Basic Table";
 export const InverseTable = "Inverse Table";
-export const InverseTablePrimaryBackground = "Inverse Table with Primary background";
+export const InverseTablePrimaryBackground =
+  "Inverse Table with Primary background";
 export const HoverableRows = "Hoverable rows";
 export const TextBackgroundUtilities = "Text or background utilities";
 export const TableHeadOptions = "Table head options";
@@ -1479,9 +1531,11 @@ export const DashedBorder = "Dashed Border";
 export const BorderBottomColor = "Border Bottom Color";
 export const DefaultStyling = "Default Styling";
 export const TableFootersStyling = "Table Footer Styling";
-export const TableHeadOptionsPrimaryBackground = "Table head options With Primary Background";
+export const TableHeadOptionsPrimaryBackground =
+  "Table head options With Primary Background";
 export const CustomTableColor = "Custom Table Color";
-export const CustomTableColorHoverStripped = "Custom Table Color with Hover and Stripped";
+export const CustomTableColorHoverStripped =
+  "Custom Table Color with Hover and Stripped";
 
 // pages
 export const RememberPassword = "Remember password";
@@ -1766,7 +1820,8 @@ export const Prefixes: string = "Prefix";
 export const FormattedLabels: string = "Formated Label";
 
 export const DefaultPaginations: string = "Default Pagination";
-export const PaginationWithActiveAndDisabled: string = "Pagination With Active And Disabled";
+export const PaginationWithActiveAndDisabled: string =
+  "Pagination With Active And Disabled";
 export const PaginationWithIcon: string = "Pagination With Icons";
 export const RoundedPaginations: string = "Rounded Pagination";
 export const PaginationAlignments: string = "Pagination Alignment";
@@ -1891,7 +1946,8 @@ export const FeaturedTutorial: string = "Featured Tutorials";
 export const SearchWebsite: string = "Search Website";
 export const SearchPages: string = "Search Pages";
 export const SearchPixelStrap: string = `Search result for "Pixelstrap"`;
-export const SearchDesc: string = "Accusamus et iusto odio dignissimos ducimus qui blanditiis.";
+export const SearchDesc: string =
+  "Accusamus et iusto odio dignissimos ducimus qui blanditiis.";
 export const ImageAbout: string = "About 12,120 results (0.50 seconds)";
 export const AllAbout: string = `About 6,000 results (0.60 seconds)`;
 export const Breadcrumbs: string = "Breadcrumb";
@@ -1920,12 +1976,14 @@ export const ProjectSizePlaceholder: string = "Select Issues";
 export const ResolvedPlaceholder: string = "Add Resolved issues";
 export const CommentPlaceholder: string = "Add Comment";
 export const UploadProjectFiles: string = "Upload project file";
-export const DropFileUploadText: string = "(This is just a demo dropzone. Selected files are ";
+export const DropFileUploadText: string =
+  "(This is just a demo dropzone. Selected files are ";
 export const ActualFileUpload: string = " actually uploaded.)";
 //Blog
 export const Hits: string = "Hits";
 export const Comments: string = "Comments";
-export const BlogWithoutDetailHeading: string = "Stay ahead of the competition with our data-driven insights and analytics.";
+export const BlogWithoutDetailHeading: string =
+  "Stay ahead of the competition with our data-driven insights and analytics.";
 export const BlogWithoutDetails: string = ` People just don't do it anymore. We have to change that. Sometimes the simplest things are the most profound.`;
 export const SingleBlogHeading: string = `Using a camera's lens to record moments in time is the art form known as photography.`;
 export const BlogSingle: string = `Blog Single`;
@@ -2002,7 +2060,8 @@ export const MouseWheelVariants: string = "Mouse Wheel Variant";
 export const WithIndicator: string = "With Indicators";
 export const WithCaption: string = "With Captions";
 export const CrossFades: string = "Cross-Fade";
-export const IndividualCarouselItemIntervals: string = "Individual Carousel-Item Interval";
+export const IndividualCarouselItemIntervals: string =
+  "Individual Carousel-Item Interval";
 export const DisableTouchSwipings: string = "Disable Touch Swiping";
 export const DarkVariants: string = "Dark Variant";
 
@@ -2010,7 +2069,8 @@ export const DefaultFileUploads: string = "Default File Upload";
 export const PreviewImage: string = "Image Preview ";
 export const SingleFileUploads: string = "Single File Upload";
 export const MultiFileUploads: string = "Multi File Upload";
-export const DropFilesHereOrClickToUpload: string = "Drop files here or click to upload.";
+export const DropFilesHereOrClickToUpload: string =
+  "Drop files here or click to upload.";
 
 //Bonus Ui - Timeline
 export const ConferenceWithClient: string = "CONFERENCE WITH CLIENT";
@@ -2019,12 +2079,15 @@ export const MeetUp: string = "Meet-up";
 export const MeetUpTimelineTitle: string = "Meet-up";
 export const TimelineTitle: string = "Timeline";
 export const AppIdeas: string = "app-ideas";
-export const EstablishedNewTheAppIdeaRepository: string = "Established new the app-ideas repository.";
+export const EstablishedNewTheAppIdeaRepository: string =
+  "Established new the app-ideas repository.";
 export const ViewItOnGithub: string = "View it on Github ";
 export const BlogTimelineTitle: string = "Blog";
-export const ImplementedTheProgramForWeeklyCodeChallenges: string = "Implemented the program for weekly code challenges.";
+export const ImplementedTheProgramForWeeklyCodeChallenges: string =
+  "Implemented the program for weekly code challenges.";
 export const AudioTesting: string = "Audio testing";
-export const MusicalTrendsAndPredictability: string = "Musical trends and predictability";
+export const MusicalTrendsAndPredictability: string =
+  "Musical trends and predictability";
 export const WebDesignersMeeUp: string = "Web-designer's meet-up";
 export const PleaseMeetUp: string = "Please! Meet-up";
 export const ReadMoreTour = "ReadMore";
@@ -2066,8 +2129,10 @@ export const WilliamJennings: string = "William C. Jennings";
 export const WebDesignerTour: string = " Web Designer";
 export const FollowerTour: string = "Follower";
 export const FollowingTour: string = "Following";
-export const WonderfulTour: string = "Wonderful piece that successfully conveys the magnificence of the mountains and the natural world.";
-export const PainterTourTitle: string = "English Romantic painter, printer, and watercolourist ";
+export const WonderfulTour: string =
+  "Wonderful piece that successfully conveys the magnificence of the mountains and the natural world.";
+export const PainterTourTitle: string =
+  "English Romantic painter, printer, and watercolourist ";
 
 //Ecommerce - Pricing
 export const Pricing: string = "Pricing";
@@ -2102,17 +2167,24 @@ export const Lee: string = "Lee";
 export const Hudson: string = "Hudson";
 export const Denizen: string = "Denizen";
 export const Spykar: string = "Spykar";
-export const ModalWomanText: string = "Lorate Solid Men's Fashion Full Sleeves Latest Jacket for Men With Button Closure Long Sleeve Casual Torn Lycra Denim Jacket.";
-export const ModalMensText: string = "Lorate Solid Men's Fashion Full Sleeves Latest Jacket for Men With Button Closure Long Sleeve Casual Torn Lycra Denim Jacket.";
-export const ModalLongText: string = "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.";
-export const ModalRavaiyaaText: string = "Ravaiyaa - Attitude is everything Cotton Men's Dresses One Top Button T-Shirt.";
-export const ModalRockText: string = "Rock Paper Scissors women's Tank Top High Neck Cotton Top Stylish Women Top..";
+export const ModalWomanText: string =
+  "Lorate Solid Men's Fashion Full Sleeves Latest Jacket for Men With Button Closure Long Sleeve Casual Torn Lycra Denim Jacket.";
+export const ModalMensText: string =
+  "Lorate Solid Men's Fashion Full Sleeves Latest Jacket for Men With Button Closure Long Sleeve Casual Torn Lycra Denim Jacket.";
+export const ModalLongText: string =
+  "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.";
+export const ModalRavaiyaaText: string =
+  "Ravaiyaa - Attitude is everything Cotton Men's Dresses One Top Button T-Shirt.";
+export const ModalRockText: string =
+  "Rock Paper Scissors women's Tank Top High Neck Cotton Top Stylish Women Top..";
 export const AddToCartButton: string = "Add to Cart";
 
 //Ecommerce - Invoices
 export const BilledTo: string = "Billed To";
-export const YuriMatchettVandelayGroupLTD: string = "Yuri Matchett Vandelay Group LTD";
-export const UnitedStateTitleText: string = "2118 Thornridge Cir. Syracuse, Connecticut 35624, United State";
+export const YuriMatchettVandelayGroupLTD: string =
+  "Yuri Matchett Vandelay Group LTD";
+export const UnitedStateTitleText: string =
+  "2118 Thornridge Cir. Syracuse, Connecticut 35624, United State";
 export const InvoiceDate: string = "Invoice Date";
 export const InvoiceNumber: string = "Invoice Number";
 export const AmountDus: string = "Amount Dus (USD)";
@@ -2248,7 +2320,8 @@ export const AboutUs: string = "About us";
 export const Blog: string = "Blog";
 export const UxDesigner: string = "UX designer";
 export const IOTDeveloper: string = "IOT developer";
-export const AdminProfilesForNewEmployees: string = "Admin Profiles For New Employees:";
+export const AdminProfilesForNewEmployees: string =
+  "Admin Profiles For New Employees:";
 export const User: string = "User";
 export const Review: string = "Review";
 
@@ -2288,13 +2361,13 @@ export const SalesPipeline = "Sales Pipeline";
 export const SpecialDiscount = "Special Discount ";
 export const RevenueByIndustry = "Revenue By Industry";
 export const Instagrams = "Instagram";
-export const UpcomingTransaction = " Upcoming Transaction";
+export const UpcomingTransaction = "Team Metrics";
 export const Unsuccessfully = "Unsuccessfully";
 export const WaterBill = "Water Bill";
 export const Successfully = "Successfully";
 export const MembersStatistics = "Members Statistics";
 export const Authors = "Authors";
-export const TopReferralPages = "Top Referral Pages";
+export const TopReferralPages = "Income Report";
 
 //Data Tables - Advance Init
 export const StockResultTitle: string = `Stock Result`;
@@ -2302,11 +2375,14 @@ export const RowCreateCallBackSpan: string = "Row Create Callback";
 export const APIDataTables: string = "API DataTables";
 export const AddRowsTitle: string = "Add rows";
 export const AddNewRowButton: string = "Add new row";
-export const ChildrenRowsTitle: string = "Child rows (show extra / detailed information)";
+export const ChildrenRowsTitle: string =
+  "Child rows (show extra / detailed information)";
 export const ApiFullName: string = "Full Name: ";
 export const ApiExtensionNumber: string = "Extension number: ";
-export const ApiExtraInfo: string = "'And any further details here (images etc)...'";
-export const RowsSelectionAndDeletions: string = "Row Selection And Deletion (Single Row)";
+export const ApiExtraInfo: string =
+  "'And any further details here (images etc)...'";
+export const RowsSelectionAndDeletions: string =
+  "Row Selection And Deletion (Single Row)";
 export const DeleteSelectDataButton: string = "Delete Row";
 export const CustomFilteringSearch: string = "Custom filtering - range search";
 export const MinimumAge: string = "Minimum age: ";
@@ -2314,22 +2390,29 @@ export const MaximumAge: string = "Maximum age:	";
 export const DATASourceDataTables: string = "DATA Source DataTables";
 export const HtmlTableTittle: string = "HTML (DOM) sourced data";
 export const SearchTableButton: string = "Search";
-export const ScrollVerticalDynamicHeightTitle: string = "Scroll - vertical, dynamic height";
+export const ScrollVerticalDynamicHeightTitle: string =
+  "Scroll - vertical, dynamic height";
 
 //Reactstrap Table - Basic Table
 export const BootstrapBasicTable: string = "Bootstrap Basic Tables";
-export const BasicTableWithBorderBottomColor: string = "Basic Table With Border Bottom Color";
+export const BasicTableWithBorderBottomColor: string =
+  "Basic Table With Border Bottom Color";
 export const InverseTables: string = "Inverse Table";
-export const HoverableRowsWithHorizontalBorders: string = "Hoverable Rows With Horizontal Border";
-export const InverseTablWithPrimaryBackgrounds: string = "Inverse Table with Primary background";
+export const HoverableRowsWithHorizontalBorders: string =
+  "Hoverable Rows With Horizontal Border";
+export const InverseTablWithPrimaryBackgrounds: string =
+  "Inverse Table with Primary background";
 export const CaptionTableTitle: string = "Caption";
 export const UserList: string = "List of users";
 export const TableHeadOption: string = "Table head options";
-export const StripedRowWithInverseTables: string = "Striped Row with Inverse Table";
+export const StripedRowWithInverseTables: string =
+  "Striped Row with Inverse Table";
 export const BreckpointSpecifics: string = "Breckpoint Specific";
-export const ResponsiveLightBackgroundTitle: string = "Responsive Tables With Light Background";
+export const ResponsiveLightBackgroundTitle: string =
+  "Responsive Tables With Light Background";
 export const SizingTable: string = "Sizing Tables";
-export const CustomColorHoverStrippedTitle: string = "Custom Table Color With Hover And Stripped";
+export const CustomColorHoverStrippedTitle: string =
+  "Custom Table Color With Hover And Stripped";
 export const DashedBorderTitle: string = "Dashed Border";
 
 //Reactstrap Table - Table Components
@@ -2348,7 +2431,8 @@ export const SwitchTable: string = "SWITCH";
 export const ValidationForms: string = "Validation Forms";
 export const FormValidationTooltip: string = "Tooltip form validation";
 export const LooksGood: string = "Looks good!";
-export const UsernameFeedback: string = "Please choose a unique and valid username.";
+export const UsernameFeedback: string =
+  "Please choose a unique and valid username.";
 export const StateChoose: string = "Choose...";
 export const CityFeedback: string = "Please provide a valid city.";
 export const StateFeedback: string = "Please select a valid state.";
@@ -2366,7 +2450,8 @@ export const Visa: string = "Visa";
 export const MasterCard: string = "MasterCard";
 export const PayMethodTitle: string = "Select your payment method";
 export const AgreeToThePolicies: string = "I agree to the policies";
-export const SureInformation: string = "Are you sure above information are true";
+export const SureInformation: string =
+  "Are you sure above information are true";
 export const ValidationsForms: string = "Validation form";
 export const FirstNameError: string = "Please enter your valid firstname";
 export const FirstNameFeedback: string = "Please enter your valid";
@@ -2406,8 +2491,10 @@ export const FileInputs: string = "File input";
 export const FlatInputStyles: string = "Flat input style";
 export const SmallFileInputExample: string = "Small file input example";
 export const LargeFileInputExample: string = "Large file input example";
-export const SelectYourFavoriteRomanNumber: string = "Select your favorite roman number";
-export const SelectYourMultiplePaintings: string = "Select your multiple paintings";
+export const SelectYourFavoriteRomanNumber: string =
+  "Select your favorite roman number";
+export const SelectYourMultiplePaintings: string =
+  "Select your multiple paintings";
 export const PleaseDoComments: string = "Please do comments";
 export const BasicHtmlInputControls: string = "Basic HTML input control";
 export const BasicPlaceholder: string = "Placeholder";
@@ -2433,12 +2520,14 @@ export const ListPlaceholder: string = "Look up your nation...";
 export const BasicTime: string = "Time";
 export const BasicColorPicker: string = "Color picker";
 export const BasicMaximumLength: string = "Maximum Length";
-export const MaximumLengthPlaceholder: string = "Content must be in 6 characters";
+export const MaximumLengthPlaceholder: string =
+  "Content must be in 6 characters";
 export const BasicStaticText: string = "Static Text";
 export const StaticTextData: string = "Hello !... This is my magical text";
 export const BasicSubmitButton: string = "Submit";
 export const BasicCancelButton: string = "Cancel";
-export const BasicFloatingInputControls: string = "Basic floating input control";
+export const BasicFloatingInputControls: string =
+  "Basic floating input control";
 export const FloatingValidInput: string = "Valid input ";
 export const InputWithValue: string = "Input with value";
 export const InvalidInput: string = "Invalid input";
@@ -2469,7 +2558,8 @@ export const EdgeEmailAddress: string = "Email address";
 export const EdgeEmailAddressPlaceholder: string = "name@example.com";
 export const EdgePassword: string = "Password";
 export const EdgePasswordPlaceholder: string = "Password";
-export const SelectYourFavoritePixelstrapTheme: string = "Select your favorite pixelstrap theme";
+export const SelectYourFavoritePixelstrapTheme: string =
+  "Select your favorite pixelstrap theme";
 export const DefaultFileInputExamples: string = "Default file input example";
 export const EdgeDefaultInput: string = "Default Input";
 export const EdgeDefaultInputPlaceholder: string = "Default Input";
@@ -2485,8 +2575,10 @@ export const RaisedPassword: string = "Password";
 export const RaisedPasswordPlaceholder: string = "Password";
 export const RaisedSubmit: string = "Submit";
 export const RaisedCancel: string = "Cancel";
-export const RaisedSelectYourFavoritePixelstrapTheme: string = "Select your favorite pixelstrap theme";
-export const SelectTheColorYouLikeBelow: string = "Select the color you like below";
+export const RaisedSelectYourFavoritePixelstrapTheme: string =
+  "Select your favorite pixelstrap theme";
+export const SelectTheColorYouLikeBelow: string =
+  "Select the color you like below";
 export const RaisedComments: string = "Comments";
 
 //Checkbox & Radio
@@ -2503,7 +2595,8 @@ export const BorderedCheckbox: string = "Bordered Checkbox ";
 export const PrimaryCheckboxPrimary: string = "Primary - checkbox-primary";
 export const IconCheckbox: string = "Icon Checkbox ";
 export const FilledCheckbox: string = "Filled Checkbox";
-export const WarningCheckboxSolidWarning: string = "Warning - checkbox-solid-warning ";
+export const WarningCheckboxSolidWarning: string =
+  "Warning - checkbox-solid-warning ";
 export const DefaultRadios: string = "Default radio";
 export const DefaultRadioLabel: string = "Default radio";
 export const DefaultCheckedRadio: string = "Default checked radio";
@@ -2518,8 +2611,10 @@ export const FilledRadios: string = "Filled Radio";
 export const ProductRadio: string = "Product";
 export const DefaultSwitche: string = "Default switches";
 export const CustomSwitches: string = "Custom Switches";
-export const DefaultSwitchCheckboxInput: string = "Default switch checkbox input";
-export const CheckedSwitchCheckboxInput: string = "Checked switch checkbox input";
+export const DefaultSwitchCheckboxInput: string =
+  "Default switch checkbox input";
+export const CheckedSwitchCheckboxInput: string =
+  "Checked switch checkbox input";
 export const InlineInputType: string = "Inline input-types";
 export const InlineRadio: string = "Inline Radios";
 export const InlineSwitches: string = "Inline Switches";
@@ -2527,7 +2622,8 @@ export const AnimatedButton: string = "Animated buttons";
 export const SelectYourPaymentMethods: string = "Select your payment method";
 export const VisaAnimated: string = "Visa";
 export const InstagramAnimated: string = "Instagram";
-export const WhatIsYourFavoriteSocialMedia: string = "What is your favorite social media?";
+export const WhatIsYourFavoriteSocialMedia: string =
+  "What is your favorite social media?";
 export const BasicRadioAndCheckboxs: string = "Basic radio and checkbox";
 export const SimpleCheckbox: string = "Simple Checkbox";
 export const BasicRadioAndCheckboxBlog: string = "Blog";
@@ -2549,9 +2645,11 @@ export const SubmitButtonAddonPlaceHolder: string = "Recipient's username";
 export const AddonPlaceHolder: string = "Recipient's username";
 export const CustomForm: string = "Custom forms ";
 export const OptionsFormGroup: string = "Options";
-export const PixelstrapThemeTitle: string = "Select Your Favorite Pixelstrap theme";
+export const PixelstrapThemeTitle: string =
+  "Select Your Favorite Pixelstrap theme";
 export const FavoriteColorsTitle: string = "Select Your Favorite Colors";
-export const FavoriteChocolatesTitle: string = "Select Your Favorite Chocolates";
+export const FavoriteChocolatesTitle: string =
+  "Select Your Favorite Chocolates";
 export const FavoriteThemeTitle: string = "Select Your Favorite Theme";
 export const CustomFormSubmit: string = "Submit";
 export const CustomFileInputs: string = "Custom file input";
@@ -2610,7 +2708,8 @@ export const TailprefixPlaceholder: string = "0000.00€";
 export const MegaOptions: string = "Mega options";
 export const VariationRadios: string = "Variation radio";
 export const VariationCheckboxs: string = "Variation checkbox";
-export const ChooseActivities: string = "Which of the following activities do you enjoy doing in your free time?";
+export const ChooseActivities: string =
+  "Which of the following activities do you enjoy doing in your free time?";
 export const UpgradeTitle: string = "It's time to";
 export const UpgradeSpanText: string = "upgrade";
 export const DefaultStyleMegaOptions: string = "Default style";
@@ -2643,7 +2742,8 @@ export const hourPicker: string = "24-hour Time Picker";
 export const TimePickerLimits: string = "Time Picker W/Limits";
 export const PreloadingTime: string = "Preloading Time";
 export const TimePickerRange: string = "TimePicker with Limited Time Range";
-export const TimePickerMinMaxRange: string = "TimePicker with Min/Max Time Range";
+export const TimePickerMinMaxRange: string =
+  "TimePicker with Min/Max Time Range";
 export const DateWithTime: string = "Date With Time";
 export const DateAndTimeHeading: string = "Date and time";
 
@@ -2651,8 +2751,10 @@ export const DateAndTimeHeading: string = "Date and time";
 export const Touchspin: string = "Touchspin";
 export const DefaultTouchspins: string = "Default touchspin";
 export const OutlinedTouchspins: string = "Outlined touchspin";
-export const IconsWithPrefixAndPostfixs: string = "Icons with prefix and postfix";
-export const ButtonsWithPrefixAndPostfixs: string = "Buttons with prefix and postfix";
+export const IconsWithPrefixAndPostfixs: string =
+  "Icons with prefix and postfix";
+export const ButtonsWithPrefixAndPostfixs: string =
+  "Buttons with prefix and postfix";
 export const PreText: string = "Pre";
 export const PostText: string = "Post";
 export const RoundedTouchspins: string = "Rounded touchspin";
@@ -2673,7 +2775,8 @@ export const PreFetchHeading: string = "Prefetch";
 export const BloodHoundHeading: string = "Bloodhound (Suggestion Engine)";
 export const RemotetypeAheadHeading: string = "Remote typeahead";
 export const CustomTemplate: string = "Custom templates";
-export const MultipleSectionWithHeader: string = "Multiple sections with headers";
+export const MultipleSectionWithHeader: string =
+  "Multiple sections with headers";
 export const ScrollableDropDownMenu: string = "Scrollable Dropdown Menu";
 export const RTLSupport: string = "RTL Support";
 
@@ -2689,11 +2792,13 @@ export const ClipboardOnParagraphs: string = "Clipboard On Paragraph";
 export const CopyFromParagraph: string = "Copy From Paragraph";
 export const CopyPortionFromParagraphs: string = "Copy Portion From Paragraph";
 export const ClipBoardCopy: string = "Copy Portion From Paragraph";
-export const HighlightText: string = "Web design is the process of creating websites ";
+export const HighlightText: string =
+  "Web design is the process of creating websites ";
 export const CopyHighLightedText: string = " Copy highlighted text";
 
 //Two factor
-export const TwoFactorAuthenticationHeading: string = "Two-factor authentication";
+export const TwoFactorAuthenticationHeading: string =
+  "Two-factor authentication";
 export const FactorAuthentication: string = "2 factor authentication";
 export const VerificationCodeHeading: string = "Verification code";
 export const OtpCodeSent: string = "We've sent a verification code to";
@@ -2707,12 +2812,14 @@ export const PleaseEnterTheCodeHere: string = "Please enter the code here";
 //From Layout - wizard 1
 export const FormWizard: string = "Form Wizard";
 export const NumberingWizardHeading: string = "Numbering wizard";
-export const AgreeToTermsAndConditions: string = "Agree to terms and conditions";
+export const AgreeToTermsAndConditions: string =
+  "Agree to terms and conditions";
 export const PlaceHolderName: string = "Placeholder Name";
 export const Expiration: string = "Expiration(MM/YY)";
 export const CVVNumber: string = "CVV Number";
 export const UploadDocumentation: string = "Upload Documentation";
-export const AboveInformationCorrect: string = "All the above information is correct";
+export const AboveInformationCorrect: string =
+  "All the above information is correct";
 export const LinkedIn: string = "LinkedIn";
 export const SelectState: string = "Select State";
 export const GiveFeedback: string = "Give Feedback";
@@ -2722,13 +2829,15 @@ export const AddProfile: string = "Add Profile";
 export const PortfolioURL: string = " Portfolio URL";
 export const SocialLinks: string = " Social Links ";
 export const Twitter: string = " Twitter";
-export const VerticalValidationWizardHeading: string = "Vertical validation wizard";
+export const VerticalValidationWizardHeading: string =
+  "Vertical validation wizard";
 export const SelectPaymentMethod: string = "Select your payment method";
 export const SelectYourBank: string = " SELECT YOUR BANK";
 export const AgreeConditions: string = "Agree to terms and conditions";
 export const Finish: string = "Finish";
 export const ShippingFormHeading: string = "Shipping form";
-export const FillFollowingInformation: string = "Fill up the following information ";
+export const FillFollowingInformation: string =
+  "Fill up the following information ";
 export const ShippingInformation: string = "Shipping Information";
 export const SavedAddress: string = "Saved Address";
 export const ShippingMethod: string = "Shipping Method";
@@ -2745,7 +2854,8 @@ export const ExpiryPlaceholder: string = "xx/xx";
 export const LinkedInPlaceholder: string = "https://linkedIn.com/yuri";
 export const GitHubPlaceholder: string = "https://github.com/yuri";
 export const TwitterPlaceholder: string = "https://twitter.com/yuri";
-export const AllTheAboveInformationIsCorrect: string = "All the above information is correct";
+export const AllTheAboveInformationIsCorrect: string =
+  "All the above information is correct";
 export const RememberMeForNextTime: string = "Remember me for next time";
 export const OtherNotes: string = "Other notes";
 export const EnterYourQueries: string = "Enter your queries...";
@@ -2776,7 +2886,8 @@ export const CardHolder: string = "Card Holder";
 export const CardHolderPlaceholder: string = "Enter card holder name";
 export const PanPlaceholder: string = "xxxxxxxxxx";
 export const InqMail: string = "org@support.com";
-export const ShareYourProblemsAndAnotherIssues: string = "Share your problems and another issues";
+export const ShareYourProblemsAndAnotherIssues: string =
+  "Share your problems and another issues";
 export const Lists: string = "Lists";
 export const ActiveList: string = "Active Lists ";
 export const FlushList: string = "Flush Lists";
@@ -2794,10 +2905,10 @@ export const Marketing = "Marketing";
 export const HaveYouTried = "Have you tried";
 export const UpgradeYourPlan = "Upgrade Your Plan";
 
-export const TodayRevenue = "Today Revenue";
+export const TodayRevenue = "Weekly Income ";
 export const VoteByConsumer = "Vote by Consumer";
 export const ThisWeek = "This Week";
-export const TotalTransactionHeading = "Total Transactions";
+export const TotalTransactionHeading = "Transactions";
 export const Report = "Report";
 export const Performance = "Performance";
 
@@ -2812,7 +2923,8 @@ export const LinkedInIcon: string = " LinkedIn ";
 export const TwitterIcon: string = " twitter ";
 export const FacebookIcon: string = " facebook ";
 export const DontHaveAccount: string = "Don't have account?";
-export const EnterYourPersonalDetailsToCreateAccount: string = "Enter your personal details to create account";
+export const EnterYourPersonalDetailsToCreateAccount: string =
+  "Enter your personal details to create account";
 export const YourNameSignUp = "Your Name";
 export const EmailAddressSignUp = "Email Address";
 export const PasswordSignUp = "Password";
@@ -2828,10 +2940,12 @@ export const CreateYourPassword: string = "Create Your Password";
 export const CreateYourAccount: string = "Create your account";
 export const BackToHomePage: string = "BACK TO HOME PAGE";
 export const MaintenancesTitle: string = "MAINTENANCE";
-export const MaintenancesSubContent: string = "Our Site is Currently under maintenance We will be back Shortly";
+export const MaintenancesSubContent: string =
+  "Our Site is Currently under maintenance We will be back Shortly";
 export const ThankYouForPatience: string = "Thank You For Patience";
 export const SignUpToAccount: string = "Sign up to account";
-export const EnterYourEmailPasswordToLoginWizard: string = "Enter your email & password to login";
+export const EnterYourEmailPasswordToLoginWizard: string =
+  "Enter your email & password to login";
 export const FirstNameWizard: string = "First Name";
 export const LastNameWizard: string = "Last Name";
 export const ContactNameWizard: string = "Contact No.";
@@ -2875,10 +2989,13 @@ export const Documentation: string = "Documentation";
 //Miscellaneous - Gallery
 export const ImageGallery: string = "Image Gallery";
 export const MyPortfolioTitle: string = "My Portfolio";
-export const GalleryGridWithDescriptions: string = "Gallery Grid With Description";
-export const GalleryGridWithDescriptionCap: string = "Image Gallery With Description";
+export const GalleryGridWithDescriptions: string =
+  "Gallery Grid With Description";
+export const GalleryGridWithDescriptionCap: string =
+  "Image Gallery With Description";
 export const MasonryGalleryCap: string = "Masonry Gallery";
-export const MasonryGalleryDescriptionCap: string = "Masonry Gallery With Description";
+export const MasonryGalleryDescriptionCap: string =
+  "Masonry Gallery With Description";
 export const ImageHoverEffects: string = "Image Hover Effects";
 //Chats
 export const PrivateChat: string = "Private Chat";
@@ -2910,7 +3027,8 @@ export const InlineTooltipContent: string = "Inline Tooltip Content";
 export const ColoredTooltips: string = "Colored Tooltip ";
 export const DirectionsTooltip: string = "Tooltip  Directions";
 export const TooltipOnTop: string = "Tooltip on tops";
-export const HTMLElementsWithHoverEffect: string = "HTML Elements With Hover Effect";
+export const HTMLElementsWithHoverEffect: string =
+  "HTML Elements With Hover Effect";
 export const NotificationsReceived: string = "Notifications Received";
 export const FilledTooltips: string = "Filled Tooltip";
 export const TooltipPrimary: string = "Tooltip Primary";
@@ -2966,7 +3084,8 @@ export const Birthday: string = "Birthday:";
 //Bonus Ui - Scrollable
 export const CustomScrollbars: string = "Custom Scrollbar";
 export const SmallSizeScrollbars: string = "Small Size Scrollbar";
-export const SolutionBusinessTransformation: string = "Solution for Business Transformation";
+export const SolutionBusinessTransformation: string =
+  "Solution for Business Transformation";
 export const BadgesScrollbars: string = "Badges Scrollbar";
 export const ProfileScrollableTitle: string = "Profile Scrollable";
 export const ScrollableContents: string = "Scrollable Content";
@@ -2980,7 +3099,8 @@ export const TopRightToasts: string = "Top-right toast";
 export const BottomRightToasts: string = "Bottom-right toast";
 export const TopLeftToasts: string = "Top-left toast";
 export const BottomLeftToasts: string = "Bottom-left toast";
-export const YourAccountWillBePermanentlyDeleted: string = "Your account will be permanently deleted?";
+export const YourAccountWillBePermanentlyDeleted: string =
+  "Your account will be permanently deleted?";
 export const ImNotSure: string = "I'm not sure";
 export const RemoveMyAccount: string = "Remove My Account";
 export const ColorsScheme: string = "Colors Schemes";
@@ -2994,7 +3114,8 @@ export const ToastPlacements: string = "Toast Placement";
 export const LinkColorDarkTheme: string = "Link Color In Dark Theme";
 export const LinkColorLightTheme: string = "Link Color In Light Theme";
 export const OutlineDarkLightAlerts: string = "Outline Dark And Light Alerts";
-export const AlertsWithIconsTextActions: string = "Alerts With Icons and Text Actions";
+export const AlertsWithIconsTextActions: string =
+  "Alerts With Icons and Text Actions";
 export const DismissingDarkAlert: string = "Dismissing Dark Alerts";
 export const DismissingLightAlert: string = "Dismissing Light Alerts";
 export const LiveAlerts: string = "Live Alert";
@@ -3002,3 +3123,11 @@ export const ShowLiveAlert: string = "Show live alert";
 export const PeopleKnow: string = "Pepole You May Know";
 export const StarColorTwo = "#D77748";
 export const OutlineDarkAndLightAlerts = "Outline Dark And Light Alert";
+
+// Images
+export const ImagePath = "/assets/images";
+export const DefaultDirectUserImg: string = "/user/User.png";
+export const DefaultLogo="/logo/logo.png"
+
+
+export const CappingMultiplier:number=2;

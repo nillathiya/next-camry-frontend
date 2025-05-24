@@ -33,7 +33,7 @@ export const useCompanyInfoValues = (
 
 export const useRegistrationType = (): string | undefined => {
   const registrationType = useCompanyInfo("Registration", "registration_type");
-  console.log("registrationType", registrationType);
+  // console.log("registrationType", registrationType);
   return Array.isArray(registrationType) ? registrationType[0] : undefined;
 };
 
@@ -51,4 +51,36 @@ export const useWeb3RegistrationFields = (): string[] | undefined => {
     "web3_registration_fields"
   );
   return Array.isArray(registrationType) ? registrationType : undefined;
+};
+
+export const useWeb3RegistrationWithOtp = (): string | undefined => {
+  const registrationType = useCompanyInfo(
+    "Registration",
+    "web3_registration_with_otp"
+  );
+  return Array.isArray(registrationType) ? registrationType[0] : undefined;
+};
+
+export const useRegistrationWithOtp = (): string | undefined => {
+  const registrationType = useCompanyInfo(
+    "Registration",
+    "registration_with_otp"
+  );
+  return Array.isArray(registrationType) ? registrationType[0] : undefined;
+};
+
+export const useWeb3RegistrationWithUsdt = (): string | undefined => {
+  const registrationType = useCompanyInfo(
+    "Registration",
+    "web3_registration_with_usdt"
+  );
+  return Array.isArray(registrationType) ? registrationType[0] : undefined;
+};
+
+export const useWeb3RegistrationWithUsdtFees = (): number | undefined => {
+  const registrationType = useCompanyInfo(
+    "Registration",
+    "web3_registration_with_usdt_fees"
+  );
+  return typeof registrationType === "number" ? registrationType : undefined;
 };

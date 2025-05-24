@@ -1,42 +1,279 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux-toolkit/Hooks";
 import { getUsersiteSettingsAsync } from "@/redux-toolkit/slices/settingSlice";
-import { IUserSetting, MenuItem, MenuItemChild } from "@/types";
+import { IUserSetting, MenuItem, MenuItemChild, SettingOption } from "@/types";
 
-interface UserSettingsState {
-  userSettings: IUserSetting[];
-  loading: boolean;
-  error: string | null;
+interface RawMenuItem {
+  status: string;
+  children?: RawMenuItemChild[];
+  [key: string]: any;
 }
 
-export const useUserSettings = (): UserSettingsState => {
+interface RawMenuItemChild {
+  status: string;
+  [key: string]: any;
+}
+
+const useFetchUserSettings = () => {
   const dispatch = useAppDispatch();
-  const { userSettings, loading, error } = useAppSelector((state) => state.setting);
+  const { userSettings } = useAppSelector((state) => state.setting);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!userSettings.length) {
-      dispatch(getUsersiteSettingsAsync());
-    }
+    const fetchSettings = async () => {
+      if (userSettings.length === 0) {
+        setLoading(true);
+        try {
+          await dispatch(getUsersiteSettingsAsync()).unwrap();
+        } catch (error) {
+          console.error("Failed to fetch user settings:", error);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setLoading(false);
+      }
+    };
+
+    fetchSettings();
   }, [dispatch, userSettings.length]);
 
-  // Memoize normalized settings
-  const normalizedSettings = useMemo(() => {
-    return userSettings.map((setting) => {
-      if (setting.slug === "menu_items" && Array.isArray(setting.value)) {
-        const normalizedValue = (setting.value as MenuItem[]).map((item) => ({
-          ...item,
-          status: item.status === "true" ? true : !!item.status,
-          children: item.children?.map((child) => ({
-            ...child,
-            status: child.status === "true" ? true : !!child.status,
-          })),
-        }));
-        console.log("Normalized Menu Items:", normalizedValue); // Will now only log when userSettings actually changes
-        return { ...setting, value: normalizedValue };
-      }
-      return setting;
-    });
-  }, [userSettings]); // Only recalculate when userSettings changes
+  return { userSettings, loading };
+};
 
-  return { userSettings: normalizedSettings, loading, error };
+export const useUserSetting = (
+  title: string,
+  slug: string
+): {
+  value: SettingOption[] | string | string[] | boolean | undefined;
+  loading: boolean;
+} => {
+  const { userSettings, loading } = useFetchUserSettings();
+
+  const value = useMemo(() => {
+    if (loading) return undefined;
+    const setting = userSettings.find(
+      (data: IUserSetting) => data.title === title && data.slug === slug
+    );
+    return setting?.value as string | SettingOption[] | undefined;
+  }, [userSettings, title, slug, loading]);
+
+  return { value, loading };
+};
+
+export const useUserSettingValues = (
+  criteria: { title: string; slug: string }[]
+): {
+  values: (SettingOption[] | string | undefined)[];
+  loading: boolean;
+} => {
+  const { userSettings, loading } = useFetchUserSettings();
+
+  const values = useMemo(() => {
+    if (loading) return criteria.map(() => undefined);
+    return criteria.map(
+      ({ title, slug }) =>
+        userSettings.find(
+          (data: IUserSetting) => data.title === title && data.slug === slug
+        )?.value as string | undefined
+    );
+  }, [userSettings, criteria, loading]);
+
+  return { values, loading };
+};
+
+export const useMenuItems = (): {
+  items: MenuItem[] | undefined;
+  loading: boolean;
+} => {
+  const { userSettings, loading } = useFetchUserSettings();
+
+  const items = useMemo(() => {
+    if (loading) return undefined;
+    const setting = userSettings.find(
+      (data: IUserSetting) =>
+        data.title === "Menu Items" && data.slug === "menu_items"
+    );
+
+    if (!setting || !Array.isArray(setting.value)) {
+      return undefined;
+    }
+
+    const normalizeStatus = (status: string | boolean): boolean =>
+      typeof status === "string" ? status === "true" : status;
+
+    const isRawMenuItemArray = (value: any[]): value is RawMenuItem[] =>
+      value.every(
+        (item) =>
+          typeof item === "object" &&
+          item !== null &&
+          "key" in item &&
+          "label" in item &&
+          "status" in item
+      );
+
+    const value = setting.value;
+    if (!isRawMenuItemArray(value)) {
+      return undefined;
+    }
+
+    return value.map((item) => ({
+      ...item,
+      status: normalizeStatus(item.status),
+      children: item.children?.map((child: RawMenuItemChild) => ({
+        ...child,
+        status: normalizeStatus(child.status),
+      })) as MenuItemChild[],
+    })) as MenuItem[];
+  }, [userSettings, loading]);
+
+  return { items, loading };
+};
+
+export const useAddFundWallet = (): {
+  value: SettingOption | undefined;
+  loading: boolean;
+} => {
+  const { value: setting, loading } = useUserSetting("Fund", "add_fund_wallet");
+
+  const value = useMemo(() => {
+    if (loading || !Array.isArray(setting)) return undefined;
+    return setting[0] as SettingOption;
+  }, [setting, loading]);
+
+  return { value, loading };
+};
+
+export const useFundConvertToWallets = (): {
+  value: SettingOption[] | undefined;
+  loading: boolean;
+} => {
+  const { value: setting, loading } = useUserSetting(
+    "Fund",
+    "convert_fund_to_wallets"
+  );
+
+  const value = useMemo(() => {
+    if (loading || !Array.isArray(setting)) return undefined;
+    return setting as SettingOption[];
+  }, [setting, loading]);
+
+  return { value, loading };
+};
+
+export const useFundConvertFromWallets = (): {
+  value: SettingOption[] | undefined;
+  loading: boolean;
+} => {
+  const { value: setting, loading } = useUserSetting(
+    "Fund",
+    "convert_fund_from_wallets"
+  );
+
+  const value = useMemo(() => {
+    if (loading || !Array.isArray(setting)) return undefined;
+    return setting as SettingOption[];
+  }, [setting, loading]);
+
+  return { value, loading };
+};
+
+export const useFundTransferWallets = (): {
+  value: SettingOption[] | undefined;
+  loading: boolean;
+} => {
+  const { value: setting, loading } = useUserSetting(
+    "Fund",
+    "transfer_fund_wallet"
+  );
+
+  const value = useMemo(() => {
+    if (loading || !Array.isArray(setting)) return undefined;
+    return setting as SettingOption[];
+  }, [setting, loading]);
+
+  return { value, loading };
+};
+
+export const useFundWithdrawalWallets = (): {
+  value: SettingOption[] | undefined;
+  loading: boolean;
+} => {
+  const { value: setting, loading } = useUserSetting(
+    "Withdrawal",
+    "withdrawal_fund_wallets"
+  );
+
+  const value = useMemo(() => {
+    if (loading || !Array.isArray(setting)) return undefined;
+    return setting as SettingOption[];
+  }, [setting, loading]);
+
+  return { value, loading };
+};
+
+export const useFundWithdrawalDays = (): {
+  value: string[] | undefined;
+  loading: boolean;
+} => {
+  const { value: setting, loading } = useUserSetting(
+    "Withdrawal",
+    "withdrawal_days"
+  );
+
+  const value = useMemo(() => {
+    if (loading || !Array.isArray(setting)) return undefined;
+    return setting as string[];
+  }, [setting, loading]);
+
+  return { value, loading };
+};
+
+export const useShowSlidingHighlight = (): {
+  value: boolean;
+  loading: boolean;
+} => {
+  const { value: setting, loading } = useUserSetting(
+    "Sliding Highlight",
+    "show_sliding_highlight"
+  );
+
+  const value = useMemo(() => {
+    return setting as boolean;
+  }, [setting, loading]);
+
+  return { value, loading };
+};
+
+export const useSlidingHighlightText = (): {
+  value: string;
+  loading: boolean;
+} => {
+  const { value: setting, loading } = useUserSetting(
+    "Sliding Highlight",
+    "sliding_highlight_text"
+  );
+
+  const value = useMemo(() => {
+    return setting as string;
+  }, [setting, loading]);
+
+  return { value, loading };
+};
+
+export const useTopUpFundWallet = (): {
+  value: SettingOption[] | undefined;
+  loading: boolean;
+} => {
+  const { value: setting, loading } = useUserSetting(
+    "TopUp",
+    "topup_fund_wallet"
+  );
+
+  const value = useMemo(() => {
+    if (loading || !Array.isArray(setting)) return undefined;
+    return setting as SettingOption[];
+  }, [setting, loading]);
+
+  return { value, loading };
 };

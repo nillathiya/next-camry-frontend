@@ -30,23 +30,23 @@ const RightHeader = () => {
   };
 
   const handleSignOut = () => {
-    console.log("User signed out from Header");
+    // console.log("User signed out from Header");
     signOut({ redirect: true, callbackUrl: "/login" }); // Redirect to /login after sign-out
   };
 
   return (
     <ul className="nav-menus simple-list flex-row">
-      <li>
+      {/* <li>
         <span className="header-search">
           <SvgIcon onClick={handleSearch} iconId="search" />
         </span>
-      </li>
+      </li> */}
       <MaximizeScreen />
-      <NotificationBox />
-      <HeaderBookmark />
-      <ChatHeader />
+      {/* <NotificationBox /> */}
+      {/* <HeaderBookmark /> */}
+      {/* <ChatHeader /> */}
       <MoonLight />
-      <CartHeader />
+      {/* <CartHeader /> */}
       <ProfileHeader />
     </ul>
   );

@@ -1,24 +1,62 @@
 import { apiClient } from "@/api/apiClient";
 import { ROUTES } from "@/api/route";
-import { IApiResponse, IWebsiteSettings, IUserSetting } from "@/types";
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  IApiResponse,
+  IWebsiteSettings,
+  IUserSetting,
+  IWalletSettings,
+  ICompanyInfo,
+  IPinSettings,
+} from "@/types";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { IPlan, IRankSettings, IRewardSettings } from "../../types/setting";
 
-interface SettingState { // Fixed typo: SettingState → SettingState
+interface SettingState {
   websiteSettings: IWebsiteSettings[];
+  walletSettings: IWalletSettings[];
   userSettings: IUserSetting[];
-  loading: boolean; // Changed Boolean to boolean
+  companyInfo: ICompanyInfo[];
+  pinSettings: IPinSettings[];
+  rankSettings: IRankSettings[];
+  rewardSettings: IRewardSettings[];
+  plans: IPlan[];
+  loading: {
+    getWebsiteSettings: boolean;
+    getUserSettings: boolean;
+    getWalletSettings: boolean;
+    getCompanyInfo: boolean;
+    getPinSettings: boolean;
+    getRankSettings: boolean;
+    getRewardSettings: boolean;
+    getPlans: boolean;
+  };
   error: any;
 }
 
 const initialState: SettingState = {
   websiteSettings: [],
+  walletSettings: [],
   userSettings: [],
-  loading: false,
+  companyInfo: [],
+  pinSettings: [],
+  rankSettings: [],
+  rewardSettings: [],
+  plans: [],
+  loading: {
+    getWebsiteSettings: false,
+    getUserSettings: false,
+    getWalletSettings: false,
+    getCompanyInfo: false,
+    getPinSettings: false,
+    getRankSettings: false,
+    getRewardSettings: false,
+    getPlans: false,
+  },
   error: null,
 };
 
 export const getWebsiteSettingsAsync = createAsyncThunk(
-  "settting/getWebsiteSettings",
+  "setting/getWebsiteSettings", // Fixed typo: "settting" → "setting"
   async (_, { rejectWithValue }) => {
     try {
       const response = await apiClient.get<IApiResponse<IWebsiteSettings[]>>(
@@ -26,16 +64,16 @@ export const getWebsiteSettingsAsync = createAsyncThunk(
       );
       return response.data;
     } catch (error: any) {
-      console.log("Setting slice error", error);
+      // console.log("Website settings error", error);
       return rejectWithValue(
-        error.response?.data?.message || "An unknown error occurred"
+        error.response?.data?.message || "Failed to fetch website settings"
       );
     }
   }
 );
 
 export const getUsersiteSettingsAsync = createAsyncThunk(
-  "setting/getUsersiteSettingsAsync",
+  "setting/getUserSettings", // Renamed for consistency: "getUsersiteSettings" → "getUserSettings"
   async (_, { rejectWithValue }) => {
     try {
       const response = await apiClient.get<IApiResponse<IUserSetting[]>>(
@@ -43,9 +81,108 @@ export const getUsersiteSettingsAsync = createAsyncThunk(
       );
       return response.data;
     } catch (error: any) {
-      console.log("Setting slice error", error);
+      // console.log("User settings error", error);
       return rejectWithValue(
-        error.response?.data?.message || "An unknown error occurred"
+        error.response?.data?.message || "Failed to fetch user settings"
+      );
+    }
+  }
+);
+
+export const getWalletSettingsAsync = createAsyncThunk(
+  "setting/getWalletSettings",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get<IApiResponse<IWalletSettings[]>>(
+        ROUTES.SETTINGS.GET_WALLET_SETTINGS
+      );
+      return response.data;
+    } catch (error: any) {
+      // console.log("Wallet settings error", error);
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch wallet settings"
+      );
+    }
+  }
+);
+
+export const getCompanyInfoSettingsAsync = createAsyncThunk(
+  "setting/getCompanyInfo",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get<IApiResponse<ICompanyInfo[]>>(
+        ROUTES.SETTINGS.GET_COMPANY_INFO_SETTINGS
+      );
+      return response.data;
+    } catch (error: any) {
+      // console.log("Company info settings error", error);
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch company info settings"
+      );
+    }
+  }
+);
+
+export const getPinSettingsAsync = createAsyncThunk(
+  "setting/getPinSettings",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get<IApiResponse<IPinSettings[]>>(
+        ROUTES.SETTINGS.GET_PIN_SETTINGS
+      );
+      return response.data;
+    } catch (error: any) {
+      // console.log("Pin settings error", error);
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch company info settings"
+      );
+    }
+  }
+);
+
+export const getRankSettingsAsync = createAsyncThunk(
+  "setting/getRankSettings",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get<IApiResponse<IRankSettings[]>>(
+        ROUTES.SETTINGS.GET_RANK_SETTINGS
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch rank settings"
+      );
+    }
+  }
+);
+
+export const getRewardSettingsAsync = createAsyncThunk(
+  "setting/getRewardSettings",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get<IApiResponse<IRewardSettings[]>>(
+        ROUTES.SETTINGS.GET_REWARD_SETTINGS
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch rank settings"
+      );
+    }
+  }
+);
+
+export const getPlansAsync = createAsyncThunk(
+  "setting/getPlans",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.get<IApiResponse<IPlan[]>>(
+        ROUTES.SETTINGS.GET_PLANS
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch rank settings"
       );
     }
   }
@@ -59,29 +196,113 @@ const settingSlice = createSlice({
     builder
       // getWebsiteSettingsAsync
       .addCase(getWebsiteSettingsAsync.pending, (state) => {
-        state.loading = true;
+        state.loading.getWebsiteSettings = true;
         state.error = null;
       })
       .addCase(getWebsiteSettingsAsync.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loading.getWebsiteSettings = false;
         state.websiteSettings = action.payload.data;
       })
       .addCase(getWebsiteSettingsAsync.rejected, (state, action) => {
-        state.loading = false;
+        state.loading.getWebsiteSettings = false;
         state.error = action.payload as string;
       })
 
       // getUsersiteSettingsAsync
       .addCase(getUsersiteSettingsAsync.pending, (state) => {
-        state.loading = true;
+        state.loading.getUserSettings = true;
         state.error = null;
       })
       .addCase(getUsersiteSettingsAsync.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loading.getUserSettings = false;
         state.userSettings = action.payload.data;
       })
       .addCase(getUsersiteSettingsAsync.rejected, (state, action) => {
-        state.loading = false;
+        state.loading.getUserSettings = false;
+        state.error = action.payload as string;
+      })
+
+      // getWalletSettingsAsync
+      .addCase(getWalletSettingsAsync.pending, (state) => {
+        state.loading.getWalletSettings = true;
+        state.error = null;
+      })
+      .addCase(getWalletSettingsAsync.fulfilled, (state, action) => {
+        state.loading.getWalletSettings = false;
+        state.walletSettings = action.payload.data;
+      })
+      .addCase(getWalletSettingsAsync.rejected, (state, action) => {
+        state.loading.getWalletSettings = false;
+        state.error = action.payload as string;
+      })
+
+      // getCompanyInfoSettingsAsync
+      .addCase(getCompanyInfoSettingsAsync.pending, (state) => {
+        state.loading.getCompanyInfo = true;
+        state.error = null;
+      })
+      .addCase(getCompanyInfoSettingsAsync.fulfilled, (state, action) => {
+        state.loading.getCompanyInfo = false;
+        state.companyInfo = action.payload.data;
+      })
+      .addCase(getCompanyInfoSettingsAsync.rejected, (state, action) => {
+        state.loading.getCompanyInfo = false;
+        state.error = action.payload as string;
+      })
+
+      // getPinSettingsAsync
+      .addCase(getPinSettingsAsync.pending, (state) => {
+        state.loading.getPinSettings = true;
+        state.error = null;
+      })
+      .addCase(getPinSettingsAsync.fulfilled, (state, action) => {
+        state.loading.getPinSettings = false;
+        state.pinSettings = action.payload.data;
+      })
+      .addCase(getPinSettingsAsync.rejected, (state, action) => {
+        state.loading.getPinSettings = false;
+        state.error = action.payload as string;
+      })
+
+      // getRankSettingsAsync
+      .addCase(getRankSettingsAsync.pending, (state) => {
+        state.loading.getRankSettings = true;
+        state.error = null;
+      })
+      .addCase(getRankSettingsAsync.fulfilled, (state, action) => {
+        state.loading.getRankSettings = false;
+        state.rankSettings = action.payload.data;
+      })
+      .addCase(getRankSettingsAsync.rejected, (state, action) => {
+        state.loading.getRankSettings = false;
+        state.error = action.payload as string;
+      })
+
+      // getPlansAsync
+      .addCase(getPlansAsync.pending, (state) => {
+        state.loading.getPlans = true;
+        state.error = null;
+      })
+      .addCase(getPlansAsync.fulfilled, (state, action) => {
+        state.loading.getPlans = false;
+        state.plans = action.payload.data;
+      })
+      .addCase(getPlansAsync.rejected, (state, action) => {
+        state.loading.getPlans = false;
+        state.error = action.payload as string;
+      })
+
+      // getRewardSettingsAsync
+      .addCase(getRewardSettingsAsync.pending, (state) => {
+        state.loading.getRewardSettings = true;
+        state.error = null;
+      })
+      .addCase(getRewardSettingsAsync.fulfilled, (state, action) => {
+        state.loading.getRewardSettings = false;
+        state.rewardSettings = action.payload.data;
+      })
+      .addCase(getRewardSettingsAsync.rejected, (state, action) => {
+        state.loading.getRewardSettings = false;
         state.error = action.payload as string;
       });
   },

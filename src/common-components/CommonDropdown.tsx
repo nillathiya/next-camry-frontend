@@ -5,8 +5,9 @@ import { Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from "reactstrap
 interface CommonDropdown {
   dropdownItems?: string[];
   dropdownToggle?: string;
+  onSelect: (value: string) => void;
 }
-const CommonDropdown = ({ dropdownItems, dropdownToggle }: CommonDropdown) => {
+const CommonDropdown = ({ dropdownItems, dropdownToggle, onSelect  }: CommonDropdown) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggle = () => setDropdownOpen((prevState) => !prevState);
   const days = ["Today", "Tomorrow", "Yesterday"];
@@ -21,7 +22,7 @@ const CommonDropdown = ({ dropdownItems, dropdownToggle }: CommonDropdown) => {
       </DropdownToggle>
       <DropdownMenu end className="dropdown-menu-end">
         {(dropdownItems || days).map((item, i) => (
-          <DropdownItem key={i} tag="a" href={Href}>
+          <DropdownItem key={i} tag="a" href={Href} onClick={() => onSelect(item)}>
             {item}
           </DropdownItem>
         ))}
