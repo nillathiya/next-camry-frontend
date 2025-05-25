@@ -31,12 +31,12 @@ const getDynamicUrl = () => {
 
 // Configure wallets using RainbowKit's getDefaultWallets
 const { connectors } = getDefaultWallets({
-  appName: "My Web3 App",
+  appName: "CamryChain",
   projectId: WALLET_CONNECT_PROJECT_ID,
   walletConnectParameters: {
     metadata: {
-      name: "My Web3 App",
-      description: "A Web3 application built with Wagmi and RainbowKit",
+      name: "CamryChain",
+      description: "Camry Chain DApp formerly Camry World",
       url: getDynamicUrl(),
       icons: [APP_ICON_URL],
     },
